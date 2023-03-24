@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
 import { ethers } from "ethers";
-import { FunWallet, FunWalletConfig } from "@fun-wallet/sdk";
+import { FunWallet, FunWalletConfig } from "@fun-wallet/sdk/wallet/index";
 import TokenSelect from "../forms/TokenSelect";
 
 export default function Deployed(props) {

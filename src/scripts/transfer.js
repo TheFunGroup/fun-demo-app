@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { FunWallet, FunWalletConfig } from "@fun-wallet/sdk";
+import { FunWallet, FunWalletConfig } from "@fun-wallet/sdk/wallet/index";
 
 export const handleTransfer = async function(wallet, paymentToken, transferData){
   console.log("TRANSFER")

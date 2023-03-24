@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
 import { ethers } from "ethers";
-import { FunWallet, FunWalletConfig } from "@fun-wallet/sdk"
+import { FunWallet, FunWalletConfig } from "@fun-wallet/sdk/wallet/index";
 import { networks, connectToNetwork } from "../../utils/networks";
 import { createFunWallet } from "../../scripts/wallet";
 import Loader from "../misc/Loader";
+import { Eoa } from "../../../../wallet-sdk-v1/auth/EoaAuth"
 
 export default function ConnectWallet(props) {
 
@@ -19,11 +20,15 @@ export default function ConnectWallet(props) {
     try {
       await provider.send('eth_requestAccounts', []) // <- this promps user to connect external wallet
       const eoa = provider.getSigner()
+
+      // const auth = new Eoa({signer:eoa})
+      const auth = new Eoa({privateKey: "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"})
       const network = 5
       setCreating(true)
       connectToNetwork(network).then(async () => {
-        const FunWallet = await createFunWallet(eoa, network)
-        setEOA(eoa);
+        const FunWallet = await createFunWallet(auth, network)
+        
+        setEOA(auth);
         setNetwork(network)
         setWallet(FunWallet);
         setCreating(false)
