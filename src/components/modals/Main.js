@@ -2,8 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
 import { ethers } from "ethers";
 import { FunWallet, FunWalletConfig } from "@fun-wallet/sdk"
-import NetworkSelect from "./NetworkSelect";
-import WalletView from "./WalletView";
+import NetworkSelect from "../popups/NetworkSelect";
+import WalletView from "../popups/WalletView";
 
 export default function Main(props) {
 
@@ -15,8 +15,31 @@ export default function Main(props) {
   const setNetwork = props.setNetwork;
   const setModal = props.setModal;
 
+  const [walletCreated, setWalletCreated] = useState()
+
+  useEffect(() => {
+    if(localStorage.getItem("fun-wallet-addr") !== wallet?.address){
+      setWalletCreated(true);
+      localStorage.setItem("fun-wallet-addr", wallet.address)
+      setTimeout(() => {
+        setWalletCreated(false)
+      }, 2500)
+    }
+  }, [wallet])
+
   return (
     <div className="modal w-[690px]">
+
+      {walletCreated && (
+        <div className="alert w-full flex justify-between -mb-[50px] relative">
+          <div className="flex items-center">
+            <Image src="/created.svg" width="24" height="24"/>
+            <div className="text-[#101828] font-medium ml-3">{`Congrats! Fun Wallet Created`}</div>
+          </div>
+          {/* <div className="button text-center px-[18px] py-[10px]" onClick={() => setModal("fund")}>Fund</div> */}
+        </div>
+      )}
+
       <div className="w-full flex p-2 justify-between">
         <div className="">
           <div className="text-[#101828] font-semibold text-xl">Welcome!</div>

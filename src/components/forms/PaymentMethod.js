@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
-import { networks,  connectToNetwork } from "../utils/networks";
-import { tokens } from "../utils/tokens";
+import { networks,  connectToNetwork } from "../../utils/networks";
+import { tokens } from "../../utils/tokens";
 
-import { useOnClickOutside } from "../hooks/useOnClickOutside";
+import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 
 export default function PaymentMethod(props) {
 
@@ -63,7 +63,7 @@ export default function PaymentMethod(props) {
         onClick={() => {setToken(chainToken.symbol)}}
       >
         <div className="flex items-center">
-          <Image src="/ethereum-payment.png" width="46" height="32"/>
+          <Image src={token == "ETH" ?  "/ethereum-payment.png" : "/matic-payment.png"} width="46" height="32"/>
           <div className="ml-4">{chainToken.name}</div>
         </div>
         <Image src={token == chainToken.symbol ? "/checked.svg" : "/uncheck.svg"} width="20" height="20"/>

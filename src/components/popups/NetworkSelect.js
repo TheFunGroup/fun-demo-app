@@ -1,25 +1,37 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
-import { networks,  connectToNetwork } from "../utils/networks";
-import { useOnClickOutside } from "../hooks/useOnClickOutside";
+import { networks,  connectToNetwork } from "../../utils/networks";
+import { useOnClickOutside } from "../../hooks/useOnClickOutside";
+import { createFunWallet } from "../../scripts/wallet";
+import Loader from "../misc/Loader";
 
 export default function NetworkSelect(props) {
   
   const setNetwork = props.setNetwork;
   const setWallet = props.setWallet;
   const eoa = props.eoa;
-  const [current, setCurrent] = useState(networks[ethereum.networkVersion] ? ethereum.networkVersion : 1)
+  const [current, setCurrent] = useState(5)
   const [hover, setHover] = useState();
   const [dropdown, setDropdown] = useState();
   const dropdownRef = useRef()
   const networkBtnRef = useRef()
 
+  const [creating, setCreating] = useState()
+
   function connect(id){
     if(!networks[id]) return;
-    connectToNetwork(id).then((err) => {
+    setCreating(id)
+    connectToNetwork(id).then(async (err) => {
       if(!err) {
-        setCurrent(id);
-        setNetwork(id);
+        try {
+          const FunWallet = await createFunWallet(eoa, id)
+          setCurrent(id);
+          setNetwork(id);
+          setWallet(FunWallet);
+          setCreating(false)
+        } catch(e){
+          console.log(e)
+        }
       } else {
         console.log(err)
       }
@@ -51,11 +63,11 @@ export default function NetworkSelect(props) {
             return (
               <div 
                 className={`
-                  w-full flex items-center justify-between px-[14px] py-[10px] cursor-pointer
+                  w-full flex items-center justify-between px-[14px] py-[10px] cursor-not-allowed	
                   ${idx == 0 && "rounded-t-xl"} ${idx == Object.keys(networks).length - 1 && "rounded-b-xl"}
                   ${id == (current) ? "bg-white" : id == hover ? "bg-[#f5f5f5]" : "bg-[#f9f9f9]"}
                 `}
-                onClick={() => connect(id)}
+                // onClick={() => connect(id)}
                 onMouseEnter={() => setHover(id)}
                 onMouseLeave={() => setHover("")}
               >
@@ -66,6 +78,9 @@ export default function NetworkSelect(props) {
                 <div>
                   {id == current && (
                     <Image src="/check.svg" width="20" height="20"/>
+                  )}
+                  {id == creating && (
+                    <Loader width="20px" height="20px"/>
                   )}
                 </div>
               </div>

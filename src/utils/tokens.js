@@ -28,31 +28,23 @@ export const tokens = {
   '5': [
     {
       name: "ETH",
-      addr: "native"
+      addr: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+      decimal: 18
     },
     {
       name: "USDC",
-      addr: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-    },
-    {
-      name: "USDT",
-      addr: "0xdac17f958d2ee523a2206206994597c13d831ec7"
-    },
-    {
-      name: "BNB",
-      addr: "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
-    },
-    {
-      name: "UNI",
-      addr: "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"
+      addr: "0x824b8e927417276b6643e9fc830176ce18dfc6f8",
+      decimal: 6
     },
     {
       name: "DAI",
-      addr: "0x6b175474e89094c44da98b954eedeac495271d0f"
+      addr: "0xae8cc06365253284eea8c23192c410b19a7a1224",
+      decimal: 10
     },
     {
-      name: "WBTC",
-      addr: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+      name: "TST",
+      addr: "0x92db1cebe8770acbc0cf321a5e71746c4097c995",
+      decimal: 6
     },
   ],
   '137': [

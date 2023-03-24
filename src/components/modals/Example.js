@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
-import { networks,  connectToNetwork } from "../utils/networks";
-import { tokens } from "../utils/tokens";
-import { useOnClickOutside } from "../hooks/useOnClickOutside";
-import TransferForm from "./TransferForm";
-import SwapForm from "./SwapForm";
-import PaymentMethod from "./PaymentMethod";
+import { networks,  connectToNetwork } from "../../utils/networks";
+import { tokens } from "../../utils/tokens";
+import { useOnClickOutside } from "../../hooks/useOnClickOutside";
+import TransferForm from "../forms/TransferForm";
+import SwapForm from "../forms/SwapForm";
+import PaymentMethod from "../forms/PaymentMethod";
 
 const examples = {
   "transfer": {
@@ -23,14 +23,15 @@ export default function Example(props) {
   const example = examples[props.example];
   const setModal = props.setModal;
   const network = props.network;
+  const wallet = props.wallet;
   const [mustFund, setMustFund] = useState(false)
 
   const token = tokens[network][0];
 
-  const [transfer, setTransfer] = useState([0.2, token.name]);
+  const [transfer, setTransfer] = useState([0.2, token]);
   const [receiverAddr, setReceiverAddr] = useState("");
-  const [swapExchange, setSwapExchange] = useState([0.25, token.name]);
-  const [swapReceive, setSwapReceive] = useState([200.25, "DAI"]);
+  const [swapExchange, setSwapExchange] = useState([0.1, token]);
+  const [swapReceive, setSwapReceive] = useState([921137.876962, tokens[network][1]]);
   const [slippage, setSlippage] = useState(0.5);
   const [gas, setGas] = useState(.00056);
 
@@ -67,13 +68,13 @@ export default function Example(props) {
       <div className="text-[#667085] text-sm mt-1 mb-10 whitespace-nowrap">{example.description}</div>
 
       {props.example == "transfer" && (
-        <TransferForm transfer={transfer} setTransfer={setTransfer} receiverAddr={receiverAddr} setReceiverAddr={setReceiverAddr} network={network}/>
+        <TransferForm transfer={transfer} setTransfer={setTransfer} receiverAddr={receiverAddr} setReceiverAddr={setReceiverAddr} network={network} wallet={wallet}/>
       )}
 
       {props.example == "swap" && (
         <SwapForm 
           swapExchange={swapExchange} setSwapExchange={setSwapExchange} swapReceive={swapReceive} setSwapReceive={setSwapReceive}
-          slippage={slippage} setSlippage={setSlippage} network={network}
+          slippage={slippage} setSlippage={setSlippage} network={network} wallet={wallet}
         />
       )}
 

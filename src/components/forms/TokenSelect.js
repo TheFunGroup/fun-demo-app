@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
-import { networks,  connectToNetwork } from "../utils/networks";
-import { tokens } from "../utils/tokens";
-import { useOnClickOutside } from "../hooks/useOnClickOutside";
+import { networks,  connectToNetwork } from "../../utils/networks";
+import { tokens } from "../../utils/tokens";
+import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 
 export default function TokenSelect(props) {
   
@@ -26,7 +26,7 @@ export default function TokenSelect(props) {
   return (
     <div className="">
       <div className="flex items-center cursor-pointer" onClick={() => setDropdown(!dropdown)}>
-        <div className="text-[#101828] mr-1">{token}</div>
+        <div className="text-[#101828] mr-1">{token.name}</div>
         <Image src="/chevron.svg" width="30" height="20"/>
       </div>
       {dropdown && (
@@ -37,15 +37,15 @@ export default function TokenSelect(props) {
                 className={`
                   w-full flex justify-between px-[14px] py-[10px] cursor-pointer
                   ${idx == 0 && "rounded-t-xl"} ${idx == tokens[network].length - 1 && "rounded-b-xl"}
-                  ${t.name == (token) ? "bg-[#2D4EA214]" : t.name == hover ? "bg-[#2D4EA207]" : "bg-white"}
+                  ${t.name == (token.name) ? "bg-[#2D4EA214]" : t.name == hover ? "bg-[#2D4EA207]" : "bg-white"}
                 `}
-                onClick={() => setToken(t.name)}
+                onClick={() => setToken(t)}
                 onMouseEnter={() => setHover(t.name)}
                 onMouseLeave={() => setHover("")}
               >
                 <div className="text-[#101828] text-sm">{t.name}</div>
                 <div>
-                  {t.name == token && (
+                  {t.name == token.name && (
                     <Image src="/check.svg" width="20" height="20"/>
                   )}
                 </div>

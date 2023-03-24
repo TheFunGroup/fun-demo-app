@@ -2,8 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
 import { ethers } from "ethers";
 import { FunWallet, FunWalletConfig } from "@fun-wallet/sdk";
-import { useOnClickOutside } from "../hooks/useOnClickOutside";
-import { networks } from "../utils/networks";
+import { useOnClickOutside } from "../../hooks/useOnClickOutside";
+import { networks } from "../../utils/networks";
 
 export default function WalletView(props) {
 
@@ -20,14 +20,18 @@ export default function WalletView(props) {
 
   useEffect(() => {
     if(networks[network || ethereum.networkVersion]){
-      eoa.getAddress().then((address) => {
-        setAddr(address)
-        eoa.provider.getBalance(address).then((balance) => {
-          setBalance(ethers.utils.formatEther(balance))
-        }).catch((e) => {
-          console.log(e)
-        })
-      })
+      if(wallet.address){
+        setAddr(wallet.address);
+        setBalance(0)
+      }
+      // eoa.getAddress().then((address) => {
+      //   setAddr(address)
+      //   eoa.provider.getBalance(address).then((balance) => {
+      //     setBalance(ethers.utils.formatEther(balance))
+      //   }).catch((e) => {
+      //     console.log(e)
+      //   })
+      // })
     }
   }, [network])
 
@@ -69,7 +73,7 @@ export default function WalletView(props) {
           </div>
           <Image src="/profile.svg" width="56" height="56" className="mt-4"/>
           <div className="flex items-end mt-2">
-            <div className="text-[32px] font-semibold mr-1">{Number(balance).toFixed(5)}</div>
+            <div className="text-[32px] font-semibold mr-1">{Number(balance).toFixed(2)}</div>
             <div className="text-[#667085] mb-2">{networks[ethereum.networkVersion]?.nativeCurrency.symbol}</div>
           </div>
           <div className="button text-center py-3 px-4 w-full mt-4" onClick={handleLogout}>Logout</div>

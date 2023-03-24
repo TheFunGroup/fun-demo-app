@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
 import Layout from '../components/layout';
-import ConnectWallet from "../components/ConnectWallet";
-import Main from "../components/Main";
+import ConnectWallet from "../components/modals/ConnectWallet";
+import Main from "../components/modals/Main";
 import { networks } from "../utils/networks";
-import Example from "../components/Example";
-import FundWallet from "../components/FundWallet";
-import Deployed from "../components/Deployed";
+import Example from "../components/modals/Example";
+import FundWallet from "../components/modals/FundWallet";
+import Deployed from "../components/modals/Deployed";
 
 export default function Home() {
 

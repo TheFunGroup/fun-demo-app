@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
-import { networks,  connectToNetwork } from "../utils/networks";
-import { tokens } from "../utils/tokens";
+import { networks,  connectToNetwork } from "../../utils/networks";
+import { tokens } from "../../utils/tokens";
 
-import { useOnClickOutside } from "../hooks/useOnClickOutside";
+import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 import TokenSelect from "./TokenSelect";
 
 export default function TransferForm(props) {
@@ -31,7 +31,7 @@ export default function TransferForm(props) {
             onChange={(e) => {setTransfer([e.target.value, transfer[1]])}}
             ref={transferRef}
           ></input>
-          <TokenSelect token={transfer[1]} setToken={(value) => {setTransfer([transfer[0], value])}} networks={network}/>
+          <TokenSelect token={transfer[1]} setToken={(value) => {setTransfer([transfer[0], value])}} network={network}/>
         </div>
       </div>
 
