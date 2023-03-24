@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { networks,  connectToNetwork } from "../../utils/networks";
 import { tokens } from "../../utils/tokens";
 import TokenSelect from "./TokenSelect";
-import { getPriceOfToken, getSwapInfo } from "../../scripts/prices";
+import { getSwapAmount } from "../../scripts/prices";
 
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 
@@ -26,22 +26,20 @@ export default function SwapForm(props) {
   }
 
   useEffect(() => {
-    getSwapInfo(swapExchange[1], swapExchange[0], swapReceive[1], network, wallet.eoa).then((swapAmount) => {
+    getSwapAmount(swapExchange[1].name, swapExchange[0], swapReceive[1].name).then((swapAmount) => {
       setSwapReceive([swapAmount, swapReceive[1]])
     });
   }, [])
 
   async function handleSwapChange(e){
     setSwapExchange([e.target.value, swapExchange[1]])
-    const swapAmount = await getSwapInfo(swapExchange[1], swapExchange[0], swapReceive[1], network, wallet.eoa);
-    console.log(swapAmount)
+    const swapAmount = await getSwapAmount(swapExchange[1].name, e.target.value, swapReceive[1].name);
     setSwapReceive([swapAmount, swapReceive[1]])
   }
 
   async function handleReceiveChange(e){
     setSwapReceive([e.target.value, swapReceive[1]])
-    const swapAmount = await getSwapInfo(swapReceive[1], swapReceive[0], swapExchange[1], network, wallet.eoa);
-    console.log(swapAmount)
+    const swapAmount = await getSwapAmount(swapReceive[1].name, e.target.value, swapExchange[1].name);
     setSwapExchange([swapAmount, swapExchange[1]])
   }
 

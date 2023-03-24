@@ -42,7 +42,7 @@ export const tokens = {
       decimal: 10
     },
     {
-      name: "TST",
+      name: "USDT",
       addr: "0x92db1cebe8770acbc0cf321a5e71746c4097c995",
       decimal: 6
     },

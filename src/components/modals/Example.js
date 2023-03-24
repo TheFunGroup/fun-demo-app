@@ -6,6 +6,9 @@ import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 import TransferForm from "../forms/TransferForm";
 import SwapForm from "../forms/SwapForm";
 import PaymentMethod from "../forms/PaymentMethod";
+import { calculateGas } from "../../scripts/calculateGas";
+import { handleSwap } from "../../scripts/swap";
+import { handleTransfer } from "../../scripts/transfer";
 
 const examples = {
   "transfer": {
@@ -24,6 +27,7 @@ export default function Example(props) {
   const setModal = props.setModal;
   const network = props.network;
   const wallet = props.wallet;
+  const setDeployedUrl = props.setDeployedUrl;
   const [mustFund, setMustFund] = useState(false)
 
   const token = tokens[network][0];
@@ -31,25 +35,65 @@ export default function Example(props) {
   const [transfer, setTransfer] = useState([0.2, token]);
   const [receiverAddr, setReceiverAddr] = useState("");
   const [swapExchange, setSwapExchange] = useState([0.1, token]);
-  const [swapReceive, setSwapReceive] = useState([921137.876962, tokens[network][1]]);
+  const [swapReceive, setSwapReceive] = useState([176, tokens[network][1]]);
   const [slippage, setSlippage] = useState(0.5);
-  const [gas, setGas] = useState(.00056);
+  const [gas, setGas] = useState("Calculating...");
 
   const [paymentToken, setPaymentToken] = useState(token.name);
 
   function handleSubmit(){
     if(props.example == "transfer"){
-      console.log("Transfer")
-      setModal("deployed");
+      handleTransfer(wallet, paymentToken, {
+        token: transfer[1],
+        amount: transfer[0],
+        to: receiverAddr
+      }).then((data) => {
+        if(data.success){
+          setDeployedUrl(data.explorerUrl)
+          setModal("deployed");
+        } else if(data.mustFund){
+          setMustFund(true);
+        }
+      })
     } else if(props.example == "swap"){
-      console.log("Swap");
-      setMustFund(true);
+      handleSwap(wallet, paymentToken, {
+        token1: swapExchange[1],
+        amount: swapExchange[0],
+        token2: swapReceive[1]
+      }).then((data) => {
+        if(data.success){
+          setDeployedUrl(data.explorerUrl)
+          setModal("deployed");
+        } else if(data.mustFund){
+          setMustFund(true);
+        }
+      })
     }
   }
 
   useEffect(() => {
     setMustFund(false)
   }, [paymentToken])
+
+  useEffect(() => {
+    if(props.example == "transfer"){
+      calculateGas(paymentToken, wallet, null, {
+        token: transfer[1],
+        amount: transfer[0],
+        to: receiverAddr
+      }).then((gas) => {
+        setGas(`${gas.token} ${paymentToken} · $${gas.usd}`)
+      })
+    } else if(props.example == "swap"){
+      calculateGas(paymentToken, wallet, {
+        token1: swapExchange[1],
+        amount: swapExchange[0],
+        token2: swapReceive[1]
+      }, null).then((gas) => {
+        setGas(`${gas.token} ${paymentToken} · $${gas.usd}`)
+      })
+    }
+  }, [paymentToken, swapExchange, swapReceive, transfer, receiverAddr])
 
   return (
     <div className={`modal w-[690px] ${example == "transfer" ? "-mt-[128px]" : "-mt-[148px]"}`}>
@@ -91,7 +135,7 @@ export default function Example(props) {
 
       <div className="flex justify-between w-full mt-3 text-sm">
         <div className="text-[#344054] font-medium">Gas</div>
-        <div className="text-[#667085]">{`${gas} ${paymentToken || "ETH"}`}</div>
+        <div className="text-[#667085]">{`${gas}`}</div>
       </div>
 
       <div className="flex w-full items-center justify-between mt-10 text-center">

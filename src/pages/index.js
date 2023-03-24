@@ -13,7 +13,8 @@ export default function Home() {
     const [eoa, setEOA] = useState();
     const [wallet, setWallet] = useState()
     const [network, setNetwork] = useState();
-    const [modal, setModal] = useState("main")
+    const [modal, setModal] = useState("main");
+    const [deployedUrl, setDeployedUrl] = useState();
 
     return (
       <div className="w-full h-full flex flex-col items-center pt-[200px]">
@@ -27,16 +28,16 @@ export default function Home() {
               <Main setModal={setModal} wallet={wallet} setWallet={setWallet} eoa={eoa} setEOA={setEOA} network={network} setNetwork={setNetwork}/>
             )}
             {modal == "transfer" && (
-              <Example example="transfer" setModal={setModal} network={network} wallet={wallet}/>
+              <Example example="transfer" setModal={setModal} network={network} wallet={wallet} setDeployedUrl={setDeployedUrl}/>
             )}
             {modal == "swap" && (
-              <Example example="swap" setModal={setModal} network={network} wallet={wallet}/>
+              <Example example="swap" setModal={setModal} network={network} wallet={wallet} setDeployedUrl={setDeployedUrl}/>
             )}
             {modal == "fund" && (
               <FundWallet setModal={setModal} wallet={wallet}/>
             )}
             {modal == "deployed" && (
-              <Deployed setModal={setModal}/>
+              <Deployed setModal={setModal} deployedUrl={deployedUrl}/>
             )}
           </div>
         )}
