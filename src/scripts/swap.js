@@ -12,7 +12,10 @@ export const handleSwap = async function(wallet, paymentToken, swapData){
   //Tells frontend swap was success
   return {success: true, explorerUrl: "https://goerli.etherscan.io/tx/"} 
 
-  //Tells frontend that funwallet must be funded
-  // return {mustFund: true} 
+  //Tells frontend that funwallet must be funded  
+  //return {mustFund: true} 
+
+  //Tells frontend that funwallet token sponsor must be approved
+  //return {mustApprove: true} 
 
 }

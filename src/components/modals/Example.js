@@ -28,7 +28,8 @@ export default function Example(props) {
   const network = props.network;
   const wallet = props.wallet;
   const setDeployedUrl = props.setDeployedUrl;
-  const [mustFund, setMustFund] = useState(false)
+  const [mustFund, setMustFund] = useState(false);
+  const [mustApprove, setMustApprove] = useState(false);
 
   const token = tokens[network][0];
 
@@ -53,6 +54,8 @@ export default function Example(props) {
           setModal("deployed");
         } else if(data.mustFund){
           setMustFund(true);
+        } else if(data.mustApprove){
+          setMustApprove(true);
         }
       })
     } else if(props.example == "swap"){
@@ -66,6 +69,8 @@ export default function Example(props) {
           setModal("deployed");
         } else if(data.mustFund){
           setMustFund(true);
+        } else if(data.mustApprove){
+          setMustApprove(true);
         }
       })
     }
@@ -73,6 +78,7 @@ export default function Example(props) {
 
   useEffect(() => {
     setMustFund(false)
+    setMustApprove(false)
   }, [paymentToken])
 
   useEffect(() => {
@@ -105,6 +111,16 @@ export default function Example(props) {
             <div className="text-[#101828] font-medium ml-3">{`Insufficient ${paymentToken} for transaction fees.`}</div>
           </div>
           <div className="button text-center px-[18px] py-[10px]" onClick={() => setModal("fund")}>Fund</div>
+        </div>
+      )}
+
+      {mustApprove && (
+        <div className="alert w-full flex justify-between -mb-[72px] relative">
+          <div className="flex items-center">
+            <Image src="/alert.svg" width="24" height="24"/>
+            <div className="text-[#101828] font-medium ml-3">{`Token Sponsor doesn’t have the required authorization amount.`}</div>
+          </div>
+          <div className="button text-center px-[18px] py-[10px]" onClick={() => setModal("approve")}>Give</div>
         </div>
       )}
 

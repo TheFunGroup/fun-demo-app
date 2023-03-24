@@ -7,6 +7,7 @@ import { networks } from "../utils/networks";
 import Example from "../components/modals/Example";
 import FundWallet from "../components/modals/FundWallet";
 import Deployed from "../components/modals/Deployed";
+import Approve from "../components/modals/Approve";
 
 export default function Home() {
 
@@ -35,6 +36,9 @@ export default function Home() {
             )}
             {modal == "fund" && (
               <FundWallet setModal={setModal} wallet={wallet}/>
+            )}
+            {modal == "approve" && (
+              <Approve setModal={setModal} wallet={wallet}/>
             )}
             {modal == "deployed" && (
               <Deployed setModal={setModal} deployedUrl={deployedUrl}/>
