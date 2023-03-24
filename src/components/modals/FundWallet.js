@@ -12,8 +12,9 @@ export default function FundWallet(props) {
   const wallet = props.wallet;
 
   function fundWallet(){
-    handleFundWallet(wallet, funding)
-    setModal("main");
+    handleFundWallet(wallet, funding).then((data) => {
+      setModal("main");
+    })
   }
 
   return (
