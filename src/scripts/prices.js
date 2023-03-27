@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { FeeAmount } from '@uniswap/v3-sdk'
 import Quoter from "@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json"
 
 export const getSwapAmount = async function (token1, amt, token2) {

@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { FunWallet, FunWalletConfig } from "@fun-wallet/sdk/wallet/index";
 import { toUSD } from "./prices";
 
 export const calculateGas = async function(paymentToken, wallet, swapData, transferData){
