@@ -11,14 +11,23 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
     alert("No Receiver Address Specified")
     return { success: false }
   }
-
+  const address= await wallet.getAddress()
   console.log(wallet)
-  console.log(await wallet.getAddress())
   console.log(transferData)
-  
-  // if(Token get balance ){
+  let balance = 0;
+  if(transferData.token.name=="ETH"){
+    const provider = ethers.getDefaultProvider();
+    balance = await provider.getBalance(address);
+    // balance = (await Token.getBalance(transferData.token.name, address))
+  }
+  else{
+    balance = (await Token.getBalance(transferData.token.name, address))
+  }
+  if(balance<transferData.amount){
+    alert(`Insufficient ${transferData.token.name} to perform Transfer.`)
+    return {success:false}
     // return { success: false }
-  // }
+  }
   if(transferData.token.name!="ETH"){
     console.log("Transfering ERC")
     const receipt = await wallet.transfer(auth, { to: transferData.to, amount: transferData.amount, token: transferData.token.name})

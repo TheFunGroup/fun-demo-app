@@ -13,12 +13,13 @@ export default function ConnectWallet(props) {
   const setEOA = props.setEOA;
 
   const [creating, setCreating] = useState()
-
+  
   async function connectEOA() {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    console.log(window.ethereum)
-    await provider.send('eth_requestAccounts', []);
-    const eoa = provider.getSigner()
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    await provider.send('eth_requestAccounts', []); // <- this promps user to connect metamask
+    const eoa = provider.getSigner();
+    console.log(eoa)
+    console.log(provider)
     // console.log(eoa)
     try {
 
@@ -58,6 +59,7 @@ export default function ConnectWallet(props) {
         )}
         <div className="ml-3 font-medium text-[#344054]">Connect EOA</div>
       </div>
+      
     </div>
   )
 }
