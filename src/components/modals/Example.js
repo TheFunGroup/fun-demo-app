@@ -48,7 +48,7 @@ export default function Example(props) {
         token: transfer[1],
         amount: transfer[0],
         to: receiverAddr
-      }).then((data) => {
+      }, props.eoa).then((data) => {
         if(data.success){
           setDeployedUrl(data.explorerUrl)
           setModal("deployed");
@@ -63,7 +63,7 @@ export default function Example(props) {
         token1: swapExchange[1],
         amount: swapExchange[0],
         token2: swapReceive[1]
-      }).then((data) => {
+      }, props.eoa).then((data) => {
         if(data.success){
           setDeployedUrl(data.explorerUrl)
           setModal("deployed");
