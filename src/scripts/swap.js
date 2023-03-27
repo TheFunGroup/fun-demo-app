@@ -10,20 +10,20 @@ export const handleSwap = async function(wallet, paymentToken, swapData, auth){
   const out = swapData.token2.name.toLowerCase()
 
   const address= await wallet.getAddress()
-  let balance = 0;
-  if(ins=="eth"){
-    const provider = ethers.getDefaultProvider();
-    balance = await provider.getBalance(address);
-    // balance = (await Token.getBalance(transferData.token.name, address))
-  }
-  else{
-    balance = (await Token.getBalance(ins, address))
-  }
-  if(balance<swapData.amount){
-    alert(`Insufficient ${ins} to perform Transfer.`)
-    return {success:false}
-    // return { success: false }
-  }
+  // let balance = 0;
+  // if(ins=="eth"){
+  //   const provider = ethers.getDefaultProvider();
+  //   balance = await provider.getBalance(address);
+  //   // balance = (await Token.getBalance(transferData.token.name, address))
+  // }
+  // else{
+  //   balance = (await Token.getBalance(ins, address))
+  // }
+  // if(balance<swapData.amount){
+  //   alert(`Insufficient ${ins} to perform Transfer.`)
+  //   return {success:false}
+  //   // return { success: false }
+  // }
 
   //Tells frontend that funwallet must be funded  
   //return {mustFund: true} 

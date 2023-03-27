@@ -736,7 +736,7 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@fun-wallet/sdk@../wallet-sdk-v1":
+"@fun-wallet/sdk@../fun-wallet-sdk":
   version "0.1.1"
   dependencies:
     "@account-abstraction/sdk" "^0.4.0"
