@@ -13,6 +13,9 @@ export const handleTransfer = async function(wallet, paymentToken, transferData)
   return {success: true, explorerUrl: "https://goerli.etherscan.io/tx/"} 
 
   //Tells frontend that funwallet must be funded  
-  return {mustFund: true} 
+  //return {mustFund: true} 
+
+  //Tells frontend that funwallet token sponsor must be approved
+  //return {mustApprove: true} 
 
 }

@@ -29,7 +29,7 @@ export default function ConnectWallet(props) {
         setCreating(false)
       })
     } catch(e){
-
+      console.log(e)
     }
   }
 
