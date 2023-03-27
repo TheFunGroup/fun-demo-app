@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/router";
 import Image from 'next/image';
 import { ethers } from "ethers";
 import NetworkSelect from "../popups/NetworkSelect";
@@ -6,13 +7,13 @@ import WalletView from "../popups/WalletView";
 
 export default function Main(props) {
 
+  const router = useRouter();
   const wallet = props.wallet;
   const setWallet = props.setWallet;
   const eoa = props.eoa;
-  const setEOA = props.eoa;
+  const setEOA = props.setEOA;
   const network = props.network;
   const setNetwork = props.setNetwork;
-  const setModal = props.setModal;
 
   const [walletCreated, setWalletCreated] = useState()
 
@@ -35,7 +36,6 @@ export default function Main(props) {
             <Image src="/created.svg" width="24" height="24"/>
             <div className="text-[#101828] font-medium ml-3">{`Congrats! Fun Wallet Created`}</div>
           </div>
-          {/* <div className="button text-center px-[18px] py-[10px]" onClick={() => setModal("fund")}>Fund</div> */}
         </div>
       )}
 
@@ -44,20 +44,23 @@ export default function Main(props) {
           <div className="text-[#101828] font-semibold text-xl">Welcome!</div>
           <div className="text-[#667085] text-sm mt-1 whitespace-nowrap">Explore the possibilities of a Fun Wallet!</div>
         </div>
-        <div className="flex">
-          <NetworkSelect network={network} setNetwork={setNetwork} setWallet={setWallet} eoa={props.eoa}/>
-          <WalletView wallet={wallet} setWallet={setWallet} network={network} setEOA={setEOA} eoa={props.eoa}/>
+        <div className="w-full flex flex-col items-end">
+          <div className="flex">
+            <NetworkSelect network={network} setNetwork={setNetwork} setWallet={setWallet} eoa={props.eoa}/>
+            <WalletView wallet={wallet} setWallet={setWallet} network={network} setEOA={setEOA} eoa={props.eoa}/>
+          </div>
+          <a href="https://shuttleone.io/testnet/faucet.html" target="_blank"><div className="button text-[#667085] text-sm rounded-md border-[1px] border-[#667085] mt-3 cursor-pointer px-2">Goerli Faucet</div></a>
         </div>
       </div>
       <div className="w-full mt-6">
-        <div className="button flex items-center text-sm p-4" onClick={() => setModal("swap")}>
+        <div className="button flex items-center text-sm p-4" onClick={() => router.push("/swap")}>
           <Image src="/swap.svg" width="40" height="40"/>
           <div className="ml-3">
             <div className="font-medium text-[#344054]">Uniswap</div>
             <div className="text-[#667085]">A decentralized exchange protocol that enables automated liquidity provision and trading on Ethereum.</div>
           </div>
         </div>
-        <div className="button flex items-center text-sm mt-4 p-4" onClick={() => setModal("transfer")}>
+        <div className="button flex items-center text-sm mt-4 p-4" onClick={() => router.push("/transfer")}>
           <Image src="/transfer.svg" width="40" height="40"/>
           <div className="ml-3">
             <div className="font-medium text-[#344054]">Token Transfer</div>

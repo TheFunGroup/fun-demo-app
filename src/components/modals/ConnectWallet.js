@@ -4,7 +4,8 @@ import { ethers } from "ethers";
 import { networks, connectToNetwork } from "../../utils/networks";
 import { createFunWallet } from "../../scripts/wallet";
 import Loader from "../misc/Loader";
-import { Eoa } from "../../../../fun-wallet-sdk/auth/EoaAuth"
+// import { Eoa } from "../../../../fun-wallet-sdk/auth/EoaAuth"
+import { Eoa } from "@fun-wallet/sdk/auth"
 
 export default function ConnectWallet(props) {
 
@@ -17,14 +18,12 @@ export default function ConnectWallet(props) {
   async function connectEOA() {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     await provider.send('eth_requestAccounts', []); // <- this promps user to connect metamask
-    const eoa = provider.getSigner();
-    console.log(eoa)
-    console.log(provider)
-    // console.log(eoa)
+    const signer = provider.getSigner();
+    localStorage.setItem("fun-wallet-addr", "")
     try {
 
       // console.log(eoa)
-      // const auth = new Eoa({ signer: eoa })
+      // const auth = new Eoa({ signer })
       // console.log(auth)
       const auth = new Eoa({privateKey: "0x6270ba97d41630c84de28dd8707b0d1c3a9cd465f7a2dba7d21b69e7a1981064"})
       console.log(auth)
@@ -32,7 +31,8 @@ export default function ConnectWallet(props) {
       setCreating(true)
       connectToNetwork(network).then(async () => {
         const FunWallet = await createFunWallet(auth, network)
-
+        const addr = await FunWallet.getAddress();
+        FunWallet.address = addr;
         setEOA(auth);
         setNetwork(network)
         setWallet(FunWallet);

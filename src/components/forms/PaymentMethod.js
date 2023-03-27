@@ -11,7 +11,7 @@ export default function PaymentMethod(props) {
     token, setToken, network
   } = props;
 
-  const chainToken = networks[network].nativeCurrency;
+  const chainToken = networks[network || 5].nativeCurrency;
 
   return (
     <div className="w-full mt-10">
@@ -63,7 +63,7 @@ export default function PaymentMethod(props) {
         onClick={() => {setToken(chainToken.symbol)}}
       >
         <div className="flex items-center">
-          <Image src={token == "ETH" ?  "/ethereum-payment.png" : "/matic-payment.png"} width="46" height="32"/>
+          <Image src={network == 5 ?  "/ethereum-payment.png" : "/matic-payment.png"} width="46" height="32"/>
           <div className="ml-4">{chainToken.name}</div>
         </div>
         <Image src={token == chainToken.symbol ? "/checked.svg" : "/uncheck.svg"} width="20" height="20"/>

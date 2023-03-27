@@ -11,17 +11,17 @@ const options = {
   chain: 5,
   apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
 }
-export async function createFunWallet(eoa, chainID){
+export async function createFunWallet(auth, chainID){
   await configureEnvironment(options)
 
   // const config = new FunWalletConfig(eoa, chainID)
-  const salt = await eoa.getUniqueId()
+  const salt = await auth.getUniqueId()
   const wallet = new FunWallet({ salt, index: 0 })
 
-  console.log(eoa)
+  console.log(auth)
   console.log(wallet)
 
-  // await prefundWallet(eoa, wallet, 0)
+  // await prefundWallet(auth, wallet, 0)
 
   return wallet;
 }

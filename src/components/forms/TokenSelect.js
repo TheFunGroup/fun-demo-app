@@ -31,7 +31,7 @@ export default function TokenSelect(props) {
       </div>
       {dropdown && (
         <div className="dropdown w-[200px] absolute -ml-[132px] mt-2" ref={dropdownRef}>
-          {tokens[network].map((t, idx) => {
+          {tokens[network]?.map((t, idx) => {
             return (
               <div 
                 className={`
@@ -45,7 +45,7 @@ export default function TokenSelect(props) {
               >
                 <div className="text-[#101828] text-sm">{t.name}</div>
                 <div>
-                  {t.name == token.name && (
+                  {t.name == token && (
                     <Image src="/check.svg" width="20" height="20"/>
                   )}
                 </div>

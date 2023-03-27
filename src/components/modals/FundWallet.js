@@ -6,18 +6,18 @@ import { handleFundWallet } from "../../scripts/fund";
 
 export default function FundWallet(props) {
 
+  const router = useRouter();
   const [funding, setFunding] = useState(["20"]);
-  const setModal = props.setModal;
   const wallet = props.wallet;
 
   function fundWallet(){
     handleFundWallet(wallet, funding).then((data) => {
-      setModal("main");
+      router.push('/')
     })
   }
 
   return (
-    <div className="modal w-[512px]">
+    <div className="modal w-[512px] my-12">
       <div className="text-[#101828] font-semibold text-xl">Fund your Fun Wallet</div>
       <div className="text-[#667085] text-sm mt-1 whitespace-nowrap">Add tokens to your wallet for transaction fees.</div>
       <div className="w-full mt-6 flex items-center justify-between">

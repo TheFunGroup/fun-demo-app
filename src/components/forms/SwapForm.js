@@ -26,21 +26,21 @@ export default function SwapForm(props) {
   }
 
   useEffect(() => {
-    getSwapAmount(swapExchange[1].name, swapExchange[0], swapReceive[1].name).then((swapAmount) => {
+    getSwapAmount(swapExchange[1], swapExchange[0], swapReceive[1]).then((swapAmount) => {
       setSwapReceive([swapAmount, swapReceive[1]])
     });
   }, [])
 
-  async function handleSwapChange(e){
-    setSwapExchange([e.target.value, swapExchange[1]])
-    const swapAmount = await getSwapAmount(swapExchange[1].name, e.target.value, swapReceive[1].name);
-    setSwapReceive([swapAmount, swapReceive[1]])
+  async function handleSwapChange(amount, from, to){
+    setSwapExchange([amount, from])
+    const swapAmount = await getSwapAmount(from, amount, to);
+    setSwapReceive([swapAmount, to])
   }
 
-  async function handleReceiveChange(e){
-    setSwapReceive([e.target.value, swapReceive[1]])
-    const swapAmount = await getSwapAmount(swapReceive[1].name, e.target.value, swapExchange[1].name);
-    setSwapExchange([swapAmount, swapExchange[1]])
+  async function handleReceiveChange(amount, from, to){
+    setSwapReceive([amount, to])
+    const swapAmount = await getSwapAmount(swapReceive[1], amount, from);
+    setSwapExchange([swapAmount, from])
   }
 
   return (
@@ -70,11 +70,14 @@ export default function SwapForm(props) {
           >
             <input 
               className="border-0 outline-0 w-full text-[#667085]" placeholder="0.00" type="number" value={swapExchange[0]}
-              onChange={handleSwapChange}
+              onChange={(e) => {handleSwapChange(e.target.value, swapExchange[1], swapReceive[1])}}
               ref={swapExchangeRef}
             >
             </input>
-            <TokenSelect token={swapExchange[1]} setToken={(value) => {setSwapExchange([swapExchange[0], value])}} network={network}/>
+            <TokenSelect token={swapExchange[1]} setToken={(value) => {
+              setSwapExchange([swapExchange[0], value]);
+              handleSwapChange(swapExchange[0], value, swapReceive[1]);
+            }} network={network}/>
           </div>
         </div>
         
@@ -87,11 +90,14 @@ export default function SwapForm(props) {
           >
             <input 
               className="border-0 outline-0 w-full text-[#667085]" placeholder="0.00" type="number" value={swapReceive[0]}
-              onChange={handleReceiveChange}
+              onChange={(e) => {handleReceiveChange(e.target.value)}}
               ref={swapReceiveRef}
             >
             </input>
-            <TokenSelect token={swapReceive[1]} setToken={(value) => {setSwapReceive([swapReceive[0], value])}} network={network}/>
+            <TokenSelect token={swapReceive[1]} setToken={(value) => {
+              setSwapReceive([swapReceive[0], value]);
+              handleSwapChange(swapExchange[0], swapExchange[1], value)
+            }} network={network}/>
           </div>
         </div>
       </div>

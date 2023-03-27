@@ -40,7 +40,10 @@ export default function NetworkSelect(props) {
 
   useEffect(() => {
     if(current) setDropdown(false);
-    if(ethereum.networkVersion !== current) connect(current)
+    if(Number(ethereum.networkVersion) !== current){
+      console.log("CONNECTING", current, ethereum.networkVersion)
+      connect(current)
+    } 
   }, [current])
 
   useOnClickOutside(dropdownRef, (e) => {
