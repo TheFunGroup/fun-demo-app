@@ -1,9 +1,8 @@
 import { ethers } from "ethers";
 import { FunWallet, FunWalletConfig } from "@fun-wallet/sdk/wallet/index";
 import { configureEnvironment } from "@fun-wallet/sdk/managers"
-import { prefundWallet } from "../../../wallet-sdk-v1/utils"
+import { prefundWallet } from "../../../fun-wallet-sdk/utils"
 import { Token } from "@fun-wallet/sdk/data"
-// import { FunWallet } from "../../../wallet-sdk-v1/";
 
 
 export const handleTransfer = async function (wallet, paymentToken, transferData, auth) {

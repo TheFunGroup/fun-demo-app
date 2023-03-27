@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@fun-wallet/sdk": "../wallet-sdk-v1",
+    "@fun-wallet/sdk": "../fun-wallet-sdk",
     "@next/font": "13.1.1",
     "@uniswap/v3-periphery": "^1.4.3",
     "bignumber.js": "^9.1.1",

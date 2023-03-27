@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import { networks, connectToNetwork } from "../../utils/networks";
 import { createFunWallet } from "../../scripts/wallet";
 import Loader from "../misc/Loader";
-import { Eoa } from "../../../../wallet-sdk-v1/auth/EoaAuth"
+import { Eoa } from "../../../../fun-wallet-sdk/auth/EoaAuth"
 
 export default function ConnectWallet(props) {
 
