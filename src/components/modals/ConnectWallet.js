@@ -8,16 +8,21 @@ import { Eoa } from "@fun-wallet/sdk/auth"
 import { useFun } from "../../contexts/funContext";
 
 import { Web3Button, useWeb3Modal } from '@web3modal/react'
-import { useProvider } from 'wagmi'
-import { getProvider } from 'wagmi'
+import { useProvider, useConnect } from 'wagmi'
 
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
+import WalletConnect from "@walletconnect/client";
+import QRCodeModal from "@walletconnect/qrcode-modal";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 
-const connector = new WalletConnectConnector({
- options: {
-  projectId: '5a25d59af74387684be4b2fdf1ab0bc3',
- },
-})
+//  Create WalletConnect Provider
+
+
+
+const connector = new WalletConnect({
+  bridge: "https://bridge.walletconnect.org", // Required
+  qrcodeModal: QRCodeModal,
+});
+
 
 
 // import { Eoa } from "@fun-wallet/sdk/auth"
@@ -25,23 +30,9 @@ export default function ConnectWallet(props) {
 
   const { setWallet, setNetwork, setEOA, setLoading } = useFun()
   const { isOpen, open, close, setDefaultChain } = useWeb3Modal();
-
+  const { connect, connectors, error, isLoading, pendingConnector } = useConnect()
   const [creating, setCreating] = useState()
-  const walletConnectRef = useRef()
-
-  useEffect(() => {
-
-    if(walletConnectRef?.current){
-      const loading = setInterval(() => {
-        let btnContainer = walletConnectRef?.current?.firstChild?.shadowRoot?.lastChild?.shadowRoot?.lastChild;
-        if(btnContainer && btnContainer?.shadowRoot?.lastChild){
-          clearInterval(loading)
-          btnContainer.style.width = "100%";
-          btnContainer.shadowRoot.lastChild.style.width = "100%";
-        }
-      }, 10)
-    }
-  }, [walletConnectRef])
+  // const provider = useProvider()
 
   async function connectEOA() {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -74,13 +65,39 @@ export default function ConnectWallet(props) {
       console.log(e)
     }
   }
+
   const walletConnect = async () => {
-    console.log(connector)
-    // console.log(provider)
-    await open()
-    // const eoa = await provider.getSigner();
-    // console.log(eoa)
-    
+    const walletConnectProvider = new WalletConnectProvider({
+      rpc: {
+        5: "https://goerli.blockpi.network/v1/rpc/public"
+      },
+      qrcode: true,
+    });
+    //  Enable session (triggers QR Code modal)
+    await walletConnectProvider.enable();
+    const provider = new ethers.providers.Web3Provider(walletConnectProvider);
+    const eoa = provider.getSigner()
+    console.log(eoa)
+    console.log(provider)
+    try {
+      const auth = new Eoa({ signer: eoa })
+      // const auth = new Eoa({privateKey: "0x6270ba97d41630c84de28dd8707b0d1c3a9cd465f7a2dba7d21b69e7a1981064"})
+      console.log(auth)
+      const network = 5
+      setCreating(true)
+      setLoading(true)
+      // connectToNetwork(network).then(async () => {
+      const FunWallet = await createFunWallet(auth, network)
+      setEOA(auth);
+      setNetwork(network)
+      setWallet(FunWallet);
+      setCreating(false)
+      setLoading(false)
+      // })
+    } catch (e) {
+      console.log(e)
+    }
+
   }
 
   return (
@@ -88,7 +105,7 @@ export default function ConnectWallet(props) {
       <Image src="/fun.svg" width="52" height="42" alt="" />
       <div className="font-semibold text-2xl mt-6 text-[#101828]">Let the Fun begin</div>
       <div className="text-sm text-[#667085] mt-1">Unlock the power of Fun Wallets.</div>
-      <div 
+      <div
         className="button mt-8 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
         onClick={connectEOA}
       >
@@ -99,8 +116,13 @@ export default function ConnectWallet(props) {
         )}
         <div className="ml-3 font-medium text-[#344054]">Connect EOA</div>
       </div>
-      <div className="mt-2 w-full" ref={walletConnectRef}>
-        <Web3Button onClick={walletConnect} />
+      <div>
+        <div
+          className="button mt-8 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
+          onClick={walletConnect}
+        >
+          Wallet Connect
+        </div>
       </div>
 
     </div>

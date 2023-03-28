@@ -4,12 +4,13 @@ import { ethers } from "ethers";
 import TokenSelect from "../forms/TokenSelect";
 import { handleFundWallet } from "../../scripts/fund";
 import { useFun } from "../../contexts/funContext";
+import { useRouter } from "next/router";
 
 export default function FundWallet(props) {
 
   const router = useRouter();
   const [funding, setFunding] = useState(["20"]);
-  const { wallet } useFun()
+  const { wallet } = useFun()
 
   function fundWallet(){
     handleFundWallet(wallet, funding).then((data) => {
