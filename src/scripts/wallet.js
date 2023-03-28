@@ -1,9 +1,8 @@
 import { ethers } from "ethers";
-import { FunWallet, FunWalletConfig } from "@fun-wallet/sdk/wallet/index";
+import { FunWallet } from "../../../fun-wallet-sdk/wallet";
 // import { Eoa } from "@fun-wallet/sdk/auth/EoaAuth";
-import { Eoa } from "../../../fun-wallet-sdk/auth/EoaAuth"
-import { prefundWallet } from "../../../fun-wallet-sdk/utils";
-import { configureEnvironment } from "@fun-wallet/sdk/managers"
+// import { configureEnvironment } from "@fun-wallet/sdk/managers"
+import { configureEnvironment } from "../../../fun-wallet-sdk/managers"
 
 // const API_KEY = "<FUN API KEY>"
 const API_KEY = "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf"
