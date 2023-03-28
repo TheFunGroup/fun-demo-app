@@ -5,17 +5,34 @@ import { networks, connectToNetwork } from "../../utils/networks";
 import { createFunWallet } from "../../scripts/wallet";
 import Loader from "../misc/Loader";
 import { Eoa } from "../../../../fun-wallet-sdk/auth/EoaAuth"
+
+import { Web3Button, useWeb3Modal } from '@web3modal/react'
+import { useProvider } from 'wagmi'
+import { getProvider } from 'wagmi'
+
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
+
+const connector = new WalletConnectConnector({
+ options: {
+ projectId: '5a25d59af74387684be4b2fdf1ab0bc3',
+ },
+})
+
+
 // import { Eoa } from "@fun-wallet/sdk/auth"
 export default function ConnectWallet(props) {
 
   const setWallet = props.setWallet;
   const setNetwork = props.setNetwork;
   const setEOA = props.setEOA;
+  const { isOpen, open, close, setDefaultChain } = useWeb3Modal();
 
   const [creating, setCreating] = useState()
-  
+  const provider = useProvider()
+
   async function connectEOA() {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
+
     await provider.send('eth_requestAccounts', []); // <- this promps user to connect metamask
     const eoa = provider.getSigner();
     console.log(eoa)
@@ -42,13 +59,21 @@ export default function ConnectWallet(props) {
       console.log(e)
     }
   }
+  const walletConnect = async () => {
+    console.log(connector)
+    // console.log(provider)
+    await open()
+    // const eoa = await provider.getSigner();
+    // console.log(eoa)
+    
+  }
 
   return (
     <div className={`w-[360px] modal flex flex-col items-center text-center`} >
       <Image src="/fun.svg" width="52" height="42" />
       <div className="font-semibold text-2xl mt-6 text-[#101828]">Let the Fun begin</div>
       <div className="text-sm text-[#667085] mt-1">Unlock the power of Fun Wallets.</div>
-      <div
+      <div 
         className="button mt-8 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
         onClick={connectEOA}
       >
@@ -59,7 +84,11 @@ export default function ConnectWallet(props) {
         )}
         <div className="ml-3 font-medium text-[#344054]">Connect EOA</div>
       </div>
-      
+      <div>
+        <Web3Button onClick={walletConnect} />
+        {/* <button onClick = {walletConnect}>Wallet Connect</button> */}
+      </div>
+
     </div>
   )
 }

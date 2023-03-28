@@ -13,8 +13,10 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
   console.log(transferData)
   let balance = 0;
   if(transferData.token.name=="ETH"){
-    const provider = ethers.getDefaultProvider();
+    const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
     balance = await provider.getBalance(walletAddress);
+    balance = ethers.utils.formatEther(balance);
+
   }
   else{
     balance = (await Token.getBalance(transferData.token.name, walletAddress))

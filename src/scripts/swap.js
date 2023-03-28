@@ -10,9 +10,9 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
   console.log(wallet)
   let balance = 0;
   if (ins == "eth") {
-    const provider = ethers.getDefaultProvider();
+    const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
     balance = await provider.getBalance(walletAddress);
-    console.log(balance)
+    balance = ethers.utils.formatEther(balance);
   }
   else {
     balance = (await Token.getBalance(ins, walletAddress))
