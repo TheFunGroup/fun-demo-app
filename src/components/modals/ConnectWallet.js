@@ -48,7 +48,7 @@ export default function ConnectWallet(props) {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
 
     await provider.send('eth_requestAccounts', []); // <- this promps user to connect metamask
-    const signer = provider.getSigner();
+    const eoa = provider.getSigner();
     localStorage.setItem("fun-wallet-addr", "")
     try {
       // const auth = new Eoa({privateKey: "0x6270ba97d41630c84de28dd8707b0d1c3a9cd465f7a2dba7d21b69e7a1981064"})
