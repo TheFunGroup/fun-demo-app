@@ -22,7 +22,7 @@ export default function TransferForm(props) {
         type="number"
         value={transfer[0]}
         onChange={(e) => {setTransfer([e.target.value, transfer[1]])}}
-        ref={transferRef}
+        inputRef={transferRef}
         tokenSelect
         token={transfer[1]}
         setToken={(value) => {setTransfer([transfer[0], value])}}
@@ -34,7 +34,7 @@ export default function TransferForm(props) {
         placeholder="0x..."
         value={receiverAddr}
         onChange={(e) => {setReceiverAddr(e.target.value)}}
-        ref={receiverRef}
+        inputRef={receiverRef}
       />
 
     </div>

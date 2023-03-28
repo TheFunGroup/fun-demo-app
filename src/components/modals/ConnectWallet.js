@@ -3,13 +3,13 @@ import Image from 'next/image';
 import { ethers } from "ethers";
 import { networks, connectToNetwork } from "../../utils/networks";
 import { createFunWallet } from "../../scripts/wallet";
-import Loader from "../misc/Loader";
+import Spinner from "../misc/Spinner";
 import { Eoa } from "@fun-wallet/sdk/auth"
 import { useFun } from "../../contexts/funContext";
 
 export default function ConnectWallet(props) {
 
-  const { setWallet, setNetwork, setEOA } = useFun()
+  const { setWallet, setNetwork, setEOA, setLoading } = useFun()
 
   const [creating, setCreating] = useState()
   
@@ -23,6 +23,7 @@ export default function ConnectWallet(props) {
       console.log(auth)
       const network = 5
       setCreating(true)
+      setLoading(true);
       connectToNetwork(network).then(async () => {
         const FunWallet = await createFunWallet(auth, network)
         const addr = await FunWallet.getAddress();
@@ -31,6 +32,7 @@ export default function ConnectWallet(props) {
         setNetwork(network)
         setWallet(FunWallet);
         setCreating(false)
+        setLoading(false)
       })
     } catch(e){
       console.log(e)
@@ -47,7 +49,7 @@ export default function ConnectWallet(props) {
         onClick={connectEOA}
       >
         {creating ? (
-          <Loader />
+          <Spinner />
         ) : (
           <Image src="/wallet.svg" width="22" height="22" alt="" />
         )}

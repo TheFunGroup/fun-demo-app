@@ -10,6 +10,7 @@ export const FunProvider = ({ children }) => {
   const [wallet, setWallet] = useState();
   const [network, setNetwork] = useState();
   const [deployedUrl, setDeployedUrl] = useState();
+  const [loading, setLoading] = useState()
 
   useEffect(() => {
     if(!wallet || !network){
@@ -18,7 +19,13 @@ export const FunProvider = ({ children }) => {
   }, [wallet, network])
 
   return (
-    <FunContext.Provider value={{ eoa, setEOA, wallet, setWallet, network, setNetwork, deployedUrl, setDeployedUrl }}>
+    <FunContext.Provider value={{ 
+      eoa, setEOA,
+      wallet, setWallet,
+      network, setNetwork,
+      deployedUrl, setDeployedUrl,
+      loading, setLoading
+    }}>
         {children}
     </FunContext.Provider>
   )

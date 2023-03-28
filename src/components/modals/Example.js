@@ -11,6 +11,7 @@ import PaymentMethod from "../forms/PaymentMethod";
 import { calculateGas } from "../../scripts/calculateGas";
 import { handleSwap } from "../../scripts/swap";
 import { handleTransfer } from "../../scripts/transfer";
+import Spinner from "../misc/Spinner";
 
 const examples = {
   "transfer": {
@@ -29,7 +30,7 @@ export default function Example(props) {
   const example = examples[props.example];
   const network = 5;
 
-  const {wallet, setDeployedUrl} = useFun();
+  const {wallet, setDeployedUrl, setLoading} = useFun();
 
   const [mustFund, setMustFund] = useState(false);
   const [mustApprove, setMustApprove] = useState(false);
@@ -40,8 +41,13 @@ export default function Example(props) {
   const [slippage, setSlippage] = useState(0.5);
   const [gas, setGas] = useState("Calculating...");
   const [paymentToken, setPaymentToken] = useState("ETH");
+  const [submitReady, setSubmitReady] = useState(false);
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState();
 
   function handleSubmit(){
+    setSubmitting(true)
+    setLoading(true)
     if(props.example == "transfer"){
       handleTransfer(wallet, paymentToken, {
         token: transfer[1],
@@ -55,7 +61,11 @@ export default function Example(props) {
           setMustFund(true);
         } else if(data.mustApprove){
           setMustApprove(true);
+        } else if(data.error){
+          setError(data.error)
         }
+        setSubmitting(false)
+        setLoading(false)
       })
     } else if(props.example == "swap"){
       handleSwap(wallet, paymentToken, {
@@ -70,7 +80,11 @@ export default function Example(props) {
           setMustFund(true);
         } else if(data.mustApprove){
           setMustApprove(true);
+        } else if(data.error){
+          setError(data.error)
         }
+        setSubmitting(false)
+        setLoading(false)
       })
     }
   }
@@ -89,6 +103,11 @@ export default function Example(props) {
       }).then((gas) => {
         setGas(`${gas.token} ${paymentToken} · $${gas.usd}`)
       })
+      if(transfer[0] > 0 && receiverAddr){
+        setSubmitReady(true)
+      } else {
+        setSubmitReady(false)
+      }
     } else if(props.example == "swap"){
       calculateGas(paymentToken, wallet, {
         token1: swapExchange[1],
@@ -97,14 +116,31 @@ export default function Example(props) {
       }, null).then((gas) => {
         setGas(`${gas.token} ${paymentToken} · $${gas.usd}`)
       })
+      if(swapExchange[0] > 0){
+        setSubmitReady(true)
+      } else {
+        setSubmitReady(false)
+      }
     }
   }, [paymentToken, swapExchange, swapReceive, transfer, receiverAddr])
+
+  useEffect(() => {
+    setLoading(false)
+  }, [])
+
+  useEffect(() => {
+    if(error){
+      setTimeout(() => {
+        setError(null)
+      }, 2000)
+    }
+  }, [error])
 
   return (
     <div className={`modal w-[690px] my-12`}>
 
       {mustFund && (
-        <div className="alert w-full flex justify-between -mb-[72px] relative">
+        <div className="alert w-full flex justify-between -mb-[80px] relative">
           <div className="flex items-center">
             <Image src="/alert.svg" width="24" height="24" alt=""/>
             <div className="text-[#101828] font-medium ml-3">{`Insufficient ${paymentToken} for transaction fees.`}</div>
@@ -114,13 +150,22 @@ export default function Example(props) {
       )}
 
       {mustApprove && (
-        <div className="alert w-full flex justify-between -mb-[72px] relative">
+        <div className="alert w-full flex justify-between -mb-[80px] relative">
           <div className="flex items-center">
             <Image src="/alert.svg" width="24" height="24" alt=""/>
             <div className="text-[#101828] font-medium ml-3">{`Token Sponsor doesn’t have the required authorization amount.`}</div>
           </div>
           <div className="button text-center px-[18px] py-[10px]" onClick={() => router.push("/approve")}>Give</div>
         </div>
+      )}
+
+      {error && (
+        <div className="alert w-full flex justify-between -mb-[58px] relative">
+         <div className="flex items-center">
+           <Image src="/alert.svg" width="24" height="24" alt=""/>
+           <div className="text-[#101828] font-medium ml-3">{`There was an error performing the transaction.`}</div>
+         </div>
+       </div>
       )}
 
       <div className="text-[#101828] font-semibold text-xl">{example.title}</div>
@@ -157,10 +202,14 @@ export default function Example(props) {
 
         <div className="w-[315px] button p-3 font-medium text-[#344054]" onClick={() => router.push("/")}>Cancel</div>
         <div 
-          className="w-[315px] button-dark p-3 font-medium"
+          className="w-[315px] button-dark p-3 font-medium flex items-center justify-center"
           onClick={handleSubmit}
+          style={ (!submitReady || submitting) ? { opacity: 0.8, pointerEvents: "none" } : {}}
         >
-          {props.example == "transfer" ? "Transfer" : "Swap"}
+          <div>{props.example == "transfer" ? "Transfer" : "Swap"}</div>
+          {submitting && (
+            <Spinner marginLeft="8px"/>
+          )}
         </div>
 
       </div>

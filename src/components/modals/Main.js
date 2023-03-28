@@ -10,7 +10,7 @@ export default function Main(props) {
 
   const router = useRouter();
 
-  const { wallet } = useFun();
+  const { wallet, setLoading } = useFun();
 
   const [walletCreated, setWalletCreated] = useState()
 
@@ -24,11 +24,16 @@ export default function Main(props) {
     }
   }, [wallet])
 
+  function goToPage(path){
+    setLoading(true);
+    router.push(path)
+  }
+
   return (
     <div className="modal w-[690px]">
 
       {walletCreated && (
-        <div className="alert w-full flex justify-between -mb-[50px] relative">
+        <div className="alert w-full flex justify-between -mb-[58px] relative">
           <div className="flex items-center">
             <Image src="/created.svg" width="24" height="24" alt=""/>
             <div className="text-[#101828] font-medium ml-3">{`Congrats! Fun Wallet Created`}</div>
@@ -46,18 +51,18 @@ export default function Main(props) {
             <NetworkSelect />
             <WalletView />
           </div>
-          <a href="https://shuttleone.io/testnet/faucet.html" target="_blank"><div className="button text-[#667085] text-sm rounded-md border-[1px] border-[#667085] mt-3 cursor-pointer px-2">Goerli Faucet</div></a>
+          {/* <a href="https://shuttleone.io/testnet/faucet.html" target="_blank"><div className="button text-[#667085] text-sm rounded-md border-[1px] border-[#667085] mt-3 cursor-pointer px-2">Goerli Faucet</div></a> */}
         </div>
       </div>
       <div className="w-full mt-6">
-        <div className="button flex items-center text-sm p-4" onClick={() => router.push("/swap")}>
+        <div className="button flex items-center text-sm p-4" onClick={() => goToPage("/swap")}>
           <Image src="/swap.svg" width="40" height="40" alt=""/>
           <div className="ml-3">
             <div className="font-medium text-[#344054]">Uniswap</div>
             <div className="text-[#667085]">A decentralized exchange protocol that enables automated liquidity provision and trading on Ethereum.</div>
           </div>
         </div>
-        <div className="button flex items-center text-sm mt-4 p-4" onClick={() => router.push("/transfer")}>
+        <div className="button flex items-center text-sm mt-4 p-4" onClick={() => goToPage("/transfer")}>
           <Image src="/transfer.svg" width="40" height="40" alt=""/>
           <div className="ml-3">
             <div className="font-medium text-[#344054]">Token Transfer</div>

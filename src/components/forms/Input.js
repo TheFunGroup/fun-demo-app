@@ -3,7 +3,6 @@ import TokenSelect from "./TokenSelect";
 
 export default function Input(props) {
 
-  const { } = props;
   const [active, setActive] = useState(false)
 
   return (
@@ -17,7 +16,7 @@ export default function Input(props) {
           onChange={(e) => {props.onChange(e)}}
           onFocus={() => {setActive(true)}}
           onBlur={() => {setActive(false)}}
-          ref={props.ref}
+          ref={props.inputRef || null}
         >
         </input>
         {props.tokenSelect && (

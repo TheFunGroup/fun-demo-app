@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { networks,  connectToNetwork } from "../../utils/networks";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 import { createFunWallet } from "../../scripts/wallet";
-import Loader from "../misc/Loader";
+import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
 
 export default function NetworkSelect(props) {
@@ -83,7 +83,7 @@ export default function NetworkSelect(props) {
                     <Image src="/check.svg" width="20" height="20" alt=""/>
                   )}
                   {id == creating && (
-                    <Loader width="20px" height="20px"/>
+                    <Spinner width="20px" height="20px"/>
                   )}
                 </div>
               </div>
