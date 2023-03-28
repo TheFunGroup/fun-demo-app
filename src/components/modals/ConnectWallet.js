@@ -26,7 +26,6 @@ export default function ConnectWallet(props) {
   const { setWallet, setNetwork, setEOA, setLoading } = useFun()
   const { isOpen, open, close, setDefaultChain } = useWeb3Modal();
 
-
   const [creating, setCreating] = useState()
   const walletConnectRef = useRef()
 
