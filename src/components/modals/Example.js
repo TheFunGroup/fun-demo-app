@@ -28,26 +28,17 @@ export default function Example(props) {
   const router = useRouter();
   const example = examples[props.example];
   const network = 5;
-  // const wallet = props.wallet;
-  // const setDeployedUrl = props.setDeployedUrl;
 
-  const {eoa, setEOA, wallet, setWallet, deployedUrl, setDeployedUrl} = useFun();
-
+  const {wallet, setDeployedUrl} = useFun();
 
   const [mustFund, setMustFund] = useState(false);
   const [mustApprove, setMustApprove] = useState(false);
-
-  useEffect(() => {
-
-  })
-
   const [transfer, setTransfer] = useState([0.2, tokens[network][0]]);
   const [receiverAddr, setReceiverAddr] = useState("");
   const [swapExchange, setSwapExchange] = useState([0.1, tokens[network][0]]);
   const [swapReceive, setSwapReceive] = useState([176, tokens[network][1]]);
   const [slippage, setSlippage] = useState(0.5);
   const [gas, setGas] = useState("Calculating...");
-
   const [paymentToken, setPaymentToken] = useState("ETH");
 
   function handleSubmit(){
@@ -115,7 +106,7 @@ export default function Example(props) {
       {mustFund && (
         <div className="alert w-full flex justify-between -mb-[72px] relative">
           <div className="flex items-center">
-            <Image src="/alert.svg" width="24" height="24"/>
+            <Image src="/alert.svg" width="24" height="24" alt=""/>
             <div className="text-[#101828] font-medium ml-3">{`Insufficient ${paymentToken} for transaction fees.`}</div>
           </div>
           <div className="button text-center px-[18px] py-[10px]" onClick={() => router.push("/fund")}>Fund</div>
@@ -125,7 +116,7 @@ export default function Example(props) {
       {mustApprove && (
         <div className="alert w-full flex justify-between -mb-[72px] relative">
           <div className="flex items-center">
-            <Image src="/alert.svg" width="24" height="24"/>
+            <Image src="/alert.svg" width="24" height="24" alt=""/>
             <div className="text-[#101828] font-medium ml-3">{`Token Sponsor doesn’t have the required authorization amount.`}</div>
           </div>
           <div className="button text-center px-[18px] py-[10px]" onClick={() => router.push("/approve")}>Give</div>
@@ -136,17 +127,17 @@ export default function Example(props) {
       <div className="text-[#667085] text-sm mt-1 mb-10 whitespace-nowrap">{example.description}</div>
 
       {props.example == "transfer" && (
-        <TransferForm transfer={transfer} setTransfer={setTransfer} receiverAddr={receiverAddr} setReceiverAddr={setReceiverAddr} network={network} wallet={wallet}/>
+        <TransferForm transfer={transfer} setTransfer={setTransfer} receiverAddr={receiverAddr} setReceiverAddr={setReceiverAddr}/>
       )}
 
       {props.example == "swap" && (
         <SwapForm 
           swapExchange={swapExchange} setSwapExchange={setSwapExchange} swapReceive={swapReceive} setSwapReceive={setSwapReceive}
-          slippage={slippage} setSlippage={setSlippage} network={network} wallet={wallet}
+          slippage={slippage} setSlippage={setSlippage}
         />
       )}
 
-      <PaymentMethod token={paymentToken} setToken={setPaymentToken} network={network}/>
+      <PaymentMethod token={paymentToken} setToken={setPaymentToken}/>
 
       <div className="text-[#101828] font-semibold mt-10">Transaction Fees</div>
       

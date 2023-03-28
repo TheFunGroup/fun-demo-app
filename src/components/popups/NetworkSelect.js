@@ -4,12 +4,12 @@ import { networks,  connectToNetwork } from "../../utils/networks";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 import { createFunWallet } from "../../scripts/wallet";
 import Loader from "../misc/Loader";
+import { useFun } from "../../contexts/funContext";
 
 export default function NetworkSelect(props) {
-  
-  const setNetwork = props.setNetwork;
-  const setWallet = props.setWallet;
-  const eoa = props.eoa;
+
+  const {setNetwork, setWallet, eoa} = useFun();
+
   const [current, setCurrent] = useState(5)
   const [hover, setHover] = useState();
   const [dropdown, setDropdown] = useState();
@@ -55,9 +55,9 @@ export default function NetworkSelect(props) {
     <div>
       {networks[current] && (
         <div className="w-[124px] flex items-center cursor-pointer mr-4" onClick={() => setDropdown(!dropdown)} ref={networkBtnRef}>
-          <Image src={networks[current].icon} width="24" height="24"/>
+          <Image src={networks[current].icon} width="24" height="24" alt=""/>
           <div className="text-[#667085] text-sm mx-2">{networks[current].name}</div>
-          <Image src="/chevron.svg" width="20" height="20"/>
+          <Image src="/chevron.svg" width="20" height="20" alt=""/>
         </div>
       )}
       {dropdown && (
@@ -75,12 +75,12 @@ export default function NetworkSelect(props) {
                 onMouseLeave={() => setHover("")}
               >
                 <div className="flex items-center">
-                  <Image src={networks[id].icon} width="24" height="24"/>
+                  <Image src={networks[id].icon} width="24" height="24" alt=""/>
                   <div className="text-[#101828] ml-2">{networks[id].name}</div>
                 </div>
                 <div>
                   {id == current && (
-                    <Image src="/check.svg" width="20" height="20"/>
+                    <Image src="/check.svg" width="20" height="20" alt=""/>
                   )}
                   {id == creating && (
                     <Loader width="20px" height="20px"/>

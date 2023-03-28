@@ -3,12 +3,13 @@ import Image from 'next/image';
 import { ethers } from "ethers";
 import TokenSelect from "../forms/TokenSelect";
 import { handleFundWallet } from "../../scripts/fund";
+import { useFun } from "../../contexts/funContext";
 
 export default function FundWallet(props) {
 
   const router = useRouter();
   const [funding, setFunding] = useState(["20"]);
-  const wallet = props.wallet;
+  const { wallet } useFun()
 
   function fundWallet(){
     handleFundWallet(wallet, funding).then((data) => {
@@ -52,7 +53,7 @@ export default function FundWallet(props) {
         className="button mt-8 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
         onClick={fundWallet}
       >
-        <Image src="/wallet.svg" width="22" height="22"/>
+        <Image src="/wallet.svg" width="22" height="22" alt=""/>
         <div className="ml-3 font-medium text-[#344054]">Fund Wallet</div>
       </div>
 

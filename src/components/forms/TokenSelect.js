@@ -3,16 +3,18 @@ import Image from 'next/image';
 import { networks,  connectToNetwork } from "../../utils/networks";
 import { tokens } from "../../utils/tokens";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
+import { useFun } from "../../contexts/funContext";
 
 export default function TokenSelect(props) {
   
   const setToken = props.setToken;
   const token = props.token;
-  const network = props.network;
   const [hover, setHover] = useState();
   const [dropdown, setDropdown] = useState();
   const dropdownRef = useRef()
   const selectBtnRef = useRef()
+
+  const { network } = useFun();
 
   useEffect(() => {
     setDropdown(false);
@@ -27,7 +29,7 @@ export default function TokenSelect(props) {
     <div className="">
       <div className="flex items-center cursor-pointer" onClick={() => setDropdown(!dropdown)}>
         <div className="text-[#101828] mr-1">{token.name}</div>
-        <Image src="/chevron.svg" width="30" height="20"/>
+        <Image src="/chevron.svg" width="30" height="20" alt=""/>
       </div>
       {dropdown && (
         <div className="dropdown w-[200px] absolute -ml-[132px] mt-2" ref={dropdownRef}>
@@ -46,7 +48,7 @@ export default function TokenSelect(props) {
                 <div className="text-[#101828] text-sm">{t.name}</div>
                 <div>
                   {t.name == token && (
-                    <Image src="/check.svg" width="20" height="20"/>
+                    <Image src="/check.svg" width="20" height="20" alt=""/>
                   )}
                 </div>
               </div>

@@ -5,14 +5,10 @@ import Layout from '../components/layout';
 import Deployed from "../components/modals/Deployed";
 import { useFun } from "../contexts/funContext";
 
-export default function Success() {
-
-    const {eoa, setEOA, wallet, setWallet, network, setNetwork, deployedUrl, setDeployedUrl} = useFun();
-    const router = useRouter();
-    
+export default function Success() {    
     return (
       <div className="w-full flex flex-col items-center">
-          <Deployed deployedUrl={deployedUrl}/>
+          <Deployed />
       </div>
     )
 }

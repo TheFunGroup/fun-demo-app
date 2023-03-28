@@ -6,13 +6,9 @@ import ApprovePM from "../components/modals/ApprovePM";
 import { useFun } from "../contexts/funContext";
 
 export default function Approve() {
-
-    const {eoa, setEOA, wallet, setWallet, network, setNetwork, deployedUrl, setDeployedUrl} = useFun();
-    const router = useRouter();
-
     return (
       <div className="w-full flex flex-col items-center">
-        <ApprovePM setModal={setModal} wallet={wallet}/>
+        <ApprovePM />
       </div>
     )
 }

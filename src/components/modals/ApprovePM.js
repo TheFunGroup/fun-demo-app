@@ -4,12 +4,13 @@ import Image from 'next/image';
 import { ethers } from "ethers";
 import TokenSelect from "../forms/TokenSelect";
 import { handleApprove } from "../../scripts/approve";
+import { useFun } from "../../contexts/funContext";
 
-export default function Approve(props) {
+export default function ApprovePM(props) {
 
   const router = useRouter();
   const [amount, setAmount] = useState(["20"]);
-  const wallet = props.wallet;
+  const { wallet } = useFun()
 
   function approve(){
     handleApprove(wallet, amount).then((data) => {

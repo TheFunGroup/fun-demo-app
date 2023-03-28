@@ -4,16 +4,13 @@ import Image from 'next/image';
 import { ethers } from "ethers";
 import NetworkSelect from "../popups/NetworkSelect";
 import WalletView from "../popups/WalletView";
+import { useFun } from "../../contexts/funContext";
 
 export default function Main(props) {
 
   const router = useRouter();
-  const wallet = props.wallet;
-  const setWallet = props.setWallet;
-  const eoa = props.eoa;
-  const setEOA = props.setEOA;
-  const network = props.network;
-  const setNetwork = props.setNetwork;
+
+  const { wallet } = useFun();
 
   const [walletCreated, setWalletCreated] = useState()
 
@@ -33,7 +30,7 @@ export default function Main(props) {
       {walletCreated && (
         <div className="alert w-full flex justify-between -mb-[50px] relative">
           <div className="flex items-center">
-            <Image src="/created.svg" width="24" height="24"/>
+            <Image src="/created.svg" width="24" height="24" alt=""/>
             <div className="text-[#101828] font-medium ml-3">{`Congrats! Fun Wallet Created`}</div>
           </div>
         </div>
@@ -46,22 +43,22 @@ export default function Main(props) {
         </div>
         <div className="w-full flex flex-col items-end">
           <div className="flex">
-            <NetworkSelect network={network} setNetwork={setNetwork} setWallet={setWallet} eoa={props.eoa}/>
-            <WalletView wallet={wallet} setWallet={setWallet} network={network} setEOA={setEOA} eoa={props.eoa}/>
+            <NetworkSelect />
+            <WalletView />
           </div>
           <a href="https://shuttleone.io/testnet/faucet.html" target="_blank"><div className="button text-[#667085] text-sm rounded-md border-[1px] border-[#667085] mt-3 cursor-pointer px-2">Goerli Faucet</div></a>
         </div>
       </div>
       <div className="w-full mt-6">
         <div className="button flex items-center text-sm p-4" onClick={() => router.push("/swap")}>
-          <Image src="/swap.svg" width="40" height="40"/>
+          <Image src="/swap.svg" width="40" height="40" alt=""/>
           <div className="ml-3">
             <div className="font-medium text-[#344054]">Uniswap</div>
             <div className="text-[#667085]">A decentralized exchange protocol that enables automated liquidity provision and trading on Ethereum.</div>
           </div>
         </div>
         <div className="button flex items-center text-sm mt-4 p-4" onClick={() => router.push("/transfer")}>
-          <Image src="/transfer.svg" width="40" height="40"/>
+          <Image src="/transfer.svg" width="40" height="40" alt=""/>
           <div className="ml-3">
             <div className="font-medium text-[#344054]">Token Transfer</div>
             <div className="text-[#667085]">A smart wallet is the secure movement of digital assets from one wallet to another.</div>

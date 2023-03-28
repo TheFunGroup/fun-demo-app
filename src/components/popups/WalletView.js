@@ -1,16 +1,13 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
-import { ethers } from "ethers";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 import { networks } from "../../utils/networks";
+import { useFun } from "../../contexts/funContext";
 
 export default function WalletView(props) {
 
-  const wallet = props.wallet;
-  const setWallet = props.setWallet;
-  const setEOA = props.setEOA;
-  const eoa = props.eoa;
-  const network = props.network;
+  const { wallet, setWallet, setEOA, network } = useFun()
+
   const [addr, setAddr] = useState()
   const [balance, setBalance] = useState();
   const [dropdown, setDropdown] = useState();
@@ -23,14 +20,6 @@ export default function WalletView(props) {
         setAddr(wallet.address);
         setBalance(0)
       }
-      // eoa.getAddress().then((address) => {
-      //   setAddr(address)
-      //   eoa.provider.getBalance(address).then((balance) => {
-      //     setBalance(ethers.utils.formatEther(balance))
-      //   }).catch((e) => {
-      //     console.log(e)
-      //   })
-      // })
     }
   }, [network])
 
@@ -59,7 +48,7 @@ export default function WalletView(props) {
     <div>
       {addr && (
         <div className="w-[164px] flex items-center cursor-pointer" onClick={() => setDropdown(!dropdown)} ref={walletBtnRef}>
-          <Image src="/profile.svg" width="24" height="24"/>
+          <Image src="/profile.svg" width="24" height="24" alt=""/>
           <div className="text-[#667085] text-sm mx-2 font-mono max-w-[104px]">{`${addr.substring(0, 5)}...${addr.substring(addr.length - 4)}`}</div>
           <Image src="/chevron.svg" width="20" height="20"/>
         </div>
@@ -68,9 +57,9 @@ export default function WalletView(props) {
         <div className="dropdown w-[343px] absolute mt-2 -ml-[172px] p-6 flex flex-col items-center" ref={dropdownRef}>
           <div className="flex items-center cursor-pointer" onClick={handleCopyAddr}>
             <div className="font-mono text-[#667085] mr-1" >{`${addr.substring(0, 11)}...${addr.substring(addr.length - 4)}`}</div>
-            <Image src="/copy.svg" width="16" height="16"/>
+            <Image src="/copy.svg" width="16" height="16" alt=""/>
           </div>
-          <Image src="/profile.svg" width="56" height="56" className="mt-4"/>
+          <Image src="/profile.svg" width="56" height="56" className="mt-4" alt=""/>
           <div className="flex items-end mt-2">
             <div className="text-[32px] font-semibold mr-1">{Number(balance).toFixed(2)}</div>
             <div className="text-[#667085] mb-2">{networks[ethereum.networkVersion]?.nativeCurrency.symbol}</div>
