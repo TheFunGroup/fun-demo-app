@@ -15,7 +15,7 @@ import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 
 const connector = new WalletConnectConnector({
  options: {
- projectId: '5a25d59af74387684be4b2fdf1ab0bc3',
+  projectId: '5a25d59af74387684be4b2fdf1ab0bc3',
  },
 })
 
