@@ -5,7 +5,7 @@ import { networks, connectToNetwork } from "../../utils/networks";
 import { createFunWallet } from "../../scripts/wallet";
 import Loader from "../misc/Loader";
 import { Eoa } from "../../../../fun-wallet-sdk/auth/EoaAuth"
-
+// import { Eoa } from "@fun-wallet/sdk/auth"
 export default function ConnectWallet(props) {
 
   const setWallet = props.setWallet;
@@ -24,9 +24,9 @@ export default function ConnectWallet(props) {
     try {
 
       // console.log(eoa)
-      // const auth = new Eoa({ signer: eoa })
-      // console.log(auth)
-      const auth = new Eoa({privateKey: "0x6270ba97d41630c84de28dd8707b0d1c3a9cd465f7a2dba7d21b69e7a1981064"})
+      const auth = new Eoa({ signer: eoa })
+      console.log(auth)
+      // const auth = new Eoa({privateKey: "0x6270ba97d41630c84de28dd8707b0d1c3a9cd465f7a2dba7d21b69e7a1981064"})
       console.log(auth)
       const network = 5
       setCreating(true)
@@ -39,7 +39,7 @@ export default function ConnectWallet(props) {
         setCreating(false)
       })
     } catch (e) {
-
+      console.log(e)
     }
   }
 
