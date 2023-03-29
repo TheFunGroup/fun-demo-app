@@ -23,8 +23,7 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
       balance = (await Token.getBalance(transferData.token.name, walletAddress))
     }
     if(balance<transferData.amount){
-      alert(`Insufficient ${transferData.token.name} to perform Transfer.`)
-      return {success:false}
+      return {success:false, mustFund: true}
       // return { success: false }
     }
   

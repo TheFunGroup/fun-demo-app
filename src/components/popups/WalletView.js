@@ -6,6 +6,7 @@ import { useFun } from "../../contexts/funContext";
 import { ethers } from "ethers";
 import { toUSD } from "../../scripts/prices";
 import { useRouter } from "next/router";
+import erc20Abi from "../../utils/erc20Abi";
 
 export default function WalletView(props) {
 
@@ -22,6 +23,14 @@ export default function WalletView(props) {
   const [copying, setCopying] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
 
+  const [usdcBalance, setUsdcBalance] = useState();
+  const [usdcBalanceUSD, setUsdcBalanceUSD] = useState();
+  const [daiBalance, setDaiBalance] = useState();
+  const [daiBalanceUSD, setDaiBalanceUSD] = useState();
+  const [usdtBalance, setUsdtBalance] = useState();
+  const [usdtBalanceUSD, setUsdtBalanceUSD] = useState();
+
+
   useEffect(() => {
     if(networks[network || ethereum.networkVersion]){
       if(wallet.address){
@@ -32,10 +41,34 @@ export default function WalletView(props) {
           toUSD("ETH", balance).then((usd) => {
             setBalanceUSD(usd)
           })
-        });       
+        });  
+        
+        getCoinBalances();
+        
       }
     }
   }, [network])
+
+  async function getCoinBalances(){
+    const usdcContract = new ethers.Contract("0x824b8e927417276b6643e9fc830176ce18dfc6f8" , erc20Abi, eoa.signer.provider);
+    let usdcBalance = await usdcContract.balanceOf(wallet.address)
+    usdcBalance = ethers.utils.formatEther(usdcBalance);
+    setUsdcBalance(Number(usdcBalance).toFixed(2))
+    setUsdcBalanceUSD(await toUSD("USDC", usdcBalance));
+
+    const daiContract = new ethers.Contract("0xae8cc06365253284eea8c23192c410b19a7a1224" , erc20Abi, eoa.signer.provider);
+    let daiBalance = await daiContract.balanceOf(wallet.address)
+    daiBalance = ethers.utils.formatEther(daiBalance);
+    setDaiBalance(Number(daiBalance).toFixed(2))
+    setDaiBalanceUSD(await toUSD("DAI", daiBalance));
+
+    const usdtContract = new ethers.Contract("0x92db1cebe8770acbc0cf321a5e71746c4097c995" , erc20Abi, eoa.signer.provider);
+    let usdtBalance = await usdtContract.balanceOf(wallet.address)
+    usdtBalance = ethers.utils.formatEther(usdtBalance);
+    setUsdtBalance(Number(usdtBalance).toFixed(2))
+    setUsdtBalanceUSD(await toUSD("USDT", usdtBalance));
+
+  }
 
   useOnClickOutside(dropdownRef, (e) => {
     if(walletBtnRef?.current?.contains(e.target) || e.target == walletBtnRef?.current) return;
@@ -109,10 +142,30 @@ export default function WalletView(props) {
                     <Image src="/usdc.svg" width="40" height="40" alt="" className="mr-4"/>
                     <div>
                       <div className="text-black">USD Coin</div>
-                      <div className="text-[#667085]">{`${0.00} USDC`}</div>
+                      <div className="text-[#667085]">{`${usdcBalance} USDC`}</div>
                     </div>
                   </div>
-                  <div className="text-black">{`$${0.00}`}</div>
+                  <div className="text-black">{`$${usdcBalanceUSD}`}</div>
+                </div>
+                <div className="w-full flex justify-between items-center my-1">
+                  <div className="flex items-center">
+                    <Image src="/dai.svg" width="40" height="40" alt="" className="mr-4"/>
+                    <div>
+                      <div className="text-black">DAI</div>
+                      <div className="text-[#667085]">{`${daiBalance} DAI`}</div>
+                    </div>
+                  </div>
+                  <div className="text-black">{`$${daiBalanceUSD}`}</div>
+                </div>
+                <div className="w-full flex justify-between items-center mt-2">
+                  <div className="flex items-center">
+                    <Image src="/usdt.svg" width="40" height="40" alt="" className="mr-4"/>
+                    <div>
+                      <div className="text-black">USD Tether</div>
+                      <div className="text-[#667085]">{`${usdtBalance} USDT`}</div>
+                    </div>
+                  </div>
+                  <div className="text-black">{`$${usdtBalanceUSD}`}</div>
                 </div>
 
               </div>

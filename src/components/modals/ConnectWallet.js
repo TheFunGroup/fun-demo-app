@@ -18,10 +18,10 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 
 
 
-const connector = new WalletConnect({
-  bridge: "https://bridge.walletconnect.org", // Required
-  qrcodeModal: QRCodeModal,
-});
+// const connector = new WalletConnect({
+//   bridge: "https://bridge.walletconnect.org", // Required
+//   qrcodeModal: QRCodeModal,
+// });
 
 
 
@@ -101,7 +101,7 @@ export default function ConnectWallet(props) {
   }
 
   return (
-    <div className={`w-[360px] modal flex flex-col items-center text-center`} >
+    <div className={`w-[360px] modal flex flex-col items-center text-center -mt-[64px]`} >
       <Image src="/fun.svg" width="52" height="42" alt="" />
       <div className="font-semibold text-2xl mt-6 text-[#101828]">Let the Fun begin</div>
       <div className="text-sm text-[#667085] mt-1">Unlock the power of Fun Wallets.</div>
@@ -116,14 +116,14 @@ export default function ConnectWallet(props) {
         )}
         <div className="ml-3 font-medium text-[#344054]">Connect EOA</div>
       </div>
-      <div>
+      {/* <div>
         <div
           className="button mt-8 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
           onClick={walletConnect}
         >
           Wallet Connect
         </div>
-      </div>
+      </div> */}
 
     </div>
   )

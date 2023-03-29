@@ -19,8 +19,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
       balance = (await Token.getBalance(ins, walletAddress))
     }
     if (balance < swapData.amount) {
-      alert(`Insufficient ${ins} to perform Transfer.`)
-      return { success: false }
+      return {success:false, mustFund: true}
     }
 
     // // Tells frontend that funwallet must be funded  

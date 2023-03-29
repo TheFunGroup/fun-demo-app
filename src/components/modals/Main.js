@@ -30,7 +30,7 @@ export default function Main(props) {
   }
 
   return (
-    <div className="modal w-[690px]">
+    <div className="modal w-[690px] -mt-[64px]">
 
       {walletCreated && (
         <div className="alert w-full flex justify-between -mb-[58px] relative">

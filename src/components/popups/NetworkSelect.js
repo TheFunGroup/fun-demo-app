@@ -66,11 +66,11 @@ export default function NetworkSelect(props) {
             return (
               <div 
                 className={`
-                  w-full flex items-center justify-between px-[14px] py-[10px] cursor-not-allowed	
+                  w-full flex items-center justify-between px-[14px] py-[10px] ${idx !== 1 && "cursor-not-allowed"}
                   ${idx == 0 && "rounded-t-xl"} ${idx == Object.keys(networks).length - 1 && "rounded-b-xl"}
                   ${id == (current) ? "bg-white" : id == hover ? "bg-[#f5f5f5]" : "bg-[#f9f9f9]"}
                 `}
-                // onClick={() => connect(id)}
+                onClick={() => {if(idx == 1) setDropdown(false)}}
                 onMouseEnter={() => setHover(id)}
                 onMouseLeave={() => setHover("")}
               >

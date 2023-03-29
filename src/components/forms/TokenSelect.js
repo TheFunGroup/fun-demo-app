@@ -18,6 +18,7 @@ export default function TokenSelect(props) {
 
   useEffect(() => {
     setDropdown(false);
+    console.log(token)
   }, [token])
 
   useOnClickOutside(dropdownRef, (e) => {
@@ -27,7 +28,7 @@ export default function TokenSelect(props) {
 
   return (
     <div className="">
-      <div className="flex items-center cursor-pointer" onClick={() => setDropdown(!dropdown)}>
+      <div ref={selectBtnRef} className="flex items-center cursor-pointer" onClick={() => setDropdown(!dropdown)}>
         <div className="text-[#101828] mr-1">{token.name}</div>
         <Image src="/chevron.svg" width="30" height="20" alt=""/>
       </div>
