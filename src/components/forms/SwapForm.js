@@ -27,12 +27,14 @@ export default function SwapForm(props) {
   }, [])
 
   async function handleSwapChange(amount, from, to){
+    if((from.name == "ETH" && amount > 0.1) || amount > 100 || amount < 0) return;
     setSwapExchange([amount, from])
     const swapAmount = await getSwapAmount(from, amount, to);
     setSwapReceive([swapAmount, to])
   }
 
   async function handleReceiveChange(amount, from, to){
+    if((to.name == "ETH" && amount > 0.1) || amount > 100 || amount < 0) return;
     setSwapReceive([amount, to])
     const swapAmount = await getSwapAmount(swapReceive[1], amount, from);
     setSwapExchange([swapAmount, from])

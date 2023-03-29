@@ -69,6 +69,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
   
   
   } catch(e){
+    console.log(e)
     return {success: false, error: e}
   }
 

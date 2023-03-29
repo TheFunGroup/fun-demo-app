@@ -100,13 +100,25 @@ export default function WalletView(props) {
     router.push("/fund")
   }
 
+  function handleDropdown(){
+    if(!dropdown){
+      setTimeout(() => {
+        setDropdown(true)
+      }, 100)
+    } else {
+      setDropdown(false)
+    }
+  }
+
   return (
     <div>
       {addr && (
-        <div className="w-[164px] flex items-center cursor-pointer" onClick={() => setDropdown(!dropdown)} ref={walletBtnRef}>
+        <div className="w-[164px] flex items-center cursor-pointer" onClick={handleDropdown} ref={walletBtnRef}>
           <Image src="/profile.svg" width="24" height="24" alt=""/>
           <div className="text-[#667085] text-sm mx-2 font-mono max-w-[104px]">{`${addr.substring(0, 5)}...${addr.substring(addr.length - 4)}`}</div>
-          <Image src="/chevron.svg" width="20" height="20" style={dropdown && {transform: "rotate(180deg)"}}/>
+          <Image src="/chevron.svg" width="20" height="20" style={dropdown && {transform: "rotate(-180deg)"}}
+            className="duration-200 ease-linear"
+          />
         </div>
       )}
       {dropdown && (
@@ -134,17 +146,17 @@ export default function WalletView(props) {
                   <div className="text-[32px] font-semibold mr-1">{Number(balance).toFixed(2)}</div>
                   <div className="text-[#667085] mb-2">{networks[ethereum.networkVersion]?.nativeCurrency.symbol}</div>
                 </div>
-                <div className="text-[#667085]">{`$${balanceUSD} USD`}</div>
-                <div className="button-dark text-center py-3 px-4 w-full mt-4" onClick={handleFund}>Fund</div>
-                <div className="self-start text-black text-lg font-medium mt-6 mb-2">Coins</div>
+                <div className="text-[#667085] text-lg -mt-1">{`$${balanceUSD} USD`}</div>
+                <div className="button-dark text-center py-3 px-4 w-full mt-6 font-medium" onClick={handleFund}>Fund</div>
+                <div className="self-start text-black text-lg font-[590] mt-6 mb-2">Coins</div>
                 
                 {usdcBalance && (
-                  <div className="w-full flex justify-between items-center my-1">
+                  <div className="w-full flex justify-between items-center my-2 mb-[6px]">
                     <div className="flex items-center">
                       <Image src="/usdc.svg" width="40" height="40" alt="" className="mr-4"/>
                       <div>
                         <div className="text-black">USD Coin</div>
-                        <div className="text-[#667085]">{`${usdcBalance} USDC`}</div>
+                        <div className="text-[#667085] text-sm">{`${usdcBalance} USDC`}</div>
                       </div>
                     </div>
                     <div className="text-black">{`$${usdcBalanceUSD}`}</div>
@@ -152,12 +164,12 @@ export default function WalletView(props) {
                 )}
 
                 {daiBalance && (
-                  <div className="w-full flex justify-between items-center my-1">
+                  <div className="w-full flex justify-between items-center my-[6px]">
                     <div className="flex items-center">
                       <Image src="/dai.svg" width="40" height="40" alt="" className="mr-4"/>
                       <div>
                         <div className="text-black">DAI</div>
-                        <div className="text-[#667085]">{`${daiBalance} DAI`}</div>
+                        <div className="text-[#667085] text-sm">{`${daiBalance} DAI`}</div>
                       </div>
                     </div>
                     <div className="text-black">{`$${daiBalanceUSD}`}</div>
@@ -165,12 +177,12 @@ export default function WalletView(props) {
                 )}
 
                 {usdtBalance && (
-                  <div className="w-full flex justify-between items-center mt-2">
+                  <div className="w-full flex justify-between items-center mt-[6px]">
                     <div className="flex items-center">
                       <Image src="/usdt.svg" width="40" height="40" alt="" className="mr-4"/>
                       <div>
                         <div className="text-black">USD Tether</div>
-                        <div className="text-[#667085]">{`${usdtBalance} USDT`}</div>
+                        <div className="text-[#667085] text-sm">{`${usdtBalance} USDT`}</div>
                       </div>
                     </div>
                     <div className="text-black">{`$${usdtBalanceUSD}`}</div>
@@ -183,9 +195,9 @@ export default function WalletView(props) {
 
           {showSettings && (
             <div className="flex flex-col items-center w-full">
-              <div className="flex items-center w-full justify-between py-[18px] px-6 border-b-[1px] border-[#00000014]">
-                <div className="text-black text-lg mr-2 whitespace-nowrap font-medium">Settings</div>
-                <Image src="/close.svg" width="24" height="24" alt="" className="cursor-pointer" onClick={() => setShowSettings(false)}/>
+              <div className="flex items-center w-full justify-between py-[19px] px-6 border-b-[1px] border-[#00000014]">
+                <div className="text-black mr-2 whitespace-nowrap font-bold text-sm">Settings</div>
+                <Image src="/close.svg" width="18" height="18" alt="" className="cursor-pointer" onClick={() => setShowSettings(false)}/>
               </div>
               <a className="w-full" href={`https://goerli.etherscan.io/address/${addr}`} target="_blank">
                 <div className="settingsBtn">

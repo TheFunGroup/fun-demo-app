@@ -12,6 +12,12 @@ export default function TransferForm(props) {
   const transferRef = useRef();
   const receiverRef = useRef();
 
+  function handleTransferChange(e){
+    const amount = e.target.value;
+    if((transfer[1].name == "ETH" && amount > 0.1) || amount > 100 || amount < 0) return;
+    setTransfer([amount, transfer[1]])
+  }
+
   return (
     <div className="w-full flex items-center justify-between">
 
@@ -21,7 +27,7 @@ export default function TransferForm(props) {
         placeholder="0.00"
         type="number"
         value={transfer[0]}
-        onChange={(e) => {setTransfer([e.target.value, transfer[1]])}}
+        onChange={handleTransferChange}
         inputRef={transferRef}
         tokenSelect
         token={transfer[1]}

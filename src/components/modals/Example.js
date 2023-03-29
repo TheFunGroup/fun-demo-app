@@ -34,10 +34,10 @@ export default function Example(props) {
 
   const [mustFund, setMustFund] = useState(false);
   const [mustApprove, setMustApprove] = useState(false);
-  const [transfer, setTransfer] = useState([0.2, tokens[network][0]]);
+  const [transfer, setTransfer] = useState([0.1, tokens[network][0]]);
   const [receiverAddr, setReceiverAddr] = useState("");
-  const [swapExchange, setSwapExchange] = useState([0.1, tokens[network][0]]);
-  const [swapReceive, setSwapReceive] = useState([176, tokens[network][1]]);
+  const [swapExchange, setSwapExchange] = useState([0.10, tokens[network][0]]);
+  const [swapReceive, setSwapReceive] = useState([180.60, tokens[network][1]]);
   const [slippage, setSlippage] = useState(0.5);
   const [gas, setGas] = useState("Calculating...");
   const [paymentToken, setPaymentToken] = useState("ETH");
@@ -46,6 +46,7 @@ export default function Example(props) {
   const [error, setError] = useState();
 
   function handleSubmit(){
+    if(submitting) return;
     setSubmitting(true)
     setLoading(true)
     if(props.example == "transfer"){

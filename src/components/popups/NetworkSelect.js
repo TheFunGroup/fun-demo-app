@@ -57,7 +57,9 @@ export default function NetworkSelect(props) {
         <div className="w-[124px] flex items-center cursor-pointer mr-4" onClick={() => setDropdown(!dropdown)} ref={networkBtnRef}>
           <Image src={networks[current].icon} width="24" height="24" alt=""/>
           <div className="text-[#667085] text-sm mx-2">{networks[current].name}</div>
-          <Image src="/chevron.svg" width="20" height="20" alt="" style={dropdown && {transform: "rotate(180deg)"}}/>
+          <Image src="/chevron.svg" width="20" height="20" alt="" style={dropdown && {transform: "rotate(-180deg)"}}
+            className="duration-200 ease-linear"
+          />
         </div>
       )}
       {dropdown && (
