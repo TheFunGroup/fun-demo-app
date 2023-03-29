@@ -32,12 +32,12 @@ export default function WalletView(props) {
 
 
   useEffect(() => {
-    if(networks[network || ethereum.networkVersion]){
+    if(networks[network]){
       if(wallet.address){
         setAddr(wallet.address);
         eoa.signer.provider.getBalance(wallet.address).then((balance) => {
           balance = ethers.utils.formatEther(balance);
-          setBalance(Number(balance).toFixed(2))
+          setBalance(Number(balance).toFixed(6))
           toUSD("ETH", balance).then((usd) => {
             setBalanceUSD(usd)
           })
@@ -50,22 +50,22 @@ export default function WalletView(props) {
   }, [network])
 
   async function getCoinBalances(){
-    const usdcContract = new ethers.Contract("0x824b8e927417276b6643e9fc830176ce18dfc6f8" , erc20Abi, eoa.signer.provider);
+    const usdcContract = new ethers.Contract("0xaa8958047307da7bb00f0766957edec0435b46b5" , erc20Abi, eoa.signer.provider);
     let usdcBalance = await usdcContract.balanceOf(wallet.address)
-    usdcBalance = ethers.utils.formatEther(usdcBalance);
-    setUsdcBalance(Number(usdcBalance).toFixed(2))
+    usdcBalance = ethers.utils.formatUnits(usdcBalance, 6)
+    setUsdcBalance(Number(usdcBalance.toString()).toFixed(2))
     setUsdcBalanceUSD(await toUSD("USDC", usdcBalance));
 
-    const daiContract = new ethers.Contract("0xae8cc06365253284eea8c23192c410b19a7a1224" , erc20Abi, eoa.signer.provider);
+    const daiContract = new ethers.Contract("0x855af47cdf980a650ade1ad47c78ec1deebe9093" , erc20Abi, eoa.signer.provider);
     let daiBalance = await daiContract.balanceOf(wallet.address)
-    daiBalance = ethers.utils.formatEther(daiBalance);
-    setDaiBalance(Number(daiBalance).toFixed(2))
+    daiBalance = ethers.utils.formatUnits(daiBalance, 6)
+    setDaiBalance(Number(daiBalance.toString()).toFixed(2))
     setDaiBalanceUSD(await toUSD("DAI", daiBalance));
 
-    const usdtContract = new ethers.Contract("0x92db1cebe8770acbc0cf321a5e71746c4097c995" , erc20Abi, eoa.signer.provider);
+    const usdtContract = new ethers.Contract("0x3E1FF16B9A94eBdE6968206706BcD473aA3Da767" , erc20Abi, eoa.signer.provider);
     let usdtBalance = await usdtContract.balanceOf(wallet.address)
-    usdtBalance = ethers.utils.formatEther(usdtBalance);
-    setUsdtBalance(Number(usdtBalance).toFixed(2))
+    usdtBalance = ethers.utils.formatUnits(usdtBalance, 6)
+    setUsdtBalance(Number(usdtBalance.toString()).toFixed(2))
     setUsdtBalanceUSD(await toUSD("USDT", usdtBalance));
 
   }
@@ -100,13 +100,25 @@ export default function WalletView(props) {
     router.push("/fund")
   }
 
+  function handleDropdown(){
+    if(!dropdown){
+      setTimeout(() => {
+        setDropdown(true)
+      }, 100)
+    } else {
+      setDropdown(false)
+    }
+  }
+
   return (
     <div>
       {addr && (
-        <div className="w-[164px] flex items-center cursor-pointer" onClick={() => setDropdown(!dropdown)} ref={walletBtnRef}>
-          <Image src="/profile.svg" width="24" height="24" alt=""/>
+        <div className="w-[164px] flex items-center cursor-pointer" onClick={handleDropdown} ref={walletBtnRef}>
+          <Image src="/profile.svg" width="28" height="28" alt=""/>
           <div className="text-[#667085] text-sm mx-2 font-mono max-w-[104px]">{`${addr.substring(0, 5)}...${addr.substring(addr.length - 4)}`}</div>
-          <Image src="/chevron.svg" width="20" height="20" style={dropdown && {transform: "rotate(180deg)"}}/>
+          <Image src="/chevron.svg" width="20" height="20" style={dropdown && {transform: "rotate(-180deg)"}}
+            className="duration-200 ease-linear"
+          />
         </div>
       )}
       {dropdown && (
@@ -126,47 +138,56 @@ export default function WalletView(props) {
                     <div className="font-mono text-[#667085] mr-1" >{`${addr.substring(0, 5)}...${addr.substring(addr.length - 4)}`}</div>
                   </div>
                 </div>
-                <Image src="/gear.svg" width="18" height="18" alt="" className="cursor-pointer" onClick={() => setShowSettings(true)}/>
+                <Image src="/gear.svg" width="24" height="24" alt="" className="cursor-pointer" onClick={() => setShowSettings(true)}/>
               </div>
               <div className="p-6 pt-0 w-full flex items-center flex-col">
                 <Image src="/profile.svg" width="80" height="80" className="mt-4" alt=""/>
                 <div className="flex items-end">
-                  <div className="text-[32px] font-semibold mr-1">{Number(balance).toFixed(2)}</div>
+                  <div className="text-[32px] font-semibold mr-1">{Number(balance).toFixed(6)}</div>
                   <div className="text-[#667085] mb-2">{networks[ethereum.networkVersion]?.nativeCurrency.symbol}</div>
                 </div>
-                <div className="text-[#667085]">{`$${balanceUSD} USD`}</div>
-                <div className="button-dark text-center py-3 px-4 w-full mt-4" onClick={handleFund}>Fund</div>
-                <div className="self-start text-black text-lg font-medium mt-6 mb-2">Coins</div>
-                <div className="w-full flex justify-between items-center my-1">
-                  <div className="flex items-center">
-                    <Image src="/usdc.svg" width="40" height="40" alt="" className="mr-4"/>
-                    <div>
-                      <div className="text-black">USD Coin</div>
-                      <div className="text-[#667085]">{`${usdcBalance} USDC`}</div>
+                <div className="text-[#667085] text-lg -mt-1">{`$${balanceUSD} USD`}</div>
+                <div className="button-dark text-center py-3 px-4 w-full mt-6 font-medium" onClick={handleFund}>Fund</div>
+                <div className="self-start text-black text-lg font-[590] mt-6 mb-2">Coins</div>
+                
+                {usdcBalance && (
+                  <div className="w-full flex justify-between items-center my-2 mb-[6px]">
+                    <div className="flex items-center">
+                      <Image src="/usdc-coin.svg" width="40" height="40" alt="" className="mr-4"/>
+                      <div>
+                        <div className="text-black">USD Coin</div>
+                        <div className="text-[#667085] text-sm">{`${usdcBalance} USDC`}</div>
+                      </div>
                     </div>
+                    <div className="text-black">{`$${usdcBalanceUSD}`}</div>
                   </div>
-                  <div className="text-black">{`$${usdcBalanceUSD}`}</div>
-                </div>
-                <div className="w-full flex justify-between items-center my-1">
-                  <div className="flex items-center">
-                    <Image src="/dai.svg" width="40" height="40" alt="" className="mr-4"/>
-                    <div>
-                      <div className="text-black">DAI</div>
-                      <div className="text-[#667085]">{`${daiBalance} DAI`}</div>
+                )}
+
+                {daiBalance && (
+                  <div className="w-full flex justify-between items-center my-[6px]">
+                    <div className="flex items-center">
+                      <Image src="/dai-coin.svg" width="40" height="40" alt="" className="mr-4"/>
+                      <div>
+                        <div className="text-black">DAI</div>
+                        <div className="text-[#667085] text-sm">{`${daiBalance} DAI`}</div>
+                      </div>
                     </div>
+                    <div className="text-black">{`$${daiBalanceUSD}`}</div>
                   </div>
-                  <div className="text-black">{`$${daiBalanceUSD}`}</div>
-                </div>
-                <div className="w-full flex justify-between items-center mt-2">
-                  <div className="flex items-center">
-                    <Image src="/usdt.svg" width="40" height="40" alt="" className="mr-4"/>
-                    <div>
-                      <div className="text-black">USD Tether</div>
-                      <div className="text-[#667085]">{`${usdtBalance} USDT`}</div>
+                )}
+
+                {usdtBalance && (
+                  <div className="w-full flex justify-between items-center mt-[6px]">
+                    <div className="flex items-center">
+                      <Image src="/usdt-coin.svg" width="40" height="40" alt="" className="mr-4"/>
+                      <div>
+                        <div className="text-black">USD Tether</div>
+                        <div className="text-[#667085] text-sm">{`${usdtBalance} USDT`}</div>
+                      </div>
                     </div>
+                    <div className="text-black">{`$${usdtBalanceUSD}`}</div>
                   </div>
-                  <div className="text-black">{`$${usdtBalanceUSD}`}</div>
-                </div>
+                )}
 
               </div>
             </div>
@@ -174,9 +195,9 @@ export default function WalletView(props) {
 
           {showSettings && (
             <div className="flex flex-col items-center w-full">
-              <div className="flex items-center w-full justify-between py-[18px] px-6 border-b-[1px] border-[#00000014]">
-                <div className="text-black text-lg mr-2 whitespace-nowrap font-medium">Settings</div>
-                <Image src="/close.svg" width="24" height="24" alt="" className="cursor-pointer" onClick={() => setShowSettings(false)}/>
+              <div className="flex items-center w-full justify-between py-[19px] px-6 border-b-[1px] border-[#00000014]">
+                <div className="text-black mr-2 whitespace-nowrap font-bold text-sm">Settings</div>
+                <Image src="/close.svg" width="22" height="22" alt="" className="cursor-pointer" onClick={() => setShowSettings(false)}/>
               </div>
               <a className="w-full" href={`https://goerli.etherscan.io/address/${addr}`} target="_blank">
                 <div className="settingsBtn">

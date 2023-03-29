@@ -15,7 +15,7 @@ export default function Main(props) {
   const [walletCreated, setWalletCreated] = useState()
 
   useEffect(() => {
-    if(localStorage.getItem("fun-wallet-addr") !== wallet?.address){
+    if(localStorage.getItem("fun-wallet-addr") !== wallet?.address && !wallet.deployed){
       setWalletCreated(true);
       localStorage.setItem("fun-wallet-addr", wallet.address)
       setTimeout(() => {

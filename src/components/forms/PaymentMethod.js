@@ -31,28 +31,28 @@ export default function PaymentMethod(props) {
       {token !== chainToken.symbol && (
         <div className="flex items-center mt-3 w-full pb-1 pl-4">
           <div 
-            className="button justify-center flex py-4 px-7 text-[#344054] font-medium mr-4"
+            className="button justify-center flex py-1 px-[10px] text-[#344054] font-medium mr-2 text-sm"
             style={{background: token == "USDC" ? "#2D4EA214" : "", borderColor: token == "USDC" ? "#2D4EA2" : "#E4E7EC"}}
             onClick={() => setToken("USDC")}
           >
-            <Image src="/usdc.svg" width="24" height="24"  alt=""/>
-            <div className="ml-4">USDC</div>
+            <Image src="/usdc.svg" width="16" height="16"  alt=""/>
+            <div className="ml-[6px]">USDC</div>
           </div>
           <div 
-            className="button justify-center flex py-4 px-7 text-[#344054] font-medium mr-4"
+            className="button items-center justify-center flex py-1 px-[10px] text-[#344054] font-medium mr-2 text-sm"
             style={{background: token == "DAI" ? "#2D4EA214" : "", borderColor: token == "DAI" ? "#2D4EA2" : "#E4E7EC"}}
             onClick={() => setToken("DAI")}
           >
-            <Image src="/dai.svg" width="24" height="24"  alt=""/>
-            <div className="ml-4">DAI</div>
+            <Image src="/dai.svg" width="16" height="16"  alt=""/>
+            <div className="ml-[6px]">DAI</div>
           </div>
           <div 
-            className="button justify-center flex py-4 px-7 text-[#344054] font-medium mr-4"
+            className="button justify-center flex py-1 px-[10px] text-[#344054] font-medium mr-2 text-sm"
             style={{background: token == "USDT" ? "#2D4EA214" : "", borderColor: token == "USDT" ? "#2D4EA2" : "#E4E7EC"}}
             onClick={() => setToken("USDT")}
           >
-            <Image src="/usdt.svg" width="24" height="24"  alt=""/>
-            <div className="ml-4">USDT</div>
+            <Image src="/usdt.svg" width="16" height="16"  alt=""/>
+            <div className="ml-[6px]">USDT</div>
           </div>
         </div>
       )}

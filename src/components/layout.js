@@ -19,7 +19,7 @@ export default function Layout(props) {
         <link rel="icon" href="/fun.svg?" />
       </Head>
 
-      <main className="w-full h-full flex flex-col overflow-y-scroll">
+      <main className="w-full h-full flex flex-col">
         {loading && (
           <Loader />
         )}
