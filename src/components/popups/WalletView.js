@@ -106,7 +106,7 @@ export default function WalletView(props) {
         <div className="w-[164px] flex items-center cursor-pointer" onClick={() => setDropdown(!dropdown)} ref={walletBtnRef}>
           <Image src="/profile.svg" width="24" height="24" alt=""/>
           <div className="text-[#667085] text-sm mx-2 font-mono max-w-[104px]">{`${addr.substring(0, 5)}...${addr.substring(addr.length - 4)}`}</div>
-          <Image src="/chevron.svg" width="20" height="20"/>
+          <Image src="/chevron.svg" width="20" height="20" style={dropdown && {transform: "rotate(180deg)"}}/>
         </div>
       )}
       {dropdown && (
