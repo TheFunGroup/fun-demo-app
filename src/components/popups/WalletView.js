@@ -114,7 +114,7 @@ export default function WalletView(props) {
     <div>
       {addr && (
         <div className="w-[164px] flex items-center cursor-pointer" onClick={handleDropdown} ref={walletBtnRef}>
-          <Image src="/profile.svg" width="24" height="24" alt=""/>
+          <Image src="/profile.svg" width="28" height="28" alt=""/>
           <div className="text-[#667085] text-sm mx-2 font-mono max-w-[104px]">{`${addr.substring(0, 5)}...${addr.substring(addr.length - 4)}`}</div>
           <Image src="/chevron.svg" width="20" height="20" style={dropdown && {transform: "rotate(-180deg)"}}
             className="duration-200 ease-linear"
@@ -138,7 +138,7 @@ export default function WalletView(props) {
                     <div className="font-mono text-[#667085] mr-1" >{`${addr.substring(0, 5)}...${addr.substring(addr.length - 4)}`}</div>
                   </div>
                 </div>
-                <Image src="/gear.svg" width="18" height="18" alt="" className="cursor-pointer" onClick={() => setShowSettings(true)}/>
+                <Image src="/gear.svg" width="24" height="24" alt="" className="cursor-pointer" onClick={() => setShowSettings(true)}/>
               </div>
               <div className="p-6 pt-0 w-full flex items-center flex-col">
                 <Image src="/profile.svg" width="80" height="80" className="mt-4" alt=""/>
@@ -153,7 +153,7 @@ export default function WalletView(props) {
                 {usdcBalance && (
                   <div className="w-full flex justify-between items-center my-2 mb-[6px]">
                     <div className="flex items-center">
-                      <Image src="/usdc.svg" width="40" height="40" alt="" className="mr-4"/>
+                      <Image src="/usdc-coin.svg" width="40" height="40" alt="" className="mr-4"/>
                       <div>
                         <div className="text-black">USD Coin</div>
                         <div className="text-[#667085] text-sm">{`${usdcBalance} USDC`}</div>
@@ -166,7 +166,7 @@ export default function WalletView(props) {
                 {daiBalance && (
                   <div className="w-full flex justify-between items-center my-[6px]">
                     <div className="flex items-center">
-                      <Image src="/dai.svg" width="40" height="40" alt="" className="mr-4"/>
+                      <Image src="/dai-coin.svg" width="40" height="40" alt="" className="mr-4"/>
                       <div>
                         <div className="text-black">DAI</div>
                         <div className="text-[#667085] text-sm">{`${daiBalance} DAI`}</div>
@@ -179,7 +179,7 @@ export default function WalletView(props) {
                 {usdtBalance && (
                   <div className="w-full flex justify-between items-center mt-[6px]">
                     <div className="flex items-center">
-                      <Image src="/usdt.svg" width="40" height="40" alt="" className="mr-4"/>
+                      <Image src="/usdt-coin.svg" width="40" height="40" alt="" className="mr-4"/>
                       <div>
                         <div className="text-black">USD Tether</div>
                         <div className="text-[#667085] text-sm">{`${usdtBalance} USDT`}</div>
@@ -197,7 +197,7 @@ export default function WalletView(props) {
             <div className="flex flex-col items-center w-full">
               <div className="flex items-center w-full justify-between py-[19px] px-6 border-b-[1px] border-[#00000014]">
                 <div className="text-black mr-2 whitespace-nowrap font-bold text-sm">Settings</div>
-                <Image src="/close.svg" width="18" height="18" alt="" className="cursor-pointer" onClick={() => setShowSettings(false)}/>
+                <Image src="/close.svg" width="22" height="22" alt="" className="cursor-pointer" onClick={() => setShowSettings(false)}/>
               </div>
               <a className="w-full" href={`https://goerli.etherscan.io/address/${addr}`} target="_blank">
                 <div className="settingsBtn">

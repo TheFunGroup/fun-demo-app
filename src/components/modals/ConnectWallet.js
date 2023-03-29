@@ -48,6 +48,12 @@ export default function ConnectWallet(props) {
         const FunWallet = await createFunWallet(auth, network)
         const addr = await FunWallet.getAddress();
         FunWallet.address = addr;
+        try {
+          const code = await provider.getCode(addr);
+          FunWallet.deployed = true
+        } catch(e){
+          FunWallet.deployed = false
+        }
         setEOA(auth);
         setNetwork(network)
         setWallet(FunWallet);

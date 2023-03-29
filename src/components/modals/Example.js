@@ -138,7 +138,7 @@ export default function Example(props) {
   }, [error])
 
   return (
-    <div className={`modal w-[690px] my-12`}>
+    <div className={`modal w-[690px] ${props.example == "swap" ? "my-8" : "my-12"}`}>
 
       {mustFund && (
         <div className="alert w-full flex justify-between -mb-[80px] relative">
