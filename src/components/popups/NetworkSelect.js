@@ -3,13 +3,13 @@ import Image from 'next/image';
 import { networks,  connectToNetwork } from "../../utils/networks";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 import { createFunWallet } from "../../scripts/wallet";
-import Loader from "../misc/Loader";
+import Spinner from "../misc/Spinner";
+import { useFun } from "../../contexts/funContext";
 
 export default function NetworkSelect(props) {
-  
-  const setNetwork = props.setNetwork;
-  const setWallet = props.setWallet;
-  const eoa = props.eoa;
+
+  const {setNetwork, setWallet, eoa} = useFun();
+
   const [current, setCurrent] = useState(5)
   const [hover, setHover] = useState();
   const [dropdown, setDropdown] = useState();
@@ -40,7 +40,10 @@ export default function NetworkSelect(props) {
 
   useEffect(() => {
     if(current) setDropdown(false);
-    if(ethereum.networkVersion !== current) connect(current)
+    if(Number(ethereum.networkVersion) !== current){
+      console.log("CONNECTING", current, ethereum.networkVersion)
+      connect(current)
+    } 
   }, [current])
 
   useOnClickOutside(dropdownRef, (e) => {
@@ -52,9 +55,9 @@ export default function NetworkSelect(props) {
     <div>
       {networks[current] && (
         <div className="w-[124px] flex items-center cursor-pointer mr-4" onClick={() => setDropdown(!dropdown)} ref={networkBtnRef}>
-          <Image src={networks[current].icon} width="24" height="24"/>
+          <Image src={networks[current].icon} width="24" height="24" alt=""/>
           <div className="text-[#667085] text-sm mx-2">{networks[current].name}</div>
-          <Image src="/chevron.svg" width="20" height="20"/>
+          <Image src="/chevron.svg" width="20" height="20" alt="" style={dropdown && {transform: "rotate(180deg)"}}/>
         </div>
       )}
       {dropdown && (
@@ -63,24 +66,24 @@ export default function NetworkSelect(props) {
             return (
               <div 
                 className={`
-                  w-full flex items-center justify-between px-[14px] py-[10px] cursor-not-allowed	
+                  w-full flex items-center justify-between px-[14px] py-[10px] ${idx !== 1 && "cursor-not-allowed"}
                   ${idx == 0 && "rounded-t-xl"} ${idx == Object.keys(networks).length - 1 && "rounded-b-xl"}
                   ${id == (current) ? "bg-white" : id == hover ? "bg-[#f5f5f5]" : "bg-[#f9f9f9]"}
                 `}
-                // onClick={() => connect(id)}
+                onClick={() => {if(idx == 1) setDropdown(false)}}
                 onMouseEnter={() => setHover(id)}
                 onMouseLeave={() => setHover("")}
               >
                 <div className="flex items-center">
-                  <Image src={networks[id].icon} width="24" height="24"/>
+                  <Image src={networks[id].icon} width="24" height="24" alt=""/>
                   <div className="text-[#101828] ml-2">{networks[id].name}</div>
                 </div>
                 <div>
                   {id == current && (
-                    <Image src="/check.svg" width="20" height="20"/>
+                    <Image src="/check.svg" width="20" height="20" alt=""/>
                   )}
                   {id == creating && (
-                    <Loader width="20px" height="20px"/>
+                    <Spinner width="20px" height="20px"/>
                   )}
                 </div>
               </div>

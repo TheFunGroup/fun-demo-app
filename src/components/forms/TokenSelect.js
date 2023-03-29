@@ -3,19 +3,22 @@ import Image from 'next/image';
 import { networks,  connectToNetwork } from "../../utils/networks";
 import { tokens } from "../../utils/tokens";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
+import { useFun } from "../../contexts/funContext";
 
 export default function TokenSelect(props) {
   
   const setToken = props.setToken;
   const token = props.token;
-  const network = props.network;
   const [hover, setHover] = useState();
   const [dropdown, setDropdown] = useState();
   const dropdownRef = useRef()
   const selectBtnRef = useRef()
 
+  const { network } = useFun();
+
   useEffect(() => {
     setDropdown(false);
+    console.log(token)
   }, [token])
 
   useOnClickOutside(dropdownRef, (e) => {
@@ -25,13 +28,13 @@ export default function TokenSelect(props) {
 
   return (
     <div className="">
-      <div className="flex items-center cursor-pointer" onClick={() => setDropdown(!dropdown)}>
+      <div ref={selectBtnRef} className="flex items-center cursor-pointer" onClick={() => setDropdown(!dropdown)}>
         <div className="text-[#101828] mr-1">{token.name}</div>
-        <Image src="/chevron.svg" width="30" height="20"/>
+        <Image src="/chevron.svg" width="30" height="20" alt="" style={dropdown && {transform: "rotate(180deg)"}}/>
       </div>
       {dropdown && (
         <div className="dropdown w-[200px] absolute -ml-[132px] mt-2" ref={dropdownRef}>
-          {tokens[network].map((t, idx) => {
+          {tokens[network]?.map((t, idx) => {
             return (
               <div 
                 className={`
@@ -45,8 +48,8 @@ export default function TokenSelect(props) {
               >
                 <div className="text-[#101828] text-sm">{t.name}</div>
                 <div>
-                  {t.name == token.name && (
-                    <Image src="/check.svg" width="20" height="20"/>
+                  {t.name == token && (
+                    <Image src="/check.svg" width="20" height="20" alt=""/>
                   )}
                 </div>
               </div>

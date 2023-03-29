@@ -3,8 +3,11 @@ import Image from 'next/image';
 import { ethers } from "ethers";
 import { networks, connectToNetwork } from "../../utils/networks";
 import { createFunWallet } from "../../scripts/wallet";
+import Spinner from "../misc/Spinner";
+import { useFun } from "../../contexts/funContext";
 import Loader from "../misc/Loader";
 import { Eoa, WalletConnectEoa } from "../../../../fun-wallet-sdk/auth"
+
 
 
 import { Web3Button, useWeb3Modal } from '@web3modal/react'
@@ -18,19 +21,17 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 
 
 
-const connector = new WalletConnect({
-  bridge: "https://bridge.walletconnect.org", // Required
-  qrcodeModal: QRCodeModal,
-});
+// const connector = new WalletConnect({
+//   bridge: "https://bridge.walletconnect.org", // Required
+//   qrcodeModal: QRCodeModal,
+// });
 
 
 
 // import { Eoa } from "@fun-wallet/sdk/auth"
 export default function ConnectWallet(props) {
 
-  const setWallet = props.setWallet;
-  const setNetwork = props.setNetwork;
-  const setEOA = props.setEOA;
+  const { setWallet, setNetwork, setEOA, setLoading } = useFun()
   const { isOpen, open, close, setDefaultChain } = useWeb3Modal();
   const { connect, connectors, error, isLoading, pendingConnector } = useConnect()
   const [creating, setCreating] = useState()
@@ -41,10 +42,9 @@ export default function ConnectWallet(props) {
 
     await provider.send('eth_requestAccounts', []); // <- this promps user to connect metamask
     const eoa = provider.getSigner();
-    console.log(eoa)
-    console.log(provider)
-    // console.log(eoa)
+    localStorage.setItem("fun-wallet-addr", "")
     try {
+      // const auth = new Eoa({privateKey: "0x6270ba97d41630c84de28dd8707b0d1c3a9cd465f7a2dba7d21b69e7a1981064"})
 
       // console.log(eoa)
       const auth = new Eoa({ signer: eoa })
@@ -53,13 +53,16 @@ export default function ConnectWallet(props) {
       console.log(auth)
       const network = 5
       setCreating(true)
+      setLoading(true);
       connectToNetwork(network).then(async () => {
         const FunWallet = await createFunWallet(auth, network)
-
+        const addr = await FunWallet.getAddress();
+        FunWallet.address = addr;
         setEOA(auth);
         setNetwork(network)
         setWallet(FunWallet);
         setCreating(false)
+        setLoading(false)
       })
     } catch (e) {
       console.log(e)
@@ -88,14 +91,16 @@ export default function ConnectWallet(props) {
       console.log(auth)
       const network = 5
       setCreating(true)
-      connectToNetwork(network).then(async () => {
-        const FunWallet = await createFunWallet(auth, network)
+      setLoading(true)
+      // connectToNetwork(network).then(async () => {
+      const FunWallet = await createFunWallet(auth, network)
+      setEOA(auth);
+      setNetwork(network)
+      setWallet(FunWallet);
+      setCreating(false)
+      setLoading(false)
+      // })
 
-        setEOA(auth);
-        setNetwork(network)
-        setWallet(FunWallet);
-        setCreating(false)
-      })
     } catch (e) {
       console.log(e)
     }
@@ -103,8 +108,8 @@ export default function ConnectWallet(props) {
   }
 
   return (
-    <div className={`w-[360px] modal flex flex-col items-center text-center`} >
-      <Image src="/fun.svg" width="52" height="42" />
+    <div className={`w-[360px] modal flex flex-col items-center text-center -mt-[64px]`} >
+      <Image src="/fun.svg" width="52" height="42" alt="" />
       <div className="font-semibold text-2xl mt-6 text-[#101828]">Let the Fun begin</div>
       <div className="text-sm text-[#667085] mt-1">Unlock the power of Fun Wallets.</div>
       <div
@@ -112,20 +117,20 @@ export default function ConnectWallet(props) {
         onClick={connectEOA}
       >
         {creating ? (
-          <Loader />
+          <Spinner />
         ) : (
-          <Image src="/wallet.svg" width="22" height="22" />
+          <Image src="/wallet.svg" width="22" height="22" alt="" />
         )}
         <div className="ml-3 font-medium text-[#344054]">Connect EOA</div>
       </div>
-      <div>
+      {/* <div>
         <div
           className="button mt-8 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
           onClick={walletConnect}
         >
           Wallet Connect
         </div>
-      </div>
+      </div> */}
 
 
     </div>

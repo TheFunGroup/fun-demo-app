@@ -3,10 +3,13 @@
 import { useEffect, useState, useRef } from "react";
 import Head from 'next/head'
 import { useRouter } from 'next/router';
+import Loader from "./misc/Loader";
+import { useFun } from "../contexts/funContext";
 
 export default function Layout(props) {
 
   const router = useRouter();
+  const { loading, setLoading } = useFun()
 
   return (
     <div className="w-full h-full">
@@ -17,6 +20,9 @@ export default function Layout(props) {
       </Head>
 
       <main className="w-full h-full flex flex-col overflow-y-scroll">
+        {loading && (
+          <Loader />
+        )}
         <div className={`w-full h-full`}>
           {props.children}
         </div>

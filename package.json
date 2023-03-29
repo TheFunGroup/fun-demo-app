@@ -17,7 +17,6 @@
     "@walletconnect/web3-provider": "^1.8.0",
     "@web3modal/ethereum": "^2.2.2",
     "@web3modal/react": "^2.2.2",
-    "bignumber.js": "^9.1.1",
     "eslint": "8.31.0",
     "eslint-config-next": "13.1.1",
     "ethers": "5.2.0",

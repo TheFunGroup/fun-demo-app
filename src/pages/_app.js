@@ -1,4 +1,5 @@
 import '../styles/globals.css'
+import { FunProvider } from '../contexts/funContext';
 
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'
@@ -39,14 +40,13 @@ const ethereumClient = new EthereumClient(wagmiClient, chains)
 export default function App({ Component, pageProps }) {
   const getLayout = Component.getLayout || ((page) => page)
   return (
-    <>
-      <WagmiConfig client={wagmiClient}>
-        <div className="w-full h-full">
+    <div className="w-full h-full">
+      <FunProvider>
+        <WagmiConfig client={wagmiClient}>
           {getLayout(<Component {...pageProps} />)}
-        </div>  </WagmiConfig>
-
+        </WagmiConfig>
+      </FunProvider>
       <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
-    </>
-
+    </div>
   )
 }
