@@ -42,10 +42,10 @@ export default function FundWallet(props) {
 
         <div 
           className="w-[300px] button w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
-          onClick={fundWallet}
+          
         >
           <Image src="/wallet.svg" width="22" height="22" alt=""/>
-          <div className="ml-3 font-medium text-[#344054]">Fund Wallet</div>
+          <div className="ml-3 font-medium text-[#344054]" onClick={fundWallet}>Fund Wallet</div>
         </div>
       </div>
 
