@@ -32,7 +32,7 @@ export default function WalletView(props) {
 
 
   useEffect(() => {
-    if(networks[network || ethereum.networkVersion]){
+    if(networks[network]){
       if(wallet.address){
         setAddr(wallet.address);
         eoa.signer.provider.getBalance(wallet.address).then((balance) => {
@@ -50,13 +50,13 @@ export default function WalletView(props) {
   }, [network])
 
   async function getCoinBalances(){
-    const usdcContract = new ethers.Contract("0x824b8e927417276b6643e9fc830176ce18dfc6f8" , erc20Abi, eoa.signer.provider);
+    const usdcContract = new ethers.Contract("0x07865c6E87B9F70255377e024ace6630C1Eaa37F" , erc20Abi, eoa.signer.provider);
     let usdcBalance = await usdcContract.balanceOf(wallet.address)
     usdcBalance = ethers.utils.formatEther(usdcBalance);
     setUsdcBalance(Number(usdcBalance).toFixed(2))
     setUsdcBalanceUSD(await toUSD("USDC", usdcBalance));
 
-    const daiContract = new ethers.Contract("0xae8cc06365253284eea8c23192c410b19a7a1224" , erc20Abi, eoa.signer.provider);
+    const daiContract = new ethers.Contract("0xdc31ee1784292379fbb2964b3b9c4124d8f89c60" , erc20Abi, eoa.signer.provider);
     let daiBalance = await daiContract.balanceOf(wallet.address)
     daiBalance = ethers.utils.formatEther(daiBalance);
     setDaiBalance(Number(daiBalance).toFixed(2))

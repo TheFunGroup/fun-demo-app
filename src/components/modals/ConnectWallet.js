@@ -4,8 +4,11 @@ import { ethers } from "ethers";
 import { networks, connectToNetwork } from "../../utils/networks";
 import { createFunWallet } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
-import { Eoa } from "@fun-wallet/sdk/auth"
 import { useFun } from "../../contexts/funContext";
+import Loader from "../misc/Loader";
+import { Eoa, WalletConnectEoa } from "../../../../fun-wallet-sdk/auth"
+
+
 
 import { Web3Button, useWeb3Modal } from '@web3modal/react'
 import { useProvider, useConnect } from 'wagmi'
@@ -28,6 +31,7 @@ export default function ConnectWallet(props) {
   // const { isOpen, open, close, setDefaultChain } = useWeb3Modal();
   // const { connect, connectors, error, isLoading, pendingConnector } = useConnect()
   const [creating, setCreating] = useState()
+  const [wConnecting, setWConnecting] = useState()
 
   async function connectEOA() {
     const provider = new ethers.providers.Web3Provider(window.ethereum, "any") // any is needed if user has to change network to goerli
@@ -55,36 +59,45 @@ export default function ConnectWallet(props) {
     }
   }
 
+
   const walletConnect = async () => {
     try {
-      await (new ethers.providers.Web3Provider(window.ethereum, "any")).send('eth_requestAccounts', []); // <- this promps user to connect metamask
-      await connectToNetwork(5);
       const walletConnectProvider = new WalletConnectProvider({
         rpc: {
           5: "https://goerli.blockpi.network/v1/rpc/public"
         },
         qrcode: true,
       });
+      const chain = ethers.utils.hexValue(5);
+      console.log(walletConnectProvider)
       //  Enable session (triggers QR Code modal)
       await walletConnectProvider.enable();
       const provider = new ethers.providers.Web3Provider(walletConnectProvider);
       const eoa = provider.getSigner()
+
+      // await provider.request({
+      //   method: 'wallet_switchEthereumChain',
+      //   params: [{ chainId: chain }],
+      // });
       // console.log(eoa)
       // console.log(provider)
       const auth = new Eoa({ signer: eoa })
       // const auth = new Eoa({privateKey: "0x6270ba97d41630c84de28dd8707b0d1c3a9cd465f7a2dba7d21b69e7a1981064"})
       // console.log(auth)
       const network = 5
-      setCreating(true)
+      setWConnecting(true)
       setLoading(true)
       // connectToNetwork(network).then(async () => {
       const FunWallet = await createFunWallet(auth, network)
+      const addr = await FunWallet.getAddress();
+      FunWallet.address = addr;
       setEOA(auth);
       setNetwork(network)
       setWallet(FunWallet);
-      setCreating(false)
+      setWConnecting(false)
       setLoading(false)
       // })
+
     } catch (e) {
       console.log(e)
     }
@@ -111,11 +124,18 @@ export default function ConnectWallet(props) {
         className="walletConnectBtn mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-center cursor-pointer py-[10px] px-4"
         onClick={walletConnect}
       >
-        <div className="font-medium text-white">Wallet Connect</div>
+        {wConnecting ? (
+          <Spinner />
+        ) : (
+          <Image src="/walletconnect.svg" width="22" height="22" alt="" />
+        )}
+        <div className="ml-3 font-medium text-white">Wallet Connect</div>
       </div>
+
 
     </div>
   )
+
 }
 
 export async function getStaticProps() {
