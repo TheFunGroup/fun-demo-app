@@ -33,17 +33,17 @@ export const tokens = {
     },
     {
       name: "USDC",
-      addr: "0x824b8e927417276b6643e9fc830176ce18dfc6f8",
+      addr: "0xaa8958047307da7bb00f0766957edec0435b46b5",
       decimal: 6
     },
     {
       name: "DAI",
-      addr: "0xae8cc06365253284eea8c23192c410b19a7a1224",
+      addr: "0x855af47cdf980a650ade1ad47c78ec1deebe9093",
       decimal: 10
     },
     {
       name: "USDT",
-      addr: "0x92db1cebe8770acbc0cf321a5e71746c4097c995",
+      addr: "0x3E1FF16B9A94eBdE6968206706BcD473aA3Da767",
       decimal: 6
     },
   ],

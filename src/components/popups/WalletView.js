@@ -37,7 +37,7 @@ export default function WalletView(props) {
         setAddr(wallet.address);
         eoa.signer.provider.getBalance(wallet.address).then((balance) => {
           balance = ethers.utils.formatEther(balance);
-          setBalance(Number(balance).toFixed(2))
+          setBalance(Number(balance).toFixed(6))
           toUSD("ETH", balance).then((usd) => {
             setBalanceUSD(usd)
           })
@@ -50,22 +50,22 @@ export default function WalletView(props) {
   }, [network])
 
   async function getCoinBalances(){
-    const usdcContract = new ethers.Contract("0x07865c6E87B9F70255377e024ace6630C1Eaa37F" , erc20Abi, eoa.signer.provider);
+    const usdcContract = new ethers.Contract("0xaa8958047307da7bb00f0766957edec0435b46b5" , erc20Abi, eoa.signer.provider);
     let usdcBalance = await usdcContract.balanceOf(wallet.address)
-    usdcBalance = ethers.utils.formatEther(usdcBalance);
-    setUsdcBalance(Number(usdcBalance).toFixed(2))
+    usdcBalance = ethers.utils.formatUnits(usdcBalance, 6)
+    setUsdcBalance(Number(usdcBalance.toString()).toFixed(2))
     setUsdcBalanceUSD(await toUSD("USDC", usdcBalance));
 
-    const daiContract = new ethers.Contract("0xdc31ee1784292379fbb2964b3b9c4124d8f89c60" , erc20Abi, eoa.signer.provider);
+    const daiContract = new ethers.Contract("0x855af47cdf980a650ade1ad47c78ec1deebe9093" , erc20Abi, eoa.signer.provider);
     let daiBalance = await daiContract.balanceOf(wallet.address)
-    daiBalance = ethers.utils.formatEther(daiBalance);
-    setDaiBalance(Number(daiBalance).toFixed(2))
+    daiBalance = ethers.utils.formatUnits(daiBalance, 6)
+    setDaiBalance(Number(daiBalance.toString()).toFixed(2))
     setDaiBalanceUSD(await toUSD("DAI", daiBalance));
 
-    const usdtContract = new ethers.Contract("0x92db1cebe8770acbc0cf321a5e71746c4097c995" , erc20Abi, eoa.signer.provider);
+    const usdtContract = new ethers.Contract("0x3E1FF16B9A94eBdE6968206706BcD473aA3Da767" , erc20Abi, eoa.signer.provider);
     let usdtBalance = await usdtContract.balanceOf(wallet.address)
-    usdtBalance = ethers.utils.formatEther(usdtBalance);
-    setUsdtBalance(Number(usdtBalance).toFixed(2))
+    usdtBalance = ethers.utils.formatUnits(usdtBalance, 6)
+    setUsdtBalance(Number(usdtBalance.toString()).toFixed(2))
     setUsdtBalanceUSD(await toUSD("USDT", usdtBalance));
 
   }
@@ -143,7 +143,7 @@ export default function WalletView(props) {
               <div className="p-6 pt-0 w-full flex items-center flex-col">
                 <Image src="/profile.svg" width="80" height="80" className="mt-4" alt=""/>
                 <div className="flex items-end">
-                  <div className="text-[32px] font-semibold mr-1">{Number(balance).toFixed(2)}</div>
+                  <div className="text-[32px] font-semibold mr-1">{Number(balance).toFixed(6)}</div>
                   <div className="text-[#667085] mb-2">{networks[ethereum.networkVersion]?.nativeCurrency.symbol}</div>
                 </div>
                 <div className="text-[#667085] text-lg -mt-1">{`$${balanceUSD} USD`}</div>

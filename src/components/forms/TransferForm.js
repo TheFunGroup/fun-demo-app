@@ -14,7 +14,7 @@ export default function TransferForm(props) {
 
   function handleTransferChange(e){
     const amount = e.target.value;
-    if((transfer[1].name == "ETH" && amount > 0.1) || amount > 100 || amount < 0) return;
+    if((transfer[1].name == "ETH" && amount > 0.01) || amount > 100 || amount < 0) return;
     setTransfer([amount, transfer[1]])
   }
 

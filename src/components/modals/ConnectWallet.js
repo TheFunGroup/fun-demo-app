@@ -17,7 +17,6 @@ import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "@walletconnect/qrcode-modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
-
 //  Create WalletConnect Provider
 // const connector = new WalletConnect({
 //   bridge: "https://bridge.walletconnect.org", // Required
@@ -53,6 +52,11 @@ export default function ConnectWallet(props) {
           FunWallet.deployed = true
         } catch(e){
           FunWallet.deployed = false
+        }
+        let balance = await provider.getBalance(addr);
+        balance = ethers.utils.formatEther(balance);
+        if(balance == 0){
+          await useFaucet(addr);
         }
         setEOA(auth);
         setNetwork(network)
@@ -97,6 +101,17 @@ export default function ConnectWallet(props) {
       const FunWallet = await createFunWallet(auth, network)
       const addr = await FunWallet.getAddress();
       FunWallet.address = addr;
+      try {
+        const code = await provider.getCode(addr);
+        FunWallet.deployed = true
+      } catch(e){
+        FunWallet.deployed = false
+      }
+      let balance = await provider.getBalance(addr);
+      balance = ethers.utils.formatEther(balance);
+      if(balance == 0){
+        await useFaucet(addr);
+      }
       setEOA(auth);
       setNetwork(network)
       setWallet(FunWallet);
@@ -108,6 +123,17 @@ export default function ConnectWallet(props) {
       console.log(e)
     }
 
+  }
+
+  async function useFaucet(addr){
+    try {
+      await fetch(`http://18.237.113.42:8001/get-faucet?token=eth&testnet=goerli&addr=${addr}`)
+      await fetch(`http://18.237.113.42:8001/get-faucet?token=usdc&testnet=goerli&addr=${addr}`)
+      await fetch(`http://18.237.113.42:8001/get-faucet?token=dai&testnet=goerli&addr=${addr}`)
+      await fetch(`http://18.237.113.42:8001/get-faucet?token=usdt&testnet=goerli&addr=${addr}`)
+    } catch(e){
+
+    }
   }
 
   return (
