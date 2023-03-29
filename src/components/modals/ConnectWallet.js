@@ -4,8 +4,11 @@ import { ethers } from "ethers";
 import { networks, connectToNetwork } from "../../utils/networks";
 import { createFunWallet } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
-import { Eoa } from "@fun-wallet/sdk/auth"
 import { useFun } from "../../contexts/funContext";
+import Loader from "../misc/Loader";
+import { Eoa, WalletConnectEoa } from "../../../../fun-wallet-sdk/auth"
+
+
 
 import { Web3Button, useWeb3Modal } from '@web3modal/react'
 import { useProvider, useConnect } from 'wagmi'
@@ -66,6 +69,7 @@ export default function ConnectWallet(props) {
     }
   }
 
+
   const walletConnect = async () => {
     const walletConnectProvider = new WalletConnectProvider({
       rpc: {
@@ -76,11 +80,13 @@ export default function ConnectWallet(props) {
     //  Enable session (triggers QR Code modal)
     await walletConnectProvider.enable();
     const provider = new ethers.providers.Web3Provider(walletConnectProvider);
-    const eoa = provider.getSigner()
-    console.log(eoa)
-    console.log(provider)
+    const signer = provider.getSigner()
+
+
+
     try {
-      const auth = new Eoa({ signer: eoa })
+      const auth = new WalletConnectEoa({ signer, provider })
+      console.log(await auth.getUniqueId())
       // const auth = new Eoa({privateKey: "0x6270ba97d41630c84de28dd8707b0d1c3a9cd465f7a2dba7d21b69e7a1981064"})
       console.log(auth)
       const network = 5
@@ -94,6 +100,7 @@ export default function ConnectWallet(props) {
       setCreating(false)
       setLoading(false)
       // })
+
     } catch (e) {
       console.log(e)
     }
@@ -125,8 +132,10 @@ export default function ConnectWallet(props) {
         </div>
       </div> */}
 
+
     </div>
   )
+
 }
 
 export async function getStaticProps() {
