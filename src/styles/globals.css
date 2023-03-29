@@ -77,6 +77,17 @@ html, body, #__next{
   background: #232637;
 }
 
+.walletConnectBtn{
+  background: rgb(64, 153, 255);
+  border: 1px solid #E4E7EC;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.walletConnectBtn:hover{
+  background: rgb(59, 146, 246);
+}
+
 .dropdown{
   background: linear-gradient(125.87deg, rgba(255, 255, 255, 0.69) 0%, rgba(255, 255, 255, 0.42) 99.97%), #EDF1F4;
   border: 1px solid #E4E7EC;

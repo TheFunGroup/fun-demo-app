@@ -14,40 +14,29 @@ import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "@walletconnect/qrcode-modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
+
 //  Create WalletConnect Provider
-
-
-
 // const connector = new WalletConnect({
 //   bridge: "https://bridge.walletconnect.org", // Required
 //   qrcodeModal: QRCodeModal,
 // });
 
 
-
-// import { Eoa } from "@fun-wallet/sdk/auth"
 export default function ConnectWallet(props) {
 
   const { setWallet, setNetwork, setEOA, setLoading } = useFun()
-  const { isOpen, open, close, setDefaultChain } = useWeb3Modal();
-  const { connect, connectors, error, isLoading, pendingConnector } = useConnect()
+  // const { isOpen, open, close, setDefaultChain } = useWeb3Modal();
+  // const { connect, connectors, error, isLoading, pendingConnector } = useConnect()
   const [creating, setCreating] = useState()
-  // const provider = useProvider()
 
   async function connectEOA() {
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "any") // any is needed if user has to change network to goerli
 
     await provider.send('eth_requestAccounts', []); // <- this promps user to connect metamask
     const eoa = provider.getSigner();
     localStorage.setItem("fun-wallet-addr", "")
     try {
-      // const auth = new Eoa({privateKey: "0x6270ba97d41630c84de28dd8707b0d1c3a9cd465f7a2dba7d21b69e7a1981064"})
-
-      // console.log(eoa)
       const auth = new Eoa({ signer: eoa })
-      console.log(auth)
-      // const auth = new Eoa({privateKey: "0x6270ba97d41630c84de28dd8707b0d1c3a9cd465f7a2dba7d21b69e7a1981064"})
-      console.log(auth)
       const network = 5
       setCreating(true)
       setLoading(true);
@@ -67,22 +56,24 @@ export default function ConnectWallet(props) {
   }
 
   const walletConnect = async () => {
-    const walletConnectProvider = new WalletConnectProvider({
-      rpc: {
-        5: "https://goerli.blockpi.network/v1/rpc/public"
-      },
-      qrcode: true,
-    });
-    //  Enable session (triggers QR Code modal)
-    await walletConnectProvider.enable();
-    const provider = new ethers.providers.Web3Provider(walletConnectProvider);
-    const eoa = provider.getSigner()
-    console.log(eoa)
-    console.log(provider)
     try {
+      await (new ethers.providers.Web3Provider(window.ethereum, "any")).send('eth_requestAccounts', []); // <- this promps user to connect metamask
+      await connectToNetwork(5);
+      const walletConnectProvider = new WalletConnectProvider({
+        rpc: {
+          5: "https://goerli.blockpi.network/v1/rpc/public"
+        },
+        qrcode: true,
+      });
+      //  Enable session (triggers QR Code modal)
+      await walletConnectProvider.enable();
+      const provider = new ethers.providers.Web3Provider(walletConnectProvider);
+      const eoa = provider.getSigner()
+      // console.log(eoa)
+      // console.log(provider)
       const auth = new Eoa({ signer: eoa })
       // const auth = new Eoa({privateKey: "0x6270ba97d41630c84de28dd8707b0d1c3a9cd465f7a2dba7d21b69e7a1981064"})
-      console.log(auth)
+      // console.log(auth)
       const network = 5
       setCreating(true)
       setLoading(true)
@@ -116,14 +107,12 @@ export default function ConnectWallet(props) {
         )}
         <div className="ml-3 font-medium text-[#344054]">Connect EOA</div>
       </div>
-      {/* <div>
-        <div
-          className="button mt-8 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
-          onClick={walletConnect}
-        >
-          Wallet Connect
-        </div>
-      </div> */}
+      <div 
+        className="walletConnectBtn mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-center cursor-pointer py-[10px] px-4"
+        onClick={walletConnect}
+      >
+        <div className="font-medium text-white">Wallet Connect</div>
+      </div>
 
     </div>
   )

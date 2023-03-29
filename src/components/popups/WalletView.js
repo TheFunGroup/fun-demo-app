@@ -137,36 +137,45 @@ export default function WalletView(props) {
                 <div className="text-[#667085]">{`$${balanceUSD} USD`}</div>
                 <div className="button-dark text-center py-3 px-4 w-full mt-4" onClick={handleFund}>Fund</div>
                 <div className="self-start text-black text-lg font-medium mt-6 mb-2">Coins</div>
-                <div className="w-full flex justify-between items-center my-1">
-                  <div className="flex items-center">
-                    <Image src="/usdc.svg" width="40" height="40" alt="" className="mr-4"/>
-                    <div>
-                      <div className="text-black">USD Coin</div>
-                      <div className="text-[#667085]">{`${usdcBalance} USDC`}</div>
+                
+                {usdcBalance && (
+                  <div className="w-full flex justify-between items-center my-1">
+                    <div className="flex items-center">
+                      <Image src="/usdc.svg" width="40" height="40" alt="" className="mr-4"/>
+                      <div>
+                        <div className="text-black">USD Coin</div>
+                        <div className="text-[#667085]">{`${usdcBalance} USDC`}</div>
+                      </div>
                     </div>
+                    <div className="text-black">{`$${usdcBalanceUSD}`}</div>
                   </div>
-                  <div className="text-black">{`$${usdcBalanceUSD}`}</div>
-                </div>
-                <div className="w-full flex justify-between items-center my-1">
-                  <div className="flex items-center">
-                    <Image src="/dai.svg" width="40" height="40" alt="" className="mr-4"/>
-                    <div>
-                      <div className="text-black">DAI</div>
-                      <div className="text-[#667085]">{`${daiBalance} DAI`}</div>
+                )}
+
+                {daiBalance && (
+                  <div className="w-full flex justify-between items-center my-1">
+                    <div className="flex items-center">
+                      <Image src="/dai.svg" width="40" height="40" alt="" className="mr-4"/>
+                      <div>
+                        <div className="text-black">DAI</div>
+                        <div className="text-[#667085]">{`${daiBalance} DAI`}</div>
+                      </div>
                     </div>
+                    <div className="text-black">{`$${daiBalanceUSD}`}</div>
                   </div>
-                  <div className="text-black">{`$${daiBalanceUSD}`}</div>
-                </div>
-                <div className="w-full flex justify-between items-center mt-2">
-                  <div className="flex items-center">
-                    <Image src="/usdt.svg" width="40" height="40" alt="" className="mr-4"/>
-                    <div>
-                      <div className="text-black">USD Tether</div>
-                      <div className="text-[#667085]">{`${usdtBalance} USDT`}</div>
+                )}
+
+                {usdtBalance && (
+                  <div className="w-full flex justify-between items-center mt-2">
+                    <div className="flex items-center">
+                      <Image src="/usdt.svg" width="40" height="40" alt="" className="mr-4"/>
+                      <div>
+                        <div className="text-black">USD Tether</div>
+                        <div className="text-[#667085]">{`${usdtBalance} USDT`}</div>
+                      </div>
                     </div>
+                    <div className="text-black">{`$${usdtBalanceUSD}`}</div>
                   </div>
-                  <div className="text-black">{`$${usdtBalanceUSD}`}</div>
-                </div>
+                )}
 
               </div>
             </div>
