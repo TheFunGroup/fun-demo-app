@@ -8,8 +8,6 @@ import { useFun } from "../../contexts/funContext";
 import Loader from "../misc/Loader";
 import { Eoa, WalletConnectEoa } from "../../../../fun-wallet-sdk/auth"
 
-
-
 import { Web3Button, useWeb3Modal } from '@web3modal/react'
 import { useProvider, useConnect } from 'wagmi'
 
@@ -74,26 +72,16 @@ export default function ConnectWallet(props) {
     try {
       const walletConnectProvider = new WalletConnectProvider({
         rpc: {
-          5: "https://goerli.blockpi.network/v1/rpc/public"
+          5: "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
         },
         qrcode: true,
       });
-      const chain = ethers.utils.hexValue(5);
-      console.log(walletConnectProvider)
       //  Enable session (triggers QR Code modal)
       await walletConnectProvider.enable();
       const provider = new ethers.providers.Web3Provider(walletConnectProvider);
-      const eoa = provider.getSigner()
-
-      // await provider.request({
-      //   method: 'wallet_switchEthereumChain',
-      //   params: [{ chainId: chain }],
-      // });
-      // console.log(eoa)
-      // console.log(provider)
-      const auth = new Eoa({ signer: eoa })
-      // const auth = new Eoa({privateKey: "0x6270ba97d41630c84de28dd8707b0d1c3a9cd465f7a2dba7d21b69e7a1981064"})
-      // console.log(auth)
+      const signer = provider.getSigner()
+      const auth = new WalletConnectEoa({ signer, provider })
+      console.log(auth)
       const network = 5
       setWConnecting(true)
       setLoading(true)

@@ -30,7 +30,7 @@ export default function Example(props) {
   const example = examples[props.example];
   const network = 5;
 
-  const {wallet, setDeployedUrl, setLoading} = useFun();
+  const {wallet, eoa, setDeployedUrl, setLoading} = useFun();
 
   const [mustFund, setMustFund] = useState(false);
   const [mustApprove, setMustApprove] = useState(false);
@@ -54,7 +54,7 @@ export default function Example(props) {
         token: transfer[1],
         amount: transfer[0],
         to: receiverAddr
-      }, props.eoa).then((data) => {
+      }, eoa).then((data) => {
         if(data.success){
           setDeployedUrl(data.explorerUrl)
           router.push("/success");
@@ -73,7 +73,7 @@ export default function Example(props) {
         token1: swapExchange[1],
         amount: swapExchange[0],
         token2: swapReceive[1]
-      }, props.eoa).then((data) => {
+      }, eoa).then((data) => {
         if(data.success){
           setDeployedUrl(data.explorerUrl)
           router.push('/success');
