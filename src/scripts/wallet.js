@@ -15,7 +15,7 @@ export async function createFunWallet(auth, chainID){
 
   // const config = new FunWalletConfig(eoa, chainID)
   const salt = await auth.getUniqueId()
-  const wallet = new FunWallet({ salt, index: 238409 })
+  const wallet = new FunWallet({ salt, index: 182982 })
 
   console.log(auth)
   console.log(wallet)
