@@ -68,7 +68,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
       console.log("ALLOWANCE", allowance)
       if(Number(allowance) < Number(8)){//amt
         //if approved, pop up modal, and ask for approval
-        return {success: false, mustApprove: true}
+        return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
       }
 
       const ercStakeAmount = 10

@@ -35,8 +35,8 @@ export async function createFunWallet(auth, chainID, provider) {
 const isContract = async (address, provider) => {
   try {
     const code = await provider.getCode(address);
-    console.log(code)
-    if (code !== '0x') return true;
-  } catch (error) { }
-  return false
+    return true
+  } catch (error) {
+    return false
+  }
 }

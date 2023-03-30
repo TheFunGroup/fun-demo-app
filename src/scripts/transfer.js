@@ -59,11 +59,7 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
       console.log("ALLOWANCE", allowance)
       if (Number(allowance) < Number(5)) {//amt
         //if approved, pop up modal, and ask for approval
-        const obj = {
-          paymasterAddress,
-          tokenAddr: paymentaddr
-        }
-        return { success: false, mustApprove: true, obj }
+        return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
       }
       const ercStakeAmount = 1000
 
