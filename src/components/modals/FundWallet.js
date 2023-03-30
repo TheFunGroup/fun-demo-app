@@ -6,35 +6,39 @@ import { handleFundWallet } from "../../scripts/fund";
 import { useFun } from "../../contexts/funContext";
 import { useRouter } from "next/router";
 import Input from "../forms/Input";
+import Spinner from "../misc/Spinner";
 
 export default function FundWallet(props) {
 
   const router = useRouter();
-  const [funding, setFunding] = useState(["2", {name: "ETH"}]);
-  const { wallet } = useFun()
+  const [funding, setFunding] = useState(false)
+  const { wallet, setLoading } = useFun()
 
   function fundWallet(){
-    handleFundWallet(wallet, funding).then((data) => {
+    if(funding) return;
+    setFunding(true);
+    setLoading(true)
+    handleFundWallet(wallet.address).then(() => {
       router.push('/')
+      setFunding(false);
+      setLoading(false);
     })
   }
 
   return (
     <div className="modal w-[512px] my-12">
       <div className="text-[#101828] font-semibold text-xl">Fund your Fun Wallet</div>
-      <div className="text-[#667085] text-sm mt-1 whitespace-nowrap">Add tokens to your wallet to complete transactions.</div>
-      
-      <Input 
-        className="w-full mt-6" 
-        label="Amount"
-        placeholder="0.00"
-        type="number"
-        value={funding[0]}
-        onChange={(e) => {setFunding([e.target.value, funding[1]])}}
-        tokenSelect
-        token={funding[1]}
-        setToken={(value) => {setFunding([funding[0], value])}}
-      />
+      <div className="text-[#667085] text-sm mt-1 whitespace-nowrap">Add test network tokens to your wallet to complete transactions.</div>
+      <div className="w-full mt-2 text-sm text-[#667085]">
+        <div className="flex items-center justify-between">
+          <div className="">Receive 0.25 ETH</div>
+          <div className="">Receive 1000 USDC</div>
+        </div>
+        <div className="flex items-center justify-between mt-1">
+          <div className="">Receive 1000 DAI</div>
+          <div className="">Receive 1000 USTC</div>
+        </div>
+      </div>
 
       <div className="w-full flex items-center justify-center mt-4">
         
@@ -42,10 +46,18 @@ export default function FundWallet(props) {
 
         <div 
           className="w-[300px] button w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
-          
-        >
-          <Image src="/wallet.svg" width="22" height="22" alt=""/>
-          <div className="ml-3 font-medium text-[#344054]" onClick={fundWallet}>Fund Wallet</div>
+          onClick={() => fundWallet()}
+          style={ funding ? { opacity: 0.8, pointerEvents: "none" } : {}}
+        > 
+          {funding && (
+            <Spinner />
+          )}
+          {!funding && (
+            <Image src="/wallet.svg" width="22" height="22" alt=""/>
+          )}
+          <div 
+            className="ml-3 font-medium text-[#344054]"
+          >Fund Wallet</div>
         </div>
       </div>
 
