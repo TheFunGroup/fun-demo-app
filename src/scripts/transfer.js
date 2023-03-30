@@ -65,7 +65,6 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
         }
         return { success: false, mustApprove: true, obj }
       }
-      const ercStakeAmount = 1000
 
       // const approve = await gasSponsor.approve(paymentaddr, ercStakeAmount)
 
