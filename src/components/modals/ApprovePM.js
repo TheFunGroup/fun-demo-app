@@ -11,10 +11,10 @@ export default function ApprovePM(props) {
 
   const router = useRouter();
   const [amount, setAmount] = useState(["500.00"]);
-  const { wallet, paymentToken } = useFun()
+  const { eoa, paymentToken, paymentAddr, paymasterAddress } = useFun()
 
   function approve(){
-    handleApprove(wallet, amount, paymentToken, setPaymentToken).then((data) => {
+    handleApprove(eoa, paymasterAddress, paymentAddr, amount).then((data) => {
       router.push("/")
     })
   }

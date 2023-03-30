@@ -70,11 +70,8 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
     
       if (Number(allowance) < Number(5)) {//amt
         //if approved, pop up modal, and ask for approval
-        const obj = {
-          paymasterAddress,
-          tokenAddr: paymentaddr
-        }
-        return { success: false, mustApprove: true, obj }
+        return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
+
       }
     
 

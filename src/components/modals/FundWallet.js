@@ -31,7 +31,7 @@ export default function FundWallet(props) {
       <div className="text-[#667085] text-sm mt-1 whitespace-nowrap">Add test network tokens to your wallet to complete transactions.</div>
       <div className="w-full mt-2 text-sm text-[#667085]">
         <div className="flex items-center justify-between">
-          <div className="">Receive 0.25 ETH</div>
+          <div className="">Receive 0.15 ETH</div>
           <div className="">Receive 1000 USDC</div>
         </div>
         <div className="flex items-center justify-between mt-1">

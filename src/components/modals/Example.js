@@ -30,7 +30,7 @@ export default function Example(props) {
   const example = examples[props.example];
   const network = 5;
 
-  const {wallet, eoa, setDeployedUrl, setLoading, paymentToken, setPaymentToken} = useFun();
+  const {wallet, eoa, setDeployedUrl, setLoading, paymentToken, setPaymentToken, setPaymentAddr, setPaymasterAddress} = useFun();
 
   const [mustFund, setMustFund] = useState(false);
   const [mustApprove, setMustApprove] = useState(false);
@@ -60,6 +60,8 @@ export default function Example(props) {
         } else if(data.mustFund){
           setMustFund(true);
         } else if(data.mustApprove){
+          setPaymentAddr(data.tokenAddr);
+          setPaymasterAddress(data.paymasterAddress)
           setMustApprove(true);
         } else if(data.error){
           setError(data.error)
@@ -79,6 +81,8 @@ export default function Example(props) {
         } else if(data.mustFund){
           setMustFund(true);
         } else if(data.mustApprove){
+          setPaymentAddr(data.tokenAddr);
+          setPaymasterAddress(data.paymasterAddress)
           setMustApprove(true);
         } else if(data.error){
           setError(data.error)
