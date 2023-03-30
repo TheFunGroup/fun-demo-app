@@ -4,12 +4,15 @@ import { TokenSponsor } from "../../../fun-wallet-sdk/sponsors"
 import { Token } from "../../../fun-wallet-sdk/data/"
 import { formatUnits } from "ethers/lib/utils.js";
 import { tokens } from "../utils/tokens"
+import  erc20ABI  from "../utils/funTokenAbi.json";
+
 export const handleSwap = async function (wallet, paymentToken, swapData, auth) {
   try {
     const walletAddress = await wallet.getAddress()
     console.log(walletAddress)
     let inAddr = ""
     let outAddr = ""
+    let paymentaddr=""
     for (let i of tokens["5"]) {
       if (i.name == swapData.token1.name) {
         inAddr=i.addr
@@ -40,7 +43,6 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
     if (balance < swapData.amount) {
       return { success: false, mustFund: true }
     }
-
     // // Tells frontend that funwallet must be funded  
     // return {mustFund: true} 
     const funderAddress = await auth.getUniqueId()
@@ -51,24 +53,28 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
         apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
         gasSponsor: {
           sponsorAddress: "0x175C5611402815Eba550Dad16abd2ac366a63329",
-          token: swapData
+          token: paymentaddr
         }
       })
 
       const gasSponsor = new TokenSponsor()
 
-      // const ethstakeAmount = .05
-      const ercStakeAmount = 100
-      const approve = await gasSponsor.approve(paymentToken, ercStakeAmount)
-      const deposit = await gasSponsor.stakeToken(paymentToken, walletAddress, ercStakeAmount)
-      // const data = await gasSponsor.stake(funderAddress, ethstakeAmount)
+      const paymasterAddress=await gasSponsor.getPaymasterAddress()
+      console.log("Paymaster", paymasterAddress)
+      console.log(erc20ABI)
+      const erc20Contract = new ethers.Contract(paymentaddr, erc20ABI.abi, provider)
+      let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress)//paymaster address
+      allowance = ethers.utils.formatEther(allowance);
+      console.log("ALLOWANCE", allowance)
+      if(Number(allowance) < Number(8)){//amt
+        //if approved, pop up modal, and ask for approval
+        return {success: false, mustApprove: true}
+      }
 
-      await funder.sendTx(approve)
-      await funder.sendTx(deposit)
+      const ercStakeAmount = 10
+      const approve = await gasSponsor.approve(paymentaddr, ercStakeAmount)
 
-      await logTokenBalanceSponsor(gasSponsor, paymentToken, walletAddress)
-      await logTokenBalanceSponsor(gasSponsor, "eth", funderAddress)
-      // await funder.sendTx(data)
+      await wallet.sendTx(approve)
     }
     else {
       await configureEnvironment({

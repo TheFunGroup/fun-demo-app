@@ -42,7 +42,7 @@ export default function ConnectWallet(props) {
       setCreating(true)
       setLoading(true);
       connectToNetwork(network).then(async () => {
-        const FunWallet = await createFunWallet(auth, network)
+        const FunWallet = await createFunWallet(auth, network, provider)
         const addr = await FunWallet.getAddress();
         FunWallet.address = addr;
         try {
@@ -86,7 +86,7 @@ export default function ConnectWallet(props) {
       setWConnecting(true)
       setLoading(true)
       // connectToNetwork(network).then(async () => {
-      const FunWallet = await createFunWallet(auth, network)
+      const FunWallet = await createFunWallet(auth, network, walletConnectProvider)
       const addr = await FunWallet.getAddress();
       FunWallet.address = addr;
       try {
