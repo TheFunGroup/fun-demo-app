@@ -10,7 +10,7 @@ import Input from "../forms/Input";
 export default function ApprovePM(props) {
 
   const router = useRouter();
-  const [amount, setAmount] = useState(["1000000.00"]);
+  const [amount, setAmount] = useState(["500.00"]);
   const { wallet, paymentToken } = useFun()
 
   function approve(){
