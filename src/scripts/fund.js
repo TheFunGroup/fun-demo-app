@@ -9,7 +9,7 @@ export const handleFundWallet = async function (addr) {
         await fetch(`http://18.237.113.42:8001/get-faucet?token=usdt&testnet=goerli&addr=${addr}`)
         setTimeout(() => {
             return;
-        }, 1000)
+        }, 1500)
     } catch(e){
         return e;
     }
