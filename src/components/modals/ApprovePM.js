@@ -10,11 +10,11 @@ import Input from "../forms/Input";
 export default function ApprovePM(props) {
 
   const router = useRouter();
-  const [amount, setAmount] = useState(["500.00"]);
-  const { eoa, paymentToken, paymentAddr, paymasterAddress } = useFun()
+  const [amount, setAmount] = useState(["100.00"]);
+  const { wallet, eoa, paymentToken, setPaymentToken, paymentAddr, paymasterAddress } = useFun()
 
   function approve(){
-    handleApprove(eoa, paymasterAddress, paymentAddr, amount).then((data) => {
+    handleApprove(wallet, eoa, paymasterAddress, paymentAddr, amount).then((data) => {
       router.push("/")
     })
   }
@@ -35,6 +35,7 @@ export default function ApprovePM(props) {
           tokenSelect
           token={{name :paymentToken}}
           setToken={(value) => {setPaymentToken(value.name)}}
+          excludeETH={true}
         />
        
       </div>
