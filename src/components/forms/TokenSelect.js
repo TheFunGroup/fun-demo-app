@@ -37,6 +37,7 @@ export default function TokenSelect(props) {
       {dropdown && (
         <div className="dropdown w-[200px] absolute -ml-[132px] mt-2" ref={dropdownRef}>
           {tokens[network]?.map((t, idx) => {
+            if(t.name == "ETH" && props.excludeETH) return;
             return (
               <div 
                 className={`
