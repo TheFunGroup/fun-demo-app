@@ -14,12 +14,15 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
       if (i.name == swapData.token1.name) {
         inAddr=i.addr
       }
-    }
-    for (let i of tokens["5"]) {
       if (i.name == swapData.token2.name) {
         outAddr=i.addr
       }
+      if(i.name==paymentToken && paymentToken!="ETH"){
+        paymentaddr=i.addr
+      }
     }
+    
+    
     console.log(inAddr,outAddr)
 
     const ins = swapData.token1.name.toLowerCase()
@@ -48,7 +51,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
         apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
         gasSponsor: {
           sponsorAddress: "0x175C5611402815Eba550Dad16abd2ac366a63329",
-          token: paymentToken
+          token: swapData
         }
       })
 
@@ -74,10 +77,11 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
         gasSponsor: false
       })
     }
+    console.log(ins)
     const receipt = await wallet.swap(auth, {
-      in: inAddr,
+      in: ins=="eth"?"eth":inAddr,
       amount: swapData.amount,
-      out: outAddr
+      out: out=="eth"?"eth":outAddr
     })
 
     //Tells frontend swap was success

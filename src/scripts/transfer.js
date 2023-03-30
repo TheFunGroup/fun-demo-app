@@ -14,12 +14,18 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
     const walletAddress = await wallet.getAddress()
     console.log(wallet)
     console.log(transferData)
-    let tokenaddr=""
+    let tokenaddr="eth"
+    let paymentaddr=""
     for (let i of tokens["5"]) {
-      if (i.name == transferData.token.name) {
+      if (i.name == transferData.token.name && transferData.token.name!="ETH") {
         tokenaddr=i.addr
       }
+      if(i.name==paymentToken && paymentToken!="ETH"){
+        paymentaddr=i.addr
+      }
     }
+    console.log(`paying with ${paymentaddr}`)
+  
 
     let balance = 0;
     if (transferData.token.name == "ETH") {
@@ -30,8 +36,11 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
     }
     else {
       balance = (await Token.getBalance(tokenaddr, walletAddress))
+      console.log(balance)
     }
-    if (balance < transferData.amount) {
+    if (Number(balance) < Number(transferData.amount)) {
+      console.log(transferData.amount)
+      console.log(balance)
       return { success: false, mustFund: true }
       // return { success: false }
     }
@@ -44,7 +53,7 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
         apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
         gasSponsor: {
           sponsorAddress: funderAddress,
-          token: paymentToken
+          token: paymentaddr
         }
       })
 
