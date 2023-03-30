@@ -61,8 +61,6 @@ export default function FundWallet(props) {
         </div>
       </div>
 
-      
-
     </div>
   )
 }

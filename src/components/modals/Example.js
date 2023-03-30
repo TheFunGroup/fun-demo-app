@@ -30,7 +30,7 @@ export default function Example(props) {
   const example = examples[props.example];
   const network = 5;
 
-  const {wallet, eoa, setDeployedUrl, setLoading} = useFun();
+  const {wallet, eoa, setDeployedUrl, setLoading, paymentToken, setPaymentToken} = useFun();
 
   const [mustFund, setMustFund] = useState(false);
   const [mustApprove, setMustApprove] = useState(false);
@@ -40,7 +40,6 @@ export default function Example(props) {
   const [swapReceive, setSwapReceive] = useState([18.06, tokens[network][1]]);
   const [slippage, setSlippage] = useState(0.5);
   const [gas, setGas] = useState("Calculating...");
-  const [paymentToken, setPaymentToken] = useState("ETH");
   const [submitReady, setSubmitReady] = useState(false);
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState();

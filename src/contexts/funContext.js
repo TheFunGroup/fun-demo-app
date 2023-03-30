@@ -11,6 +11,7 @@ export const FunProvider = ({ children }) => {
   const [network, setNetwork] = useState();
   const [deployedUrl, setDeployedUrl] = useState();
   const [loading, setLoading] = useState()
+  const [paymentToken, setPaymentToken] = useState("ETH");
 
   useEffect(() => {
     if(!wallet || !network){
@@ -24,7 +25,8 @@ export const FunProvider = ({ children }) => {
       wallet, setWallet,
       network, setNetwork,
       deployedUrl, setDeployedUrl,
-      loading, setLoading
+      loading, setLoading,
+      paymentToken, setPaymentToken
     }}>
         {children}
     </FunContext.Provider>
