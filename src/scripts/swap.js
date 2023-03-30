@@ -10,7 +10,6 @@ import { isContract } from "../utils/utils"
 export const handleSwap = async function (wallet, paymentToken, swapData, auth) {
   try {
     const walletAddress = await wallet.getAddress()
-    console.log(walletAddress)
     let inAddr = ""
     let outAddr = ""
     let paymentaddr = ""
@@ -25,9 +24,6 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
         paymentaddr = i.addr
       }
     }
-
-
-    console.log(inAddr, outAddr)
 
     const ins = swapData.token1.name.toLowerCase()
     const out = swapData.token2.name.toLowerCase()
@@ -62,15 +58,11 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
       const gasSponsor = new TokenSponsor()
 
       const paymasterAddress = await gasSponsor.getPaymasterAddress()
-      console.log("Paymaster", paymasterAddress)
-      console.log(erc20ABI)
       const iscontract = await isContract(walletAddress, provider)
-      console.log(iscontract)
       if (iscontract) {
         const erc20Contract = new ethers.Contract(paymentaddr, erc20ABI.abi, provider)
         let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress)//paymaster address
         allowance = ethers.utils.formatUnits(allowance, 6);
-        console.log("ALLOWANCE", allowance)
 
         if (Number(allowance) < Number(5)) {//amt
           //if approved, pop up modal, and ask for approval
