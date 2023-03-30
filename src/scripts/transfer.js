@@ -4,7 +4,7 @@ import { TokenSponsor } from "../../../fun-wallet-sdk/sponsors"
 import { Token } from "../../../fun-wallet-sdk/data/"
 import { tokens } from "../utils/tokens"
 import erc20ABI from "../utils/funTokenAbi.json";
-
+import { isContract } from "../utils/utils"
 export const handleTransfer = async function (wallet, paymentToken, transferData, auth) {
 
   try {
@@ -54,17 +54,24 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
       console.log("Paymaster", paymasterAddress)
       console.log(erc20ABI)
       const erc20Contract = new ethers.Contract(paymentaddr, erc20ABI.abi, provider)
-      let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress)//paymaster address
-      allowance = ethers.utils.formatUnits(allowance, 6);
-      console.log("ALLOWANCE", allowance)
-      if (Number(allowance) < Number(5)) {//amt
-        //if approved, pop up modal, and ask for approval
-        return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
+
+      const iscontract = await isContract(walletAddress, provider)
+      console.log(iscontract)
+      if (iscontract) {
+        let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress)//paymaster address
+        allowance = ethers.utils.formatUnits(allowance, 6);
+        console.log("ALLOWANCE", allowance)
+        if (Number(allowance) < Number(5)) {//amt
+          //if approved, pop up modal, and ask for approval
+          return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
+        }
       }
+
+
 
       // const approve = await gasSponsor.approve(paymentaddr, ercStakeAmount)
 
-      // await wallet.approve(auth,{spender: paymasterAddress, token: paymentaddr, amount: ercStakeAmount})
+      // await wallet.approve(auth,{spender: paymasterAddress, token: paymentaddr, amount: 10})
     }
     else {
       await configureEnvironment({

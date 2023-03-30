@@ -15,7 +15,7 @@ const Loader = (props) => {
     let widthCSS = loader.current.style.width || "0px";
     let width = Number(widthCSS.substring(0, widthCSS.length - 2))
     if(width < (loader?.current?.parentElement?.clientWidth - 100)){
-      const delay = Math.random() * (500 - 100) + 100;
+      const delay = Math.random() * (500 - 300) + 300;
       setTimeout(() => {
         if(loader?.current){
           const addition = Math.random() * (100 - 5) + 5;
