@@ -119,6 +119,9 @@ export default function ConnectWallet(props) {
       await fetch(`http://18.237.113.42:8001/get-faucet?token=usdc&testnet=goerli&addr=${addr}`)
       await fetch(`http://18.237.113.42:8001/get-faucet?token=dai&testnet=goerli&addr=${addr}`)
       await fetch(`http://18.237.113.42:8001/get-faucet?token=usdt&testnet=goerli&addr=${addr}`)
+      setTimeout(() => {
+        return
+      }, 1500)
     } catch(e){
 
     }
