@@ -6,16 +6,22 @@ import TokenSelect from "../forms/TokenSelect";
 import { handleApprove } from "../../scripts/approve";
 import { useFun } from "../../contexts/funContext";
 import Input from "../forms/Input";
+import Spinner from "../misc/Spinner";
 
 export default function ApprovePM(props) {
 
   const router = useRouter();
   const [amount, setAmount] = useState(["100.00"]);
-  const { wallet, eoa, paymentToken, setPaymentToken, paymentAddr, paymasterAddress } = useFun()
+  const { wallet, eoa, paymentToken, setPaymentToken, paymentAddr, paymasterAddress, setLoading } = useFun()
+  const [approving, setApproving] = useState(false);
 
   function approve(){
+    setLoading(true);
+    setApproving(true)
     handleApprove(wallet, eoa, paymasterAddress, paymentAddr, amount).then((data) => {
       router.push("/")
+      setLoading(false);
+      setApproving(false);
     })
   }
 
@@ -44,10 +50,12 @@ export default function ApprovePM(props) {
 
         <div className="w-[224px] button p-3 font-medium text-[#344054]" onClick={() => router.push("/")}>Cancel</div>
         <div 
-          className="w-[224px] button-dark p-3 font-medium"
+          className="w-[224px] button-dark p-3 font-medium flex items-center justify-center"
           onClick={approve}
-        >
-          Give Access
+          style={ approving ? { opacity: 0.8, pointerEvents: "none" } : {}}
+        > 
+          {approving && (<Spinner marginRight="6px"/>)} 
+          <div>Give Access</div>
         </div>
 
       </div>

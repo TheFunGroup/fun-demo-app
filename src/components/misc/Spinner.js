@@ -9,7 +9,8 @@ const Spinner = (props) => (
       shapeRendering: "auto",
       height: props.height || "22px",
       width: props.width || "22px",
-      marginLeft: props.marginLeft || "0px"
+      marginLeft: props.marginLeft || "0px",
+      marginRight: props.marginRight || "0px"
     }}
     width={200}
     height={200}

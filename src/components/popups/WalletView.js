@@ -75,6 +75,10 @@ export default function WalletView(props) {
     setDropdown(false)
   })
 
+  useEffect(() => {
+    if(!dropdown) setShowSettings(false)
+  }, [dropdown])
+
   function handleCopyAddr(){
     var copyText = document.createElement('input');
     copyText.style.position = "absolute";
