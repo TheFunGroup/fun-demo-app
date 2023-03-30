@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
-import { configureEnvironment } from "../../../fun-wallet-sdk/managers"
-import { TokenSponsor } from "../../../fun-wallet-sdk/sponsors"
-import { Token } from "../../../fun-wallet-sdk/data/"
+import { configureEnvironment } from "@fun-wallet/sdk/managers"
+import { TokenSponsor } from "@fun-wallet/sdk/sponsors"
+import { Token } from "@fun-wallet/sdk/data/"
 import { formatUnits } from "ethers/lib/utils.js";
 import { tokens } from "../utils/tokens"
 import erc20ABI from "../utils/funTokenAbi.json";

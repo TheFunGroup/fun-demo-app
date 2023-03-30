@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
-import { FunWallet } from "../../../fun-wallet-sdk/wallet";
-import { configureEnvironment } from "../../../fun-wallet-sdk/managers"
+import { FunWallet } from "@fun-wallet/sdk";
+import { configureEnvironment } from "@fun-wallet/sdk/managers"
 import { erc20ABI } from "../utils/erc20Abi";
 // const API_KEY = "<FUN API KEY>"
 const API_KEY = "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf"
@@ -13,7 +13,7 @@ export async function createFunWallet(auth, chainID, provider) {
 
   // const config = new FunWalletConfig(eoa, chainID)
   const salt = await auth.getUniqueId()
-  const wallet = new FunWallet({ salt, index: 2804 })
+  const wallet = new FunWallet({ salt, index: 2834 })
   const walletAddress = await wallet.getAddress()
   const iscontract=await isContract(walletAddress, provider)
   console.log(isContract)

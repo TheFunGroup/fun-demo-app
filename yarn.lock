@@ -866,8 +866,10 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@fun-wallet/sdk@../fun-wallet-sdk":
-  version "0.1.1"
+"@fun-wallet/sdk@@fun-wallet/sdk":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@fun-wallet/sdk/-/sdk-0.2.0.tgz#6df3047f47316f1dbe293df29d0d0b2eff3239b5"
+  integrity sha512-C/eeu695S83jLiMiLzGIgHSX+3XG1YSINyxDofeX1wfZ8J325KaIfB+3idjaEPGRPX41bBrwcV5FWrA/yeJtrg==
   dependencies:
     "@account-abstraction/sdk" "^0.4.0"
     "@lifeomic/attempt" "^3.0.3"

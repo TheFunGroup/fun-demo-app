@@ -6,7 +6,7 @@ import { createFunWallet } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
 import Loader from "../misc/Loader";
-import { Eoa, WalletConnectEoa } from "../../../../fun-wallet-sdk/auth"
+import { Eoa, WalletConnectEoa } from "@fun-wallet/sdk/auth"
 
 import { Web3Button, useWeb3Modal } from '@web3modal/react'
 import { useProvider, useConnect } from 'wagmi'
