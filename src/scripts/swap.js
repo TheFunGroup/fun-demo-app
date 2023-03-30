@@ -30,9 +30,10 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
 
     const ins = swapData.token1.name.toLowerCase()
     const out = swapData.token2.name.toLowerCase()
+    const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
+
     let balance = 0;
     if (ins == "eth") {
-      const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
       balance = await provider.getBalance(walletAddress);
       balance = ethers.utils.formatEther(balance);
     }
@@ -64,17 +65,16 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
       console.log(erc20ABI)
       const erc20Contract = new ethers.Contract(paymentaddr, erc20ABI.abi, provider)
       let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress)//paymaster address
-      allowance = ethers.utils.formatEther(allowance);
+      allowance = ethers.utils.formatUnits(allowance, 6);
       console.log("ALLOWANCE", allowance)
-      if(Number(allowance) < Number(8)){//amt
+    
+      if (Number(allowance) < Number(5)) {//amt
         //if approved, pop up modal, and ask for approval
         return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
+
       }
+    
 
-      const ercStakeAmount = 10
-      const approve = await gasSponsor.approve(paymentaddr, ercStakeAmount)
-
-      await wallet.sendTx(approve)
     }
     else {
       await configureEnvironment({
