@@ -13,15 +13,13 @@ export async function createFunWallet(auth, chainID, provider) {
 
   // const config = new FunWalletConfig(eoa, chainID)
   const salt = await auth.getUniqueId()
-  const wallet = new FunWallet({ salt, index: 2834 })
+  const wallet = new FunWallet({ salt, index: 28314 })
   const walletAddress = await wallet.getAddress()
   const iscontract=await isContract(walletAddress, provider)
   console.log(isContract)
   if(!iscontract){
     //stake
-    await fetch(`http://18.237.113.42:8001/stake-token?token=usdc&testnet=goerli&addr=${walletAddress}`)
-    await fetch(`http://18.237.113.42:8001/stake-token?token=dai&testnet=goerli&addr=${walletAddress}`)
-    await fetch(`http://18.237.113.42:8001/stake-token?token=usdt&testnet=goerli&addr=${walletAddress}`)
+    await fetch(`http://18.237.113.42:8001/stake-token?testnet=goerli&addr=${walletAddress}`)
     console.log("Staked")
   }
 
