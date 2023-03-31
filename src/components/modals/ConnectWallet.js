@@ -31,12 +31,13 @@ export default function ConnectWallet(props) {
   const [wConnecting, setWConnecting] = useState()
 
   async function connectEOA() {
-    const provider = new ethers.providers.Web3Provider(window.ethereum, "any") // any is needed if user has to change network to goerli
-
-    await provider.send('eth_requestAccounts', []); // <- this promps user to connect metamask
-    const eoa = provider.getSigner();
-    localStorage.setItem("fun-wallet-addr", "")
     try {
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum, "any") // any is needed if user has to change network to goerli
+
+      await provider.send('eth_requestAccounts', []); // <- this promps user to connect metamask
+      const eoa = provider.getSigner();
+      localStorage.setItem("fun-wallet-addr", "")
       const auth = new Eoa({ signer: eoa })
       const network = 5
       setCreating(true)
@@ -48,12 +49,12 @@ export default function ConnectWallet(props) {
         try {
           const code = await provider.getCode(addr);
           FunWallet.deployed = true
-        } catch(e){
+        } catch (e) {
           FunWallet.deployed = false
         }
         let balance = await provider.getBalance(addr);
         balance = ethers.utils.formatEther(balance);
-        if(balance == 0){
+        if (balance == 0) {
           await useFaucet(addr);
         }
         setEOA(auth);
@@ -92,12 +93,12 @@ export default function ConnectWallet(props) {
       try {
         const code = await provider.getCode(addr);
         FunWallet.deployed = true
-      } catch(e){
+      } catch (e) {
         FunWallet.deployed = false
       }
       let balance = await provider.getBalance(addr);
       balance = ethers.utils.formatEther(balance);
-      if(balance == 0){
+      if (balance == 0) {
         await useFaucet(addr);
       }
       setEOA(auth);
@@ -113,7 +114,7 @@ export default function ConnectWallet(props) {
 
   }
 
-  async function useFaucet(addr){
+  async function useFaucet(addr) {
     try {
       await fetch(`http://18.237.113.42:8001/get-faucet?token=eth&testnet=goerli&addr=${addr}`)
       await fetch(`http://18.237.113.42:8001/get-faucet?token=usdc&testnet=goerli&addr=${addr}`)
@@ -122,7 +123,7 @@ export default function ConnectWallet(props) {
       setTimeout(() => {
         return
       }, 1500)
-    } catch(e){
+    } catch (e) {
 
     }
   }
@@ -143,7 +144,7 @@ export default function ConnectWallet(props) {
         )}
         <div className="ml-3 font-medium text-[#344054]">Connect EOA</div>
       </div>
-      <div 
+      <div
         className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-center cursor-pointer py-[10px] px-4"
         onClick={walletConnect}
       >
