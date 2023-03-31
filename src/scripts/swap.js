@@ -2,7 +2,6 @@ import { ethers } from "ethers";
 import { configureEnvironment } from "@fun-wallet/sdk/managers"
 import { TokenSponsor } from "@fun-wallet/sdk/sponsors"
 import { Token } from "@fun-wallet/sdk/data/"
-import { formatUnits } from "ethers/lib/utils.js";
 import { tokens } from "../utils/tokens"
 import erc20ABI from "../utils/funTokenAbi.json";
 import { isContract } from "../utils/utils"
@@ -42,9 +41,6 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
       return { success: false, mustFund: true }
     }
     // // Tells frontend that funwallet must be funded  
-    // return {mustFund: true} 
-    const funderAddress = await auth.getUniqueId()
-    const funder = auth
     if (paymentToken != "ETH") { //use paymaster
       await configureEnvironment({
         chain: 5,
@@ -70,8 +66,6 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
 
         }
       }
-
-
     }
     else {
       await configureEnvironment({
@@ -96,9 +90,4 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
     return { success: false, error: e }
   }
 
-}
-
-const logTokenBalanceSponsor = async (sponsor, token, spender) => {
-  const tokenBalance = await sponsor.getTokenBalance(token, spender)
-  console.log(formatUnits(tokenBalance.toString(), 18))
 }

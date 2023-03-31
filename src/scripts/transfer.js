@@ -37,14 +37,12 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
       return { success: false, mustFund: true }
     }
 
-    const funderAddress = await auth.getUniqueId()
-    const funder = auth
     if (paymentToken != "ETH") { //use paymaster
       await configureEnvironment({
         chain: 5,
         apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
         gasSponsor: {
-          sponsorAddress: funderAddress,
+          sponsorAddress: '0x175C5611402815Eba550Dad16abd2ac366a63329',
           token: paymentaddr
         }
       })
@@ -57,6 +55,7 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
       if (iscontract) {
         let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress)//paymaster address
         allowance = ethers.utils.formatUnits(allowance, 6);
+        console.log("ALLOWANCE: ", allowance)
         if (Number(allowance) < Number(5)) {//amt
           //if approved, pop up modal, and ask for approval
           return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
