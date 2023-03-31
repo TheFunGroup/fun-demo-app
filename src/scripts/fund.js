@@ -1,13 +1,16 @@
 import { ethers } from "ethers";
-import { FunWallet, FunWalletConfig } from "@fun-wallet/sdk";
+import { tokens } from "../utils/tokens";
 
-//Amount is in USDC
-export const handleFundWallet = async function(wallet, amount){
-  console.log("FUND WALLET")
-  console.log(wallet);
-  console.log(amount);
-
-  //Tells frontend that fund was success
-  return {success: true} 
-
+export const handleFundWallet = async function (addr) {
+    try {
+        await fetch(`http://18.237.113.42:8001/get-faucet?token=eth&testnet=goerli&addr=${addr}`)
+        await fetch(`http://18.237.113.42:8001/get-faucet?token=usdc&testnet=goerli&addr=${addr}`)
+        await fetch(`http://18.237.113.42:8001/get-faucet?token=dai&testnet=goerli&addr=${addr}`)
+        await fetch(`http://18.237.113.42:8001/get-faucet?token=usdt&testnet=goerli&addr=${addr}`)
+        setTimeout(() => {
+            return;
+        }, 1500)
+    } catch(e){
+        return e;
+    }
 }

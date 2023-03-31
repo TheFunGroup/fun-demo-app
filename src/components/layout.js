@@ -3,10 +3,13 @@
 import { useEffect, useState, useRef } from "react";
 import Head from 'next/head'
 import { useRouter } from 'next/router';
+import Loader from "./misc/Loader";
+import { useFun } from "../contexts/funContext";
 
 export default function Layout(props) {
 
   const router = useRouter();
+  const { loading, setLoading } = useFun()
 
   return (
     <div className="w-full h-full">
@@ -16,7 +19,10 @@ export default function Layout(props) {
         <link rel="icon" href="/fun.svg?" />
       </Head>
 
-      <main className="w-full h-full flex flex-col overflow-y-scroll">
+      <main className="w-full h-full flex flex-col">
+        {loading && (
+          <Loader />
+        )}
         <div className={`w-full h-full`}>
           {props.children}
         </div>

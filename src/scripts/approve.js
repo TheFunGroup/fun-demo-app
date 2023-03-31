@@ -1,13 +1,12 @@
 import { ethers } from "ethers";
-import { FunWallet, FunWalletConfig } from "@fun-wallet/sdk";
-
+import { configureEnvironment } from "@fun-wallet/sdk/managers";
 //Amount is in USDC
-export const handleApprove = async function(wallet, amount){
-  console.log("Approve")
-  console.log(wallet);
-  console.log(amount);
+export const handleApprove = async function (wallet, auth, paymasterAddress, paymentAddr, amount=500) {
+  await configureEnvironment({
+    gasSponsor: false
+  })
+  await wallet.approve(auth, { spender: paymasterAddress, token: paymentAddr, amount: amount })
 
-  //Tells frontend that fund was success
-  return {success: true} 
+  return { success: true }
 
 }

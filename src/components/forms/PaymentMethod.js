@@ -4,14 +4,14 @@ import { networks,  connectToNetwork } from "../../utils/networks";
 import { tokens } from "../../utils/tokens";
 
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
+import { useFun } from "../../contexts/funContext";
 
 export default function PaymentMethod(props) {
 
-  const {
-    token, setToken, network
-  } = props;
+  const { token, setToken } = props;
+  const { network } = useFun()
 
-  const chainToken = networks[network].nativeCurrency;
+  const chainToken = networks[network || 5].nativeCurrency;
 
   return (
     <div className="w-full mt-10">
@@ -22,37 +22,37 @@ export default function PaymentMethod(props) {
         onClick={() => {if(token == chainToken.symbol) setToken("USDC")}}
       >
         <div className="flex items-center">
-          <Image src="/erc20-payment.png" width="46" height="32"/>
+          <Image src="/erc20-payment.png" width="46" height="32" alt=""/>
           <div className="ml-4">ERC-20 Tokens</div>
         </div>
-        <Image src={token !== chainToken.symbol ? "/checked.svg" : "/uncheck.svg"} width="20" height="20"/>
+        <Image src={token !== chainToken.symbol ? "/checked.svg" : "/uncheck.svg"} width="20" height="20"  alt=""/>
       </div>
 
       {token !== chainToken.symbol && (
         <div className="flex items-center mt-3 w-full pb-1 pl-4">
           <div 
-            className="button justify-center flex py-4 px-7 text-[#344054] font-medium mr-4"
+            className="button justify-center flex py-1 px-[10px] text-[#344054] font-medium mr-2 text-sm"
             style={{background: token == "USDC" ? "#2D4EA214" : "", borderColor: token == "USDC" ? "#2D4EA2" : "#E4E7EC"}}
             onClick={() => setToken("USDC")}
           >
-            <Image src="/usdc.svg" width="24" height="24"/>
-            <div className="ml-4">USDC</div>
+            <Image src="/usdc.svg" width="16" height="16"  alt=""/>
+            <div className="ml-[6px]">USDC</div>
           </div>
           <div 
-            className="button justify-center flex py-4 px-7 text-[#344054] font-medium mr-4"
+            className="button items-center justify-center flex py-1 px-[10px] text-[#344054] font-medium mr-2 text-sm"
             style={{background: token == "DAI" ? "#2D4EA214" : "", borderColor: token == "DAI" ? "#2D4EA2" : "#E4E7EC"}}
             onClick={() => setToken("DAI")}
           >
-            <Image src="/dai.svg" width="24" height="24"/>
-            <div className="ml-4">DAI</div>
+            <Image src="/dai.svg" width="16" height="16"  alt=""/>
+            <div className="ml-[6px]">DAI</div>
           </div>
           <div 
-            className="button justify-center flex py-4 px-7 text-[#344054] font-medium mr-4"
+            className="button justify-center flex py-1 px-[10px] text-[#344054] font-medium mr-2 text-sm"
             style={{background: token == "USDT" ? "#2D4EA214" : "", borderColor: token == "USDT" ? "#2D4EA2" : "#E4E7EC"}}
             onClick={() => setToken("USDT")}
           >
-            <Image src="/usdt.svg" width="24" height="24"/>
-            <div className="ml-4">USDT</div>
+            <Image src="/usdt.svg" width="16" height="16"  alt=""/>
+            <div className="ml-[6px]">USDT</div>
           </div>
         </div>
       )}
@@ -63,10 +63,10 @@ export default function PaymentMethod(props) {
         onClick={() => {setToken(chainToken.symbol)}}
       >
         <div className="flex items-center">
-          <Image src={token == "ETH" ?  "/ethereum-payment.png" : "/matic-payment.png"} width="46" height="32"/>
+          <Image src={network == '5' ?  "/ethereum-payment.png" : "/matic-payment.png"} width="46" height="32" alt=""/>
           <div className="ml-4">{chainToken.name}</div>
         </div>
-        <Image src={token == chainToken.symbol ? "/checked.svg" : "/uncheck.svg"} width="20" height="20"/>
+        <Image src={token == chainToken.symbol ? "/checked.svg" : "/uncheck.svg"} width="20" height="20" alt=""/>
       </div>
     </div>
   )

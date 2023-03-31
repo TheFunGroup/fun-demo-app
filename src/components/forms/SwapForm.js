@@ -1,11 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
-import { networks,  connectToNetwork } from "../../utils/networks";
-import { tokens } from "../../utils/tokens";
-import TokenSelect from "./TokenSelect";
 import { getSwapAmount } from "../../scripts/prices";
-
-import { useOnClickOutside } from "../../hooks/useOnClickOutside";
+import Input from "./Input";
 
 export default function SwapForm(props) {
 
@@ -13,7 +9,6 @@ export default function SwapForm(props) {
     swapExchange, setSwapExchange,
     swapReceive, setSwapReceive,
     slippage, setSlippage,
-    network, wallet
   } = props;
 
   const swapExchangeRef = useRef();
@@ -26,74 +21,74 @@ export default function SwapForm(props) {
   }
 
   useEffect(() => {
-    getSwapAmount(swapExchange[1].name, swapExchange[0], swapReceive[1].name).then((swapAmount) => {
+    getSwapAmount(swapExchange[1], swapExchange[0], swapReceive[1]).then((swapAmount) => {
       setSwapReceive([swapAmount, swapReceive[1]])
     });
   }, [])
 
-  async function handleSwapChange(e){
-    setSwapExchange([e.target.value, swapExchange[1]])
-    const swapAmount = await getSwapAmount(swapExchange[1].name, e.target.value, swapReceive[1].name);
-    setSwapReceive([swapAmount, swapReceive[1]])
+  async function handleSwapChange(amount, from, to){
+    if((from.name == "ETH" && amount > 0.01) || amount > 100 || amount < 0) return;
+    setSwapExchange([amount, from])
+    const swapAmount = await getSwapAmount(from, amount, to);
+    setSwapReceive([swapAmount, to])
   }
 
-  async function handleReceiveChange(e){
-    setSwapReceive([e.target.value, swapReceive[1]])
-    const swapAmount = await getSwapAmount(swapReceive[1].name, e.target.value, swapExchange[1].name);
-    setSwapExchange([swapAmount, swapExchange[1]])
+  async function handleReceiveChange(amount, from, to){
+    if((to.name == "ETH" && amount > 0.01) || amount > 100 || amount < 0) return;
+    setSwapReceive([amount, to])
+    const swapAmount = await getSwapAmount(swapReceive[1], amount, from);
+    setSwapExchange([swapAmount, from])
   }
 
   return (
     <div className="w-full">
 
       <div className="w-full flex items-center mb-4">
-        <div className="w-[287px]">
-          <div className="text-[#344054] text-sm font-medium mb-[6px]">Slippage %</div>
-          <div 
-            className="w-full flex items-center justify-between border-[1px] border-[#D0D5DD] px-[14px] py-[10px] rounded-lg bg-white"
-          >
-            <input 
-              className="border-0 outline-0 w-full text-[#667085]" placeholder="0.30" type="number" value={`${slippage}`}
-              onChange={(e) => {setSlippage(e.target.value)}}
-            >
-            </input>
-          </div>
-        </div>
+        <Input 
+          className="w-[287px]" 
+          label="Slippage %"
+          placeholder="0.30"
+          type="number"
+          value={slippage}
+          onChange={(e) => {setSlippage(e.target.value)}}
+        />
       </div>
 
       <div className="w-full flex items-center justify-between">
-        <div className="w-[287px]">
-          <div className="text-[#344054] text-sm font-medium mb-[6px]">Exchange Quantity & Token</div>
-          <div 
-            className="w-full flex items-center justify-between border-[1px] border-[#D0D5DD] px-[14px] py-[10px] rounded-lg bg-white"
-            // onClick={() => {swapExchangeRef?.current?.focus()}}
-          >
-            <input 
-              className="border-0 outline-0 w-full text-[#667085]" placeholder="0.00" type="number" value={swapExchange[0]}
-              onChange={handleSwapChange}
-              ref={swapExchangeRef}
-            >
-            </input>
-            <TokenSelect token={swapExchange[1]} setToken={(value) => {setSwapExchange([swapExchange[0], value])}} network={network}/>
-          </div>
-        </div>
-        
-        <Image className="mt-7 cursor-pointer" src="/switch.svg" width="20" height="20" onClick={handleSwitch}/>
 
-        <div className="w-[287px]">
-          <div className="text-[#344054] text-sm font-medium mb-[6px]">Quantity & Token to Receive</div>
-          <div 
-            className="w-full flex items-center justify-between border-[1px] border-[#D0D5DD] px-[14px] py-[10px] rounded-lg bg-white"
-          >
-            <input 
-              className="border-0 outline-0 w-full text-[#667085]" placeholder="0.00" type="number" value={swapReceive[0]}
-              onChange={handleReceiveChange}
-              ref={swapReceiveRef}
-            >
-            </input>
-            <TokenSelect token={swapReceive[1]} setToken={(value) => {setSwapReceive([swapReceive[0], value])}} network={network}/>
-          </div>
-        </div>
+        <Input 
+          className="w-[287px]" 
+          label="Exchange Quantity & Token"
+          placeholder="0.00"
+          type="number"
+          value={swapExchange[0]}
+          onChange={(e) => {handleSwapChange(e.target.value, swapExchange[1], swapReceive[1])}}
+          inputRef={swapExchangeRef}
+          tokenSelect
+          token={swapExchange[1]}
+          setToken={(value) => {
+            setSwapExchange([swapExchange[0], value]);
+            handleSwapChange(swapExchange[0], value, swapReceive[1]);
+          }}
+        />
+        
+        <Image className="mt-7 cursor-pointer" src="/switch.svg" width="20" height="20" onClick={handleSwitch} alt=""/>
+
+        <Input 
+          className="w-[287px]" 
+          label="Quantity & Token to Receive"
+          placeholder="0.00"
+          type="number"
+          value={swapReceive[0]}
+          onChange={(e) => {handleReceiveChange(e.target.value, swapExchange[1], swapReceive[1])}}
+          inputRef={swapReceiveRef}
+          tokenSelect
+          token={swapReceive[1]}
+          setToken={(value) => {
+            setSwapReceive([swapReceive[0], value]);
+            handleSwapChange(swapExchange[0], swapExchange[1], value)
+          }}
+        />
       </div>
     </div>
   )

@@ -1,40 +1,38 @@
-import * as React from "react"
+import { useEffect, useState, useRef } from "react";
 
-const Loader = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    style={{
-      background: "0 0",
-      display: "block",
-      shapeRendering: "auto",
-      height: props.height || "22px",
-      width: props.width || "22px"
-    }}
-    width={200}
-    height={200}
-    viewBox="0 0 100 100"
-    preserveAspectRatio="xMidYMid"
-    {...props}
-  >
-    <circle
-      cx={50}
-      cy={50}
-      fill="none"
-      stroke="#989898"
-      strokeWidth={10}
-      r={35}
-      strokeDasharray="164.93361431346415 56.97787143782138"
-    >
-      <animateTransform
-        attributeName="transform"
-        type="rotate"
-        repeatCount="indefinite"
-        dur="0.5555555555555556s"
-        values="0 50 50;360 50 50"
-        keyTimes="0;1"
-      />
-    </circle>
-  </svg>
-)
+const Loader = (props) => {
+
+  const [animation, setAnimation] = useState();
+  const loader = useRef()
+
+  useEffect(() => {
+    if(loader?.current?.clientWidth < loader?.current?.parentElement?.clientWidth){
+      progress();
+    }
+  }, [loader])
+
+  function progress(){
+    let widthCSS = loader.current.style.width || "0px";
+    let width = Number(widthCSS.substring(0, widthCSS.length - 2))
+    if(width < (loader?.current?.parentElement?.clientWidth - 100)){
+      const delay = Math.random() * (500 - 300) + 300;
+      setTimeout(() => {
+        if(loader?.current){
+          const addition = Math.random() * (100 - 5) + 5;
+          const newWidth = width + addition;
+          loader.current.style.width = `${newWidth}px`;
+          progress();
+        }
+      }, delay)
+    }
+  }
+  
+  return (
+    <div className="loaderContainer">
+      <div ref={loader} className="loader"></div>
+    </div>
+  )
+
+}
 
 export default Loader;
