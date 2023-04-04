@@ -66,6 +66,7 @@ export default function SwapForm(props) {
           inputRef={swapExchangeRef}
           tokenSelect
           token={swapExchange[1]}
+          nonToken={swapReceive[1]}
           setToken={(value) => {
             setSwapExchange([swapExchange[0], value]);
             handleSwapChange(swapExchange[0], value, swapReceive[1]);
@@ -84,6 +85,7 @@ export default function SwapForm(props) {
           inputRef={swapReceiveRef}
           tokenSelect
           token={swapReceive[1]}
+          nonToken={swapExchange[1]}
           setToken={(value) => {
             setSwapReceive([swapReceive[0], value]);
             handleSwapChange(swapExchange[0], swapExchange[1], value)

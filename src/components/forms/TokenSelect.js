@@ -9,6 +9,7 @@ export default function TokenSelect(props) {
   
   const setToken = props.setToken;
   const token = props.token;
+  const nonToken = props.nonToken;
   const [hover, setHover] = useState();
   const [dropdown, setDropdown] = useState();
   const dropdownRef = useRef()
@@ -41,11 +42,11 @@ export default function TokenSelect(props) {
             return (
               <div 
                 className={`
-                  w-full flex justify-between px-[14px] py-[10px] cursor-pointer
+                  w-full flex justify-between px-[14px] py-[10px] ${nonToken?.name == t.name ? "cursor-not-allowed" : "cursor-pointer"}
                   ${idx == 0 && "rounded-t-xl"} ${idx == tokens[network].length - 1 && "rounded-b-xl"}
                   ${t.name == (token.name) ? "bg-[#2D4EA214]" : t.name == hover ? "bg-[#2D4EA207]" : "bg-white"}
                 `}
-                onClick={() => setToken(t)}
+                onClick={() => {nonToken?.name !== t.name && setToken(t)}}
                 onMouseEnter={() => setHover(t.name)}
                 onMouseLeave={() => setHover("")}
               >
