@@ -9,11 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "fun-wallet": "^0.2.2",
     "@magic-ext/oauth": "^11.0.0",
-=======
-    "@fun-wallet-dev/sdk": "^0.2.2",
     "@next/font": "13.1.1",
     "@uniswap/v3-periphery": "^1.4.3",
     "@walletconnect/client": "^1.8.0",
@@ -21,7 +18,6 @@
     "@walletconnect/web3-provider": "^1.8.0",
     "@web3modal/ethereum": "^2.2.2",
     "@web3modal/react": "^2.2.2",
->>>>>>> c65cd8c (fix bundler calls)
     "eslint": "8.31.0",
     "eslint-config-next": "13.1.1",
     "ethers": "5.7.2",
