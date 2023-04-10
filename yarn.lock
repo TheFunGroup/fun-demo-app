@@ -1227,6 +1227,22 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
+<<<<<<< HEAD
+=======
+"@fun-wallet-dev/sdk@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@fun-wallet-dev/sdk/-/sdk-0.2.2.tgz#e167c456fd86847f3334db5f99a9868c9824338e"
+  integrity sha512-Xmzg/PpwjRtvde4+9UyPGyljXkrh5GQdjKbw4QfX9y5OHfem2Cw79Z29onKtgXfDiTnY/l0MrpZeiVI+cbLbHw==
+  dependencies:
+    "@account-abstraction/sdk" "^0.4.0"
+    "@lifeomic/attempt" "^3.0.3"
+    "@uniswap/sdk" "^3.0.3"
+    "@uniswap/v3-core" "^1.0.1"
+    "@uniswap/v3-sdk" "^3.9.0"
+    ethers "5.7.2"
+    node-fetch "2.0.0"
+
+>>>>>>> c65cd8c (fix bundler calls)
 "@humanwhocodes/config-array@^0.11.8":
   version "0.11.8"
   resolved "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.11.8.tgz"
