@@ -866,7 +866,7 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@fun-wallet-dev/sdk@^0.2.2":
+"@fun-wallet/sdk@npm:@fun-wallet-dev/sdk@^0.2.2":
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/@fun-wallet-dev/sdk/-/sdk-0.2.2.tgz#e167c456fd86847f3334db5f99a9868c9824338e"
   integrity sha512-Xmzg/PpwjRtvde4+9UyPGyljXkrh5GQdjKbw4QfX9y5OHfem2Cw79Z29onKtgXfDiTnY/l0MrpZeiVI+cbLbHw==
