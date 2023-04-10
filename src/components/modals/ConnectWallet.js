@@ -144,7 +144,7 @@ export default function ConnectWallet(props) {
         )}
         <div className="ml-3 font-medium text-[#344054]">Connect EOA</div>
       </div>
-      <div
+      {/* <div
         className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-center cursor-pointer py-[10px] px-4"
         onClick={walletConnect}
       >
@@ -154,7 +154,7 @@ export default function ConnectWallet(props) {
           <Image src="/walletconnect.svg" width="22" height="22" alt="" />
         )}
         <div className="ml-3 font-medium text-[#344054]">Wallet Connect</div>
-      </div>
+      </div> */}
 
 
     </div>
