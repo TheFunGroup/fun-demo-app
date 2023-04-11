@@ -19,7 +19,9 @@ export async function createFunWallet(auth, chainID, provider) {
   console.log(isContract)
   if(!iscontract){
     //stake
-    await fetch(`http://18.237.113.42:8001/stake-token?testnet=goerli&addr=${walletAddress}`)
+    const STAKEURL="https://vyhjm494l3.execute-api.us-west-2.amazonaws.com/prod/demo-faucet/stake-token"
+    // await fetch(`http://18.237.113.42:8001/stake-token?testnet=goerli&addr=${walletAddress}`)
+    await fetch(`${STAKEURL}?testnet=goerli&addr=${walletAddress}`)
     console.log("Staked")
   }
 
