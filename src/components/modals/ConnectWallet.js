@@ -1,49 +1,171 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
 import { ethers } from "ethers";
-import { networks, connectToNetwork } from "../../utils/networks";
 import { createFunWallet } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
-import Loader from "../misc/Loader";
-import { Eoa, WalletConnectEoa } from "@fun-wallet/sdk/auth"
+import { Eoa, WalletConnectEoa } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/auth"
+import Web3AuthEoa from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/auth/Web3AuthEoa"
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
+import { useAccount, useProvider, useConnect, useSigner } from 'wagmi'
 
-import { Web3Button, useWeb3Modal } from '@web3modal/react'
-import { useProvider, useConnect } from 'wagmi'
-
-import WalletConnect from "@walletconnect/client";
-import QRCodeModal from "@walletconnect/qrcode-modal";
-import WalletConnectProvider from "@walletconnect/web3-provider";
-
-//  Create WalletConnect Provider
-// const connector = new WalletConnect({
-//   bridge: "https://bridge.walletconnect.org", // Required
-//   qrcodeModal: QRCodeModal,
-// });
-
+import { Web3Auth } from "@web3auth/modal";
+import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base";
 
 export default function ConnectWallet(props) {
+  const network = 5
+  const { connect, connectors } = useConnect()
+  const { connector } = useAccount()
+  const { data: signer } = useSigner()
+  const wagmiProvider = useProvider()
 
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const web3auth = new Web3Auth({
+          clientId: "BIzbdbt2x0JZ5kwsduP8Lrbz24lBswyzNRVVIMY6gsFkYnVbQWUsNaOKL6GuZ86wy7exdEWz7DMj89nHWhFS9TU", // Get your Client ID from Web3Auth Dashboard
+          web3AuthNetwork: "testnet",
+          chainConfig: {
+            chainNamespace: CHAIN_NAMESPACES.EIP155,
+            chainId: "0x5",
+            rpcTarget: "https://rpc.ankr.com/eth_goerli	", // This is the mainnet RPC we have added, please pass on your own endpoint while creating an app
+          },
+        });
+
+        setWeb3auth(web3auth);
+
+        const openloginAdapter = new OpenloginAdapter({
+          loginSettings: {
+            mfaLevel: "optional",
+          },
+        });
+
+        web3auth.configureAdapter(openloginAdapter);
+
+        await web3auth.initModal({
+          modalConfig: {
+            [WALLET_ADAPTERS.OPENLOGIN]: {
+              label: "openlogin",
+              loginMethods: {
+                google: {
+                },
+                facebook: {
+                  showOnModal: false,
+                },
+                twitter: {
+                },
+                reddit: {
+                  showOnModal: false,
+                },
+                discord: {
+                },
+                twitch: {
+                  showOnModal: false,
+                },
+                apple: {
+                  showOnModal: false,
+                },
+                line: {
+                  showOnModal: false,
+                },
+                github: {
+                },
+                kakao: {
+                  showOnModal: false,
+                },
+                linkedin: {
+                  showOnModal: false,
+                },
+                weibo: {
+                  showOnModal: false,
+                },
+                wechat: {
+                  showOnModal: false,
+                },
+                email_passwordless: {
+                  showOnModal: true
+                },
+              },
+              // setting it to false will hide all social login methods from modal.
+              showOnModal: true,
+            },
+            [WALLET_ADAPTERS.METAMASK]: {
+              showOnModal: false
+            }, 
+            [WALLET_ADAPTERS.TORUS_EVM]: {
+              showOnModal: false
+            },
+            [WALLET_ADAPTERS.WALLET_CONNECT_V1]: {
+              showOnModal: false
+            },
+            [WALLET_ADAPTERS.WALLET_CONNECT_V2]: {
+              showOnModal: false
+            }
+          },
+        });
+
+        if (web3auth.provider) {
+          setProvider(web3auth.provider);
+        }
+      } catch (err) {
+        console.log("Connect Wallet Init error", err)
+      }
+    }
+
+    init()
+  }, [])
+
+  useEffect(() => {
+    const connectFunWallet = async () => {
+      const provider = await connector?.getProvider()
+      if (signer && provider) {
+        const auth = new Eoa({ signer: signer, provider: provider })
+        setCreating(true)
+        setLoading(true)
+        
+        const FunWallet = await createFunWallet(auth, 5, provider)
+        const addr = await FunWallet.getAddress()
+        FunWallet.address = addr
+
+        try {
+          const code = await wagmiProvider.getCode(addr);
+          FunWallet.deployed = true
+        } catch (e) {
+          FunWallet.deployed = false
+        }
+        let balance = await wagmiProvider.getBalance(addr);
+        balance = ethers.utils.formatEther(balance);
+        if (balance == 0) {
+          await useFaucet(addr);
+        }
+
+        setEOA(auth);
+        setNetwork(network)
+        setWallet(FunWallet);
+        setCreating(false)
+        setLoading(false)
+      }
+    }
+
+    connectFunWallet()
+  }, [signer, wagmiProvider])
+
+  const [web3auth, setWeb3auth] = useState()
+  const [provider, setProvider] = useState()
   const { setWallet, setNetwork, setEOA, setLoading } = useFun()
-  // const { isOpen, open, close, setDefaultChain } = useWeb3Modal();
-  // const { connect, connectors, error, isLoading, pendingConnector } = useConnect()
   const [creating, setCreating] = useState()
   const [wConnecting, setWConnecting] = useState()
 
-  async function connectEOA() {
+  async function connectWeb3Auth() {
     try {
-
-      const provider = new ethers.providers.Web3Provider(window.ethereum, "any") // any is needed if user has to change network to goerli
-
-      await provider.send('eth_requestAccounts', []); // <- this promps user to connect metamask
-      const eoa = provider.getSigner();
-      localStorage.setItem("fun-wallet-addr", "")
-      const auth = new Eoa({ signer: eoa })
-      const network = 5
       setCreating(true)
-      setLoading(true);
-      connectToNetwork(network).then(async () => {
-        const FunWallet = await createFunWallet(auth, network, provider)
+      setLoading(true)
+      const web3authProvider = await web3auth.connect()
+      const network = 5
+      const provider = new ethers.providers.Web3Provider(web3authProvider)
+      if (provider) {
+        const auth = new Web3AuthEoa({ provider })
+        const FunWallet = await createFunWallet(auth, 5, provider)
         const addr = await FunWallet.getAddress();
         FunWallet.address = addr;
         try {
@@ -60,58 +182,13 @@ export default function ConnectWallet(props) {
         setEOA(auth);
         setNetwork(network)
         setWallet(FunWallet);
-        setCreating(false)
+        setWConnecting(false)
         setLoading(false)
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
-
-  const walletConnect = async () => {
-    try {
-      const walletConnectProvider = new WalletConnectProvider({
-        rpc: {
-          5: "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
-        },
-        qrcode: true,
-      });
-      //  Enable session (triggers QR Code modal)
-      await walletConnectProvider.enable();
-      const provider = new ethers.providers.Web3Provider(walletConnectProvider);
-      const signer = provider.getSigner()
-      const auth = new WalletConnectEoa({ signer, provider })
-      console.log(auth)
-      const network = 5
-      setWConnecting(true)
-      setLoading(true)
-      // connectToNetwork(network).then(async () => {
-      const FunWallet = await createFunWallet(auth, network, walletConnectProvider)
-      const addr = await FunWallet.getAddress();
-      FunWallet.address = addr;
-      try {
-        const code = await provider.getCode(addr);
-        FunWallet.deployed = true
-      } catch (e) {
-        FunWallet.deployed = false
       }
-      let balance = await provider.getBalance(addr);
-      balance = ethers.utils.formatEther(balance);
-      if (balance == 0) {
-        await useFaucet(addr);
-      }
-      setEOA(auth);
-      setNetwork(network)
-      setWallet(FunWallet);
-      setWConnecting(false)
-      setLoading(false)
-      // })
 
-    } catch (e) {
-      console.log(e)
+    } catch (err) {
+      console.log("connect wallet connect error", err)
     }
-
   }
 
   async function useFaucet(addr) {
@@ -133,33 +210,34 @@ export default function ConnectWallet(props) {
       <Image src="/fun.svg" width="52" height="42" alt="" />
       <div className="font-semibold text-2xl mt-6 text-[#101828]">Let the Fun begin</div>
       <div className="text-sm text-[#667085] mt-1">Unlock the power of Fun Wallets.</div>
-      <div
-        className="button mt-8 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
-        onClick={connectEOA}
-      >
-        {creating ? (
-          <Spinner />
-        ) : (
-          <Image src="/wallet.svg" width="22" height="22" alt="" />
-        )}
-        <div className="ml-3 font-medium text-[#344054]">Connect EOA</div>
-      </div>
+
+      {connectors.map((connector) => (
+         <button className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
+           disabled={!connector.ready}
+           onClick={() => connect( {connector} )} >
+             {creating ? (
+               <Spinner />
+             ) : (
+               <Image src="/wallet.svg" width="22" height="22" alt="" />
+             )}
+           <div className="ml-3 font-medium text-[#344054]">{connector.name}</div>
+         </button>
+      ))}
+
       <div
         className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-center cursor-pointer py-[10px] px-4"
-        onClick={walletConnect}
+        onClick={connectWeb3Auth}
       >
         {wConnecting ? (
           <Spinner />
         ) : (
-          <Image src="/walletconnect.svg" width="22" height="22" alt="" />
+          <Image src="/wallet.svg" width="22" height="22" alt="" />
         )}
-        <div className="ml-3 font-medium text-[#344054]">Wallet Connect</div>
+        <div className="ml-3 font-medium text-[#344054]">Connect Web3Auth</div>
       </div>
-
 
     </div>
   )
-
 }
 
 export async function getStaticProps() {

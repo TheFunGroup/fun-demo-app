@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
-import { FunWallet } from "@fun-wallet/sdk";
-import { configureEnvironment } from "@fun-wallet/sdk/managers"
+import { FunWallet } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk";
+import { configureEnvironment } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/managers"
 import { erc20ABI } from "../utils/erc20Abi";
 // const API_KEY = "<FUN API KEY>"
 const API_KEY = "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf"
@@ -13,16 +13,14 @@ export async function createFunWallet(auth, chainID, provider) {
 
   // const config = new FunWalletConfig(eoa, chainID)
   const salt = await auth.getUniqueId()
-  const wallet = new FunWallet({ salt, index: 28314 })
+  const wallet = new FunWallet({ salt, index: 28315 })
   const walletAddress = await wallet.getAddress()
-  const iscontract=await isContract(walletAddress, provider)
-  console.log(isContract)
+  const iscontract= await isContract(walletAddress, provider)
   if(!iscontract){
     //stake
     await fetch(`http://18.237.113.42:8001/stake-token?testnet=goerli&addr=${walletAddress}`)
     console.log("Staked")
   }
-
 
   console.log(auth)
   console.log(wallet)
@@ -34,7 +32,8 @@ export async function createFunWallet(auth, chainID, provider) {
 const isContract = async (address, provider) => {
   try {
     const code = await provider.getCode(address);
-    if (code != '0x') return true;
+    if (code != '0x') return true
+    return false
   } catch (error) {
     return false
   }
