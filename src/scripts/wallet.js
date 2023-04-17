@@ -12,8 +12,8 @@ export async function createFunWallet(auth, chainID, provider) {
   await configureEnvironment(options)
 
   // const config = new FunWalletConfig(eoa, chainID)
-  const salt = await auth.getUniqueId()
-  const wallet = new FunWallet({ salt, index: 28315 })
+  const uniqueID = await auth.getUniqueId()
+  const wallet = new FunWallet({ uniqueID, index: 28315 })
   const walletAddress = await wallet.getAddress()
   const iscontract= await isContract(walletAddress, provider)
   if(!iscontract){

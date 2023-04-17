@@ -122,7 +122,6 @@ export default function ConnectWallet(props) {
         const auth = new Eoa({ signer: signer, provider: provider })
         setCreating(true)
         setLoading(true)
-        
         const FunWallet = await createFunWallet(auth, 5, provider)
         const addr = await FunWallet.getAddress()
         FunWallet.address = addr
