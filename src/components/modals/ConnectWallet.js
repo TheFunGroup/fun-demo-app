@@ -5,7 +5,7 @@ import { createFunWallet } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
 import { Eoa, WalletConnectEoa } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/auth"
-import Web3AuthEoa from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/auth/Web3AuthEoa"
+import { Web3AuthEoa } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/auth/Web3AuthEoa"
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { useAccount, useProvider, useConnect, useSigner } from 'wagmi'
 
