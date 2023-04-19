@@ -6,6 +6,7 @@ import { useFun } from "../../contexts/funContext";
 import { ethers } from "ethers";
 import { toUSD } from "../../scripts/prices";
 import { useRouter } from "next/router";
+import { disconnect } from '@wagmi/core'
 import erc20Abi from "../../utils/erc20Abi";
 
 export default function WalletView(props) {
@@ -32,42 +33,48 @@ export default function WalletView(props) {
 
 
   useEffect(() => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
     if(networks[network]){
       if(wallet.address){
         setAddr(wallet.address);
-        eoa.signer.provider.getBalance(wallet.address).then((balance) => {
+        provider.getBalance(wallet.address).then((balance) => {
           balance = ethers.utils.formatEther(balance);
           setBalance(Number(balance).toFixed(6))
           toUSD("ETH", balance).then((usd) => {
             setBalanceUSD(usd)
           })
+        }).catch((e) => {
+          console.log(e)
         });  
-        
         getCoinBalances();
-        
       }
     }
   }, [network])
 
   async function getCoinBalances(){
-    const usdcContract = new ethers.Contract("0xaa8958047307da7bb00f0766957edec0435b46b5" , erc20Abi, eoa.signer.provider);
-    let usdcBalance = await usdcContract.balanceOf(wallet.address)
-    usdcBalance = ethers.utils.formatUnits(usdcBalance, 6)
-    setUsdcBalance(Number(usdcBalance.toString()).toFixed(2))
-    setUsdcBalanceUSD(await toUSD("USDC", usdcBalance));
-
-    const daiContract = new ethers.Contract("0x855af47cdf980a650ade1ad47c78ec1deebe9093" , erc20Abi, eoa.signer.provider);
-    let daiBalance = await daiContract.balanceOf(wallet.address)
-    daiBalance = ethers.utils.formatUnits(daiBalance, 6)
-    setDaiBalance(Number(daiBalance.toString()).toFixed(2))
-    setDaiBalanceUSD(await toUSD("DAI", daiBalance));
-
-    const usdtContract = new ethers.Contract("0x3E1FF16B9A94eBdE6968206706BcD473aA3Da767" , erc20Abi, eoa.signer.provider);
-    let usdtBalance = await usdtContract.balanceOf(wallet.address)
-    usdtBalance = ethers.utils.formatUnits(usdtBalance, 6)
-    setUsdtBalance(Number(usdtBalance.toString()).toFixed(2))
-    setUsdtBalanceUSD(await toUSD("USDT", usdtBalance));
-
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
+    try {
+      const usdcContract = new ethers.Contract("0xaa8958047307da7bb00f0766957edec0435b46b5" , erc20Abi, provider);
+      let usdcBalance = await usdcContract.balanceOf(wallet.address)
+      usdcBalance = ethers.utils.formatUnits(usdcBalance, 6)
+      setUsdcBalance(Number(usdcBalance.toString()).toFixed(2))
+      setUsdcBalanceUSD(await toUSD("USDC", usdcBalance));
+  
+      const daiContract = new ethers.Contract("0x855af47cdf980a650ade1ad47c78ec1deebe9093" , erc20Abi, provider);
+      let daiBalance = await daiContract.balanceOf(wallet.address)
+      daiBalance = ethers.utils.formatUnits(daiBalance, 6)
+      setDaiBalance(Number(daiBalance.toString()).toFixed(2))
+      setDaiBalanceUSD(await toUSD("DAI", daiBalance));
+  
+      const usdtContract = new ethers.Contract("0x3E1FF16B9A94eBdE6968206706BcD473aA3Da767" , erc20Abi, provider);
+      let usdtBalance = await usdtContract.balanceOf(wallet.address)
+      usdtBalance = ethers.utils.formatUnits(usdtBalance, 6)
+      setUsdtBalance(Number(usdtBalance.toString()).toFixed(2))
+      setUsdtBalanceUSD(await toUSD("USDT", usdtBalance));
+    } catch(e){
+      console.log(e)
+    }
+   
   }
 
   useOnClickOutside(dropdownRef, (e) => {
@@ -95,6 +102,7 @@ export default function WalletView(props) {
   }
 
   function handleLogout(){
+    disconnect();
     setWallet(null)
     setEOA(null)
   }
@@ -148,7 +156,7 @@ export default function WalletView(props) {
                 <Image src="/profile.svg" width="80" height="80" className="mt-4" alt=""/>
                 <div className="flex items-end">
                   <div className="text-[32px] font-semibold mr-1">{Number(balance).toFixed(6)}</div>
-                  <div className="text-[#667085] mb-2">{networks[ethereum.networkVersion]?.nativeCurrency.symbol}</div>
+                  <div className="text-[#667085] mb-2">{networks[network]?.nativeCurrency.symbol}</div>
                 </div>
                 <div className="text-[#667085] text-lg -mt-1">{`$${balanceUSD} USD`}</div>
                 <div className="button-dark text-center py-3 px-4 w-full mt-6 font-medium" onClick={handleFund}>Fund</div>

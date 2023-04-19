@@ -8,12 +8,13 @@ export const FunProvider = ({ children }) => {
   const router = useRouter();
   const [eoa, setEOA] = useState();
   const [wallet, setWallet] = useState();
-  const [network, setNetwork] = useState();
+  const [network, setNetwork] = useState(5);
   const [deployedUrl, setDeployedUrl] = useState();
   const [loading, setLoading] = useState()
   const [paymentToken, setPaymentToken] = useState("ETH");
   const [paymentAddr, setPaymentAddr] = useState();
   const [paymasterAddress, setPaymasterAddress] = useState();
+  const [connectMethod, setConnectMethod] = useState();
 
   useEffect(() => {
     if(!wallet || !network){
@@ -30,7 +31,8 @@ export const FunProvider = ({ children }) => {
       loading, setLoading,
       paymentToken, setPaymentToken,
       paymentAddr, setPaymentAddr,
-      paymasterAddress, setPaymasterAddress
+      paymasterAddress, setPaymasterAddress,
+      connectMethod, setConnectMethod
     }}>
         {children}
     </FunContext.Provider>

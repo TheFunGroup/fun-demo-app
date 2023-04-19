@@ -1,47 +1,67 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
 import { networks,  connectToNetwork } from "../../utils/networks";
+import { ethers } from "ethers";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 import { createFunWallet } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
+import { useAccount, useSigner } from 'wagmi'
+import { Web3AuthEoa, Eoa } from "/Users/jamesrezendes/Code/fun-wallet-sdk/auth";
+import web3AuthClient from "../../scripts/web3auth";
 
 export default function NetworkSelect(props) {
 
-  const {setNetwork, setWallet, eoa} = useFun();
+  const {network, setNetwork, setWallet, eoa, connectMethod} = useFun();
 
   const [current, setCurrent] = useState(5)
   const [hover, setHover] = useState();
   const [dropdown, setDropdown] = useState();
   const dropdownRef = useRef()
   const networkBtnRef = useRef()
+  const { connector } = useAccount()
+  const { data: signer } = useSigner()
 
-  const [creating, setCreating] = useState()
+  const [connecting, setConnecting] = useState()
 
-  function connect(id){
+  async function connect(id){
     if(!networks[id]) return;
-    setCreating(id)
-    connectToNetwork(id).then(async (err) => {
-      if(!err) {
-        try {
-          const FunWallet = await createFunWallet(eoa, id)
-          setCurrent(id);
-          setNetwork(id);
-          setWallet(FunWallet);
-          setCreating(false)
-        } catch(e){
-          console.log(e)
-        }
+    setConnecting(id)
+    let provider;
+    let auth;
+    try {
+      if(connectMethod == "wagmi"){
+        const chainId = await connector.getChainId();
+        if(chainId !== id) await connector.switchChain(Number(id))
+        provider = await connector?.getProvider();
+        auth = new Eoa({ signer: signer, provider: provider })
       } else {
-        console.log(err)
+        const web3Auth = await web3AuthClient(id);
+        const web3authProvider = await web3Auth.connect()
+        provider = new ethers.providers.Web3Provider(web3authProvider)
+        auth = new Web3AuthEoa({ provider })
       }
-    });
+    } catch(e){
+      console.log(e)
+      console.log("do web3Auth chain switch")
+    }
+    try {
+      const FunWallet = await createFunWallet(auth, provider)
+      const addr = await FunWallet.getAddress()
+      FunWallet.address = addr
+      setCurrent(id);
+      setNetwork(id);
+      setWallet(FunWallet);
+      setConnecting(false)
+    } catch(e){
+      console.log(e)
+    }
   }
 
   useEffect(() => {
     if(current) setDropdown(false);
-    if(Number(ethereum.networkVersion) !== current){
-      console.log("CONNECTING", current, ethereum.networkVersion)
+    if(network !== current){
+      console.log("CONNECTING", current, network)
       connect(current)
     } 
   }, [current])
@@ -68,11 +88,11 @@ export default function NetworkSelect(props) {
             return (
               <div 
                 className={`
-                  w-full flex items-center justify-between px-[14px] py-[10px] ${idx !== 1 && "cursor-not-allowed"}
+                  w-full flex items-center justify-between px-[14px] py-[10px] cursor-pointer
                   ${idx == 0 && "rounded-t-xl"} ${idx == Object.keys(networks).length - 1 && "rounded-b-xl"}
-                  ${id == (current) ? "bg-white" : id == hover ? "bg-[#f5f5f5]" : "bg-[#f9f9f9]"}
+                  ${id == (current) ? "bg-white cursor-default" : id == hover ? "bg-[#f5f5f5]" : "bg-[#f9f9f9]"}
                 `}
-                onClick={() => {if(idx == 1) setDropdown(false)}}
+                onClick={() => {connect(id); setDropdown(false)}}
                 onMouseEnter={() => setHover(id)}
                 onMouseLeave={() => setHover("")}
               >
@@ -84,7 +104,7 @@ export default function NetworkSelect(props) {
                   {id == current && (
                     <Image src="/check.svg" width="20" height="20" alt=""/>
                   )}
-                  {id == creating && (
+                  {id == connecting && (
                     <Spinner width="20px" height="20px"/>
                   )}
                 </div>

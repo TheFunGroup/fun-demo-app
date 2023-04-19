@@ -20,7 +20,7 @@ export default function Input(props) {
         >
         </input>
         {props.tokenSelect && (
-          <TokenSelect token={props.token} setToken={(value) => {props.setToken(value)}} excludeETH={props.excludeETH}/>
+          <TokenSelect token={props.token} nonToken={props.nonToken} setToken={(value) => {props.setToken(value)}} excludeETH={props.excludeETH}/>
         )}
       </div>
     </div>
