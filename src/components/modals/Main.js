@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import Image from 'next/image';
-import { ethers } from "ethers";
 import NetworkSelect from "../popups/NetworkSelect";
 import WalletView from "../popups/WalletView";
 import { useFun } from "../../contexts/funContext";

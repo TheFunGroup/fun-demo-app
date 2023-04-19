@@ -1,14 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
 import { ethers } from "ethers";
-import { createFunWallet } from "../../scripts/wallet";
+import { createFunWallet, useFaucet } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
 import { Web3AuthEoa, Eoa } from "/Users/jamesrezendes/Code/fun-wallet-sdk/auth";
-import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { useAccount, useProvider, useConnect, useSigner } from 'wagmi'
-import { Web3Auth } from "@web3auth/modal";
-import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base";
 import web3AuthClient from "../../scripts/web3auth";
 
 export default function ConnectWallet(props) {
@@ -43,7 +40,7 @@ export default function ConnectWallet(props) {
         const auth = new Eoa({ signer: signer, provider: provider })
         setConnecting(connector.name)
         setLoading(true)
-        const FunWallet = await createFunWallet(auth, provider)
+        const FunWallet = await createFunWallet(auth)
         const addr = await FunWallet.getAddress()
         FunWallet.address = addr
         try {
@@ -56,7 +53,7 @@ export default function ConnectWallet(props) {
           let balance = await wagmiProvider.getBalance(addr);
           balance = ethers.utils.formatEther(balance);
           if (balance == 0) {
-            await useFaucet(addr);
+            await useFaucet(addr, 5);
           }
         } catch(e){
           console.log(e)
@@ -81,7 +78,7 @@ export default function ConnectWallet(props) {
       const provider = new ethers.providers.Web3Provider(web3authProvider)
       if (provider) {
         const auth = new Web3AuthEoa({ provider })
-        const FunWallet = await createFunWallet(auth, provider)
+        const FunWallet = await createFunWallet(auth)
         const addr = await FunWallet.getAddress();
         FunWallet.address = addr;
         try {
@@ -93,7 +90,7 @@ export default function ConnectWallet(props) {
         let balance = await provider.getBalance(addr);
         balance = ethers.utils.formatEther(balance);
         if (balance == 0) {
-          await useFaucet(addr);
+          await useFaucet(addr, 5);
         }
         setConnectMethod("web3Auth");
         setEOA(auth);
@@ -106,36 +103,21 @@ export default function ConnectWallet(props) {
     }
   }
 
-  async function useFaucet(addr) {
-    if(network == 5){
-      try {
-        await fetch(`http://18.237.113.42:8001/get-faucet?token=eth&testnet=goerli&addr=${addr}`)
-        await fetch(`http://18.237.113.42:8001/get-faucet?token=usdc&testnet=goerli&addr=${addr}`)
-        await fetch(`http://18.237.113.42:8001/get-faucet?token=dai&testnet=goerli&addr=${addr}`)
-        await fetch(`http://18.237.113.42:8001/get-faucet?token=usdt&testnet=goerli&addr=${addr}`)
-        setTimeout(() => {
-          return
-        }, 1500)
-      } catch (e) {
-  
-      }
-    }
-    
-  }
-
   return (
     <div className={`w-[360px] modal flex flex-col items-center text-center -mt-[64px]`} >
       <Image src="/fun.svg" width="52" height="42" alt="" />
       <div className="font-semibold text-2xl mt-6 text-[#101828]">Let the Fun begin</div>
       <div className="text-sm text-[#667085] mt-1">Unlock the power of Fun Wallets.</div>
 
-      {connectors.map((connector) => {
+      {connectors.map((connector, idx) => {
         return (
-         <button className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
-           disabled={!connector.ready}
-           onClick={() => {
-            connect({connector})
-          }} >
+          <button className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
+            disabled={!connector.ready}
+            onClick={() => {
+              connect({connector})
+            }}
+            key={idx}
+          >
              {connecting == connector.name ? (
                <Spinner />
              ) : (

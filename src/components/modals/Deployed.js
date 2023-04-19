@@ -1,8 +1,5 @@
-import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import Image from 'next/image';
-import { ethers } from "ethers";
-import TokenSelect from "../forms/TokenSelect";
 import { useFun } from "../../contexts/funContext";
 
 export default function Deployed(props) {

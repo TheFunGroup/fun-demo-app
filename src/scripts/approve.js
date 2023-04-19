@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { configureEnvironment } from "/Users/jamesrezendes/Code/fun-wallet-sdk/managers";
 //Amount is in USDC
 export const handleApprove = async function (wallet, auth, paymasterAddress, paymentAddr, amount=500) {

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import TokenSelect from "./TokenSelect";
 
 export default function Input(props) {

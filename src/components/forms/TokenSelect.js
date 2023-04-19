@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
-import { networks,  connectToNetwork } from "../../utils/networks";
 import { tokens } from "../../utils/tokens";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 import { useFun } from "../../contexts/funContext";
@@ -19,7 +18,6 @@ export default function TokenSelect(props) {
 
   useEffect(() => {
     setDropdown(false);
-    console.log(token)
   }, [token])
 
   useOnClickOutside(dropdownRef, (e) => {
@@ -49,6 +47,7 @@ export default function TokenSelect(props) {
                 onClick={() => {nonToken?.name !== t.name && setToken(t)}}
                 onMouseEnter={() => setHover(t.name)}
                 onMouseLeave={() => setHover("")}
+                key={idx}
               >
                 <div className="text-[#101828] text-sm">{t.name}</div>
                 <div>

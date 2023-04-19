@@ -1,5 +1,4 @@
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
-import { useAccount, useProvider, useConnect, useSigner } from 'wagmi'
 import { Web3Auth } from "@web3auth/modal";
 import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base";
 

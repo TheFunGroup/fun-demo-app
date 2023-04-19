@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
-import { networks,  connectToNetwork } from "../../utils/networks";
+import { networks } from "../../utils/networks";
 import { ethers } from "ethers";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
-import { createFunWallet } from "../../scripts/wallet";
+import { createFunWallet, useFaucet } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
 import { useAccount, useSigner } from 'wagmi'
@@ -43,16 +43,28 @@ export default function NetworkSelect(props) {
       }
     } catch(e){
       console.log(e)
-      console.log("do web3Auth chain switch")
     }
     try {
-      const FunWallet = await createFunWallet(auth, provider)
+      const FunWallet = await createFunWallet(auth)
       const addr = await FunWallet.getAddress()
       FunWallet.address = addr
+      try {
+        const code = await provider.getCode(addr);
+        FunWallet.deployed = true
+      } catch (e) {
+        FunWallet.deployed = false
+      }
+      provider = new ethers.providers.Web3Provider(window.ethereum, "any")
+      let balance = await provider.getBalance(addr);
+      balance = ethers.utils.formatEther(balance);
+      if (balance == 0) {
+        await useFaucet(addr, id);
+      }
       setCurrent(id);
       setNetwork(id);
       setWallet(FunWallet);
       setConnecting(false)
+      setDropdown(false)
     } catch(e){
       console.log(e)
     }
@@ -61,7 +73,6 @@ export default function NetworkSelect(props) {
   useEffect(() => {
     if(current) setDropdown(false);
     if(network !== current){
-      console.log("CONNECTING", current, network)
       connect(current)
     } 
   }, [current])
@@ -92,9 +103,10 @@ export default function NetworkSelect(props) {
                   ${idx == 0 && "rounded-t-xl"} ${idx == Object.keys(networks).length - 1 && "rounded-b-xl"}
                   ${id == (current) ? "bg-white cursor-default" : id == hover ? "bg-[#f5f5f5]" : "bg-[#f9f9f9]"}
                 `}
-                onClick={() => {connect(id); setDropdown(false)}}
+                onClick={() => {connect(id)}}
                 onMouseEnter={() => setHover(id)}
                 onMouseLeave={() => setHover("")}
+                key={idx}
               >
                 <div className="flex items-center">
                   <Image src={networks[id].icon} width="24" height="24" alt=""/>

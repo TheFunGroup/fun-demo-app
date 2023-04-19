@@ -11,7 +11,7 @@ import erc20Abi from "../../utils/erc20Abi";
 
 export default function WalletView(props) {
 
-  const { wallet, setWallet, eoa, setEOA, network, setLoading} = useFun()
+  const { wallet, setWallet, setEOA, network, setLoading } = useFun()
 
   const router = useRouter()
   const [addr, setAddr] = useState()
@@ -128,7 +128,7 @@ export default function WalletView(props) {
         <div className="w-[164px] flex items-center cursor-pointer" onClick={handleDropdown} ref={walletBtnRef}>
           <Image src="/profile.svg" width="28" height="28" alt=""/>
           <div className="text-[#667085] text-sm mx-2 font-mono max-w-[104px]">{`${addr.substring(0, 5)}...${addr.substring(addr.length - 4)}`}</div>
-          <Image src="/chevron.svg" width="20" height="20" style={dropdown && {transform: "rotate(-180deg)"}}
+          <Image src="/chevron.svg" width="20" height="20" style={dropdown && {transform: "rotate(-180deg)"}} alt=""
             className="duration-200 ease-linear"
           />
         </div>

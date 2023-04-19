@@ -4,7 +4,7 @@ import { TokenSponsor } from "/Users/jamesrezendes/Code/fun-wallet-sdk/sponsors"
 import { Token } from "/Users/jamesrezendes/Code/fun-wallet-sdk/data"
 import { tokens } from "../utils/tokens"
 import erc20ABI from "../utils/funTokenAbi.json";
-import { isContract } from "../utils/utils"
+import { isContract } from "./wallet";
 
 export const handleSwap = async function (wallet, paymentToken, swapData, auth) {
   try {
@@ -54,7 +54,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
       const gasSponsor = new TokenSponsor()
 
       const paymasterAddress = await gasSponsor.getPaymasterAddress()
-      const iscontract = await isContract(walletAddress, provider)
+      const iscontract = await isContract(walletAddress)
       if (iscontract) {
         const erc20Contract = new ethers.Contract(paymentaddr, erc20ABI.abi, provider)
         let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress)//paymaster address
@@ -74,7 +74,6 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
         gasSponsor: false
       })
     }
-    console.log(ins)
     const receipt = await wallet.swap(auth, {
       in: ins == "eth" ? "eth" : inAddr,
       amount: swapData.amount,

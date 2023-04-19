@@ -1,9 +1,5 @@
-import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
-import { networks,  connectToNetwork } from "../../utils/networks";
-import { tokens } from "../../utils/tokens";
-
-import { useOnClickOutside } from "../../hooks/useOnClickOutside";
+import { networks } from "../../utils/networks";
 import { useFun } from "../../contexts/funContext";
 
 export default function PaymentMethod(props) {

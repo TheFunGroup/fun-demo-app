@@ -4,7 +4,7 @@ import { TokenSponsor } from "/Users/jamesrezendes/Code/fun-wallet-sdk/sponsors"
 import { Token } from "/Users/jamesrezendes/Code/fun-wallet-sdk/data"
 import { tokens } from "../utils/tokens"
 import erc20ABI from "../utils/funTokenAbi.json";
-import { isContract } from "../utils/utils"
+import { isContract } from "./wallet";
 export const handleTransfer = async function (wallet, paymentToken, transferData, auth) {
 
   try {
@@ -51,11 +51,10 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
       const paymasterAddress = await gasSponsor.getPaymasterAddress()
       const erc20Contract = new ethers.Contract(paymentaddr, erc20ABI.abi, provider)
 
-      const iscontract = await isContract(walletAddress, provider)
+      const iscontract = await isContract(walletAddress)
       if (iscontract) {
         let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress)//paymaster address
         allowance = ethers.utils.formatUnits(allowance, 6);
-        console.log("ALLOWANCE: ", allowance)
         if (Number(allowance) < Number(5)) {//amt
           //if approved, pop up modal, and ask for approval
           return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
@@ -72,14 +71,11 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
     }
 
     if (transferData.token.name != "ETH") {
-      console.log("Transfering ERC")
       const receipt = await wallet.transfer(auth, { to: transferData.to, amount: transferData.amount, token: tokenaddr })
-      console.log(receipt)
       return { success: true, explorerUrl: `https://goerli.etherscan.io/tx/${receipt.txid}` }
     }
     else {
       const receipt = await wallet.transfer(auth, { to: transferData.to, amount: transferData.amount })
-      console.log(receipt)
       return { success: true, explorerUrl: `https://goerli.etherscan.io/tx/${receipt.txid}` }
     }
   } catch (e) {
