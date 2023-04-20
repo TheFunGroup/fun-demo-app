@@ -140,7 +140,7 @@ export default function ConnectWallet(props) {
       }
     }
 
-    // init()
+    init()
   }, [])
 
   useEffect(() => {
@@ -184,57 +184,18 @@ export default function ConnectWallet(props) {
   // }, []);
 
   useEffect(() => {
-    router.query.provider ? finishSocialLogin() : finishEmailRedirectLogin();
+    const finishLogin = async () => {
+      console.log(router.query)
+      router.query.provider ? await finishSocialLogin() : finishEmailRedirectLogin();
+    }
+    finishLogin()
   }, [router.query]);
 
-  // useEffect(() => {
-  //   const finishSocialLogin = async () => {
-  //     if (magic) {
-  //       console.log("useEffect magic", magic)
-  //       const result = await magic.oauth.getRedirectResult();
-  //       console.log("magic oauth result", result)
-  //       magic.user.isLoggedIn().then((isLoggedIn) => {
-  //         console.log("isLoggedIn", isLoggedIn)
-  //       });
-  //     }
-  //   }
-  //   finishSocialLogin()
-  // }, [magic]);
-
-  const finishSocialLogin = async () => {
-    console.log("finishSocialLogin")
-    let result = await magic.oauth.getRedirectResult();
-    console.log("finishSocialLogin result", result)
-    authenticateWithServer(result.magic.idToken);
-  };
-
-  const finishEmailRedirectLogin = () => {
-    if (router.query.magic_credential)
-      magic.auth.loginWithCredential().then((didToken) => authenticateWithServer(didToken));
-  };
-
-  async function connectMagic(oauthProvider) {
-    try {
-      setCreating(true)
-      setLoading(true)
-
-      await magic.oauth.loginWithRedirect({
-        provider: oauthProvider,
-        redirectURI: new URL('/connect', window.location.origin).href
-      });
-
-      const result = await magic.oauth.getRedirectResult();
-      console.log("magic oauth result", result)
-      const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
-      console.log(provider)
+  async function createWallet(provider, uniqueID) {
        if (provider) {
-        let uniqueID
-        if (userInfo.email) {
-          uniqueID = userInfo.typeOfLogin + "###" + userInfo.email
-        } else {
-          uniqueID = userInfo.typeOfLogin + "###" + userInfo.name
-        }
-        const auth = new Web3AuthEoa({ provider, uniqueID })
+        setWConnecting(true)
+        setLoading(true)
+        const auth = new Web3AuthEoa({ provider })
         const FunWallet = await createFunWallet(auth, 5, provider)
         const addr = await FunWallet.getAddress();
         FunWallet.address = addr;
@@ -255,7 +216,28 @@ export default function ConnectWallet(props) {
         setWConnecting(false)
         setLoading(false)
        }
+  }
 
+  const finishSocialLogin = async () => {
+    let result = await magic.oauth.getRedirectResult();
+    const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
+    await createWallet(provider, "twitter###" + result.oauth.userInfo.preferredUsername)
+  };
+
+  const finishEmailRedirectLogin = () => {
+    if (router.query.magic_credential)
+      magic.auth.loginWithCredential().then((didToken) => authenticateWithServer(didToken));
+  };
+
+  async function connectMagic(oauthProvider) {
+    try {
+      setCreating(true)
+      setLoading(true)
+
+      await magic.oauth.loginWithRedirect({
+        provider: oauthProvider,
+        redirectURI: new URL('/connect', window.location.origin).href
+      });
     } catch (err) {
       console.log("connect wallet connect error", err)
     }

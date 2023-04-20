@@ -5,9 +5,6 @@ import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { WalletConnectLegacyConnector } from 'wagmi/connectors/walletConnectLegacy'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
-// import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
-// import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base";
-// import { Web3Auth } from "@web3auth/modal";
 
 export default function wagmiClientBuilder() {
     const { chains, provider, webSocketProvider } = configureChains(
@@ -50,13 +47,6 @@ export default function wagmiClientBuilder() {
               qrcode: true,
             }
           })
-          // new Web3AuthConnector({
-          //   chains,
-          //   options: {
-          //     web3auth,
-          //     modalConfig
-          //   }
-          // })
         ],
         provider,
         webSocketProvider
