@@ -1,5 +1,10 @@
 customHeaders:
-  - pattern: '/img/*'
+  - pattern: '/*'
+    headers:
+      - key: 'Cache-Control' 
+        value: 's-maxage=86400'
+customHeaders:
+  - pattern: '/connect'
     headers:
       - key: 'Cache-Control' 
         value: 's-maxage=86400'
