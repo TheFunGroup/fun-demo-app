@@ -88,9 +88,9 @@ export default function LinkAccounts(props) {
       const addr = await linkingWallet.getAddress()
       let balance = await provider.getBalance(addr);
       balance = ethers.utils.formatEther(balance);
-      if (balance == 0) {
+      // if (balance == 0) {
         await useFaucet(addr, 5);
-      }
+      // }
     } catch(e){
       console.log(e)
     }

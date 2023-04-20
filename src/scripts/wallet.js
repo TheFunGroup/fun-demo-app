@@ -13,7 +13,8 @@ export async function createFunWallet(auth) {
 }
 
 export const isContract = async (address, provider) => {
-  provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
+  console.log(address)
+  if(!provider) provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
   try {
     const code = await provider.getCode(address);
     if (code == '0x') return false

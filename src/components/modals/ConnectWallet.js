@@ -59,25 +59,25 @@ export default function ConnectWallet(props) {
           FunWallet.deployed = true
           console.log("DEPLOYED")
         } else {
-          console.log('not deployed')
-          FunWallet.deployed = false;
-          setLinkingWallet(FunWallet)
-          setProvider(provider)
-          const eoaAddr = await connector.getAccount()
-          if(!linked[connector.name]){
-            linked[connector.name] = `${connector.name}###${eoaAddr}`;
-            setLinked(linked)
-          } 
-          setShowLinkMore(true)
-          setLoading(false)
-          return;
+          // console.log('not deployed')
+          // FunWallet.deployed = false;
+          // setLinkingWallet(FunWallet)
+          // setProvider(provider)
+          // const eoaAddr = await connector.getAccount()
+          // if(!linked[connector.name]){
+          //   linked[connector.name] = `${connector.name}###${eoaAddr}`;
+          //   setLinked(linked)
+          // } 
+          // setShowLinkMore(true)
+          // setLoading(false)
+          // return;
         }
         try {
           let balance = await wagmiProvider.getBalance(addr);
           balance = ethers.utils.formatEther(balance);
-          if (balance == 0) {
+          // if (balance == 0) {
             await useFaucet(addr, 5);
-          }
+          // }
         } catch(e){
           console.log(e)
         }
@@ -106,24 +106,24 @@ export default function ConnectWallet(props) {
         FunWallet.address = addr;
         setEOA(auth);
         setConnectMethod("web3Auth");
-        try {
-          await provider.getCode(addr);
-          FunWallet.deployed = true
-        } catch (e) {
-          FunWallet.deployed = false;
-          const user = await web3auth.getUserInfo();
-          const id = `${user.typeOfLogin}###${user.verifierId}`;
-          if(!linked[user.typeOfLogin]){
-            linked[user.typeOfLogin] = id;
-            setLinked(linked)
-          }
-          setShowLinkMore(true)
-          setLoading(false)
-          setConnecting(false)
-          setProvider(provider)
-          setLinkingWallet(FunWallet)
-          return;
-        }
+        // try {
+        //   await provider.getCode(addr);
+        //   FunWallet.deployed = true
+        // } catch (e) {
+        //   FunWallet.deployed = false;
+        //   const user = await web3auth.getUserInfo();
+        //   const id = `${user.typeOfLogin}###${user.verifierId}`;
+        //   if(!linked[user.typeOfLogin]){
+        //     linked[user.typeOfLogin] = id;
+        //     setLinked(linked)
+        //   }
+        //   setShowLinkMore(true)
+        //   setLoading(false)
+        //   setConnecting(false)
+        //   setProvider(provider)
+        //   setLinkingWallet(FunWallet)
+        //   return;
+        // }
         try {
           let balance = await provider.getBalance(addr);
           balance = ethers.utils.formatEther(balance);
