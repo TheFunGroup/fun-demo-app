@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@fun-wallet/sdk": "^0.2.1",
+    "@magic-ext/oauth": "^11.0.0",
     "@next/font": "13.1.1",
     "@uniswap/v3-periphery": "^1.4.3",
     "@walletconnect/client": "^1.8.0",
@@ -23,6 +24,7 @@
     "eslint": "8.31.0",
     "eslint-config-next": "13.1.1",
     "ethers": "5.7.2",
+    "magic-sdk": "^17.0.0",
     "next": "^13.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",

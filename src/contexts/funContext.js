@@ -15,11 +15,11 @@ export const FunProvider = ({ children }) => {
   const [paymentAddr, setPaymentAddr] = useState();
   const [paymasterAddress, setPaymasterAddress] = useState();
 
-  useEffect(() => {
-    if(!wallet || !network){
-      router.push('/connect');
-    }
-  }, [wallet, network])
+  // useEffect(() => {
+  //   if((!wallet || !network) && (router.pathname !== "/connect")){
+  //     router.push('/connect');
+  //   }
+  // }, [wallet, network])
 
   return (
     <FunContext.Provider value={{ 

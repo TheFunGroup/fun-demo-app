@@ -8,11 +8,9 @@ const options = {
   chain: 5,
   apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
 }
-export async function createFunWallet(auth, chainID, provider) {
+export async function createFunWallet(auth, uniqueID, provider) {
   await configureEnvironment(options)
 
-  // const config = new FunWalletConfig(eoa, chainID)
-  const uniqueID = await auth.getUniqueId()
   const wallet = new FunWallet({ uniqueID, index: 28315 })
   const walletAddress = await wallet.getAddress()
   const iscontract= await isContract(walletAddress, provider)

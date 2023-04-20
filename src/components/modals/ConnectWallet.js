@@ -11,6 +11,9 @@ import { useAccount, useProvider, useConnect, useSigner } from 'wagmi'
 
 import { Web3Auth } from "@web3auth/modal";
 import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base";
+import { Magic } from 'magic-sdk';
+import { OAuthExtension } from '@magic-ext/oauth';
+import { useRouter } from 'next/router';
 
 export default function ConnectWallet(props) {
   const network = 5
@@ -18,6 +21,31 @@ export default function ConnectWallet(props) {
   const { connector } = useAccount()
   const { data: signer } = useSigner()
   const wagmiProvider = useProvider()
+  const router = useRouter()
+
+  const [web3auth, setWeb3auth] = useState()
+  const [magic, setMagic] = useState()
+  const [provider, setProvider] = useState()
+  const { setWallet, setNetwork, setEOA, setLoading } = useFun()
+  const [creating, setCreating] = useState()
+  const [wConnecting, setWConnecting] = useState()
+
+  useEffect(() => {
+    const initMagicAuth = async () => {
+      const magic = new Magic('pk_live_846F1095F0E1303C', {
+        network: {
+          chainId: 5,
+          rpcUrl: "https://rpc.ankr.com/eth_goerli"
+        },
+        extensions: [new OAuthExtension()],
+      })
+  
+      magic.preload()
+
+      setMagic(magic)
+    }
+    initMagicAuth()
+  }, [])
 
   useEffect(() => {
     const init = async () => {
@@ -112,7 +140,7 @@ export default function ConnectWallet(props) {
       }
     }
 
-    init()
+    // init()
   }, [])
 
   useEffect(() => {
@@ -122,7 +150,7 @@ export default function ConnectWallet(props) {
         const auth = new Eoa({ signer: signer, provider: provider })
         setCreating(true)
         setLoading(true)
-        const FunWallet = await createFunWallet(auth, 5, provider)
+        const FunWallet = await createFunWallet(auth, await auth.getUniqueId(), provider)
         const addr = await FunWallet.getAddress()
         FunWallet.address = addr
 
@@ -149,11 +177,89 @@ export default function ConnectWallet(props) {
     connectFunWallet()
   }, [signer, wagmiProvider])
 
-  const [web3auth, setWeb3auth] = useState()
-  const [provider, setProvider] = useState()
-  const { setWallet, setNetwork, setEOA, setLoading } = useFun()
-  const [creating, setCreating] = useState()
-  const [wConnecting, setWConnecting] = useState()
+  // useEffect(() => {
+  //   console.log(props)
+  //   let provider = new URLSearchParams(props.location.search).get('provider');
+  //   provider ? finishSocialLogin() : finishEmailRedirectLogin();
+  // }, []);
+
+  useEffect(() => {
+    router.query.provider ? finishSocialLogin() : finishEmailRedirectLogin();
+  }, [router.query]);
+
+  // useEffect(() => {
+  //   const finishSocialLogin = async () => {
+  //     if (magic) {
+  //       console.log("useEffect magic", magic)
+  //       const result = await magic.oauth.getRedirectResult();
+  //       console.log("magic oauth result", result)
+  //       magic.user.isLoggedIn().then((isLoggedIn) => {
+  //         console.log("isLoggedIn", isLoggedIn)
+  //       });
+  //     }
+  //   }
+  //   finishSocialLogin()
+  // }, [magic]);
+
+  const finishSocialLogin = async () => {
+    console.log("finishSocialLogin")
+    let result = await magic.oauth.getRedirectResult();
+    console.log("finishSocialLogin result", result)
+    authenticateWithServer(result.magic.idToken);
+  };
+
+  const finishEmailRedirectLogin = () => {
+    if (router.query.magic_credential)
+      magic.auth.loginWithCredential().then((didToken) => authenticateWithServer(didToken));
+  };
+
+  async function connectMagic(oauthProvider) {
+    try {
+      setCreating(true)
+      setLoading(true)
+
+      await magic.oauth.loginWithRedirect({
+        provider: oauthProvider,
+        redirectURI: new URL('/connect', window.location.origin).href
+      });
+
+      const result = await magic.oauth.getRedirectResult();
+      console.log("magic oauth result", result)
+      const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
+      console.log(provider)
+       if (provider) {
+        let uniqueID
+        if (userInfo.email) {
+          uniqueID = userInfo.typeOfLogin + "###" + userInfo.email
+        } else {
+          uniqueID = userInfo.typeOfLogin + "###" + userInfo.name
+        }
+        const auth = new Web3AuthEoa({ provider, uniqueID })
+        const FunWallet = await createFunWallet(auth, 5, provider)
+        const addr = await FunWallet.getAddress();
+        FunWallet.address = addr;
+        try {
+          const code = await provider.getCode(addr);
+          FunWallet.deployed = true
+        } catch (e) {
+          FunWallet.deployed = false
+        }
+        let balance = await provider.getBalance(addr);
+        balance = ethers.utils.formatEther(balance);
+        if (balance == 0) {
+          await useFaucet(addr);
+        }
+        setEOA(auth);
+        setNetwork(network)
+        setWallet(FunWallet);
+        setWConnecting(false)
+        setLoading(false)
+       }
+
+    } catch (err) {
+      console.log("connect wallet connect error", err)
+    }
+  }
 
   async function connectWeb3Auth() {
     try {
@@ -163,7 +269,17 @@ export default function ConnectWallet(props) {
       const network = 5
       const provider = new ethers.providers.Web3Provider(web3authProvider)
       if (provider) {
-        const auth = new Web3AuthEoa({ provider })
+        const userInfo = await web3auth.getUserInfo()
+        console.log("userInfo", userInfo)
+        const idToken = await web3auth.authenticateUser()
+        console.log("idToken", idToken)
+        let uniqueID
+        if (userInfo.email) {
+          uniqueID = userInfo.typeOfLogin + "###" + userInfo.email
+        } else {
+          uniqueID = userInfo.typeOfLogin + "###" + userInfo.name
+        }
+        const auth = new Web3AuthEoa({ provider, uniqueID })
         const FunWallet = await createFunWallet(auth, 5, provider)
         const addr = await FunWallet.getAddress();
         FunWallet.address = addr;
@@ -233,6 +349,30 @@ export default function ConnectWallet(props) {
           <Image src="/wallet.svg" width="22" height="22" alt="" />
         )}
         <div className="ml-3 font-medium text-[#344054]">Connect Web3Auth</div>
+      </div>
+
+      <div
+        className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-center cursor-pointer py-[10px] px-4"
+        onClick={() => connectMagic("google")}
+      >
+        {wConnecting ? (
+          <Spinner />
+        ) : (
+          <Image src="/wallet.svg" width="22" height="22" alt="" />
+        )}
+        <div className="ml-3 font-medium text-[#344054]">Connect Magic Google</div>
+      </div>
+
+      <div
+        className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-center cursor-pointer py-[10px] px-4"
+        onClick={() => connectMagic("twitter")}
+      >
+        {wConnecting ? (
+          <Spinner />
+        ) : (
+          <Image src="/wallet.svg" width="22" height="22" alt="" />
+        )}
+        <div className="ml-3 font-medium text-[#344054]">Connect Magic Twitter</div>
       </div>
 
     </div>
