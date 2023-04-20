@@ -30,15 +30,11 @@ export default function wagmiClientBuilder() {
               appName: 'wagmi',
             },
           }),
-          new WalletConnectConnector({
-            options: {
-            projectId: '5a25d59af74387684be4b2fdf1ab0bc3',
-            },
-          }),
           new WalletConnectLegacyConnector({
             chains,
             options: {
               qrcode: true,
+              name: 'WalletConnect',
             }
           })
         ],

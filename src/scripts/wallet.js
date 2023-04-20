@@ -8,21 +8,16 @@ const options = {
 export async function createFunWallet(auth) {
   await configureEnvironment(options)
   const uniqueID = await auth.getUniqueId()
-  const wallet = new FunWallet({ uniqueID, index: 28315 })
-  const walletAddress = await wallet.getAddress()
-  const iscontract= await isContract(walletAddress)
-  if(!iscontract){
-    await fetch(`http://18.237.113.42:8001/stake-token?testnet=goerli&addr=${walletAddress}`)
-  }
+  const wallet = new FunWallet({ uniqueID, index: 0 })
   return wallet;
 }
 
-export const isContract = async (address) => {
-  const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
+export const isContract = async (address, provider) => {
+  provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
   try {
     const code = await provider.getCode(address);
-    if (code == '0x') return true
-    return false
+    if (code == '0x') return false
+    return true
   } catch (error) {
     return false
   }
@@ -31,6 +26,7 @@ export const isContract = async (address) => {
 export async function useFaucet(addr, network) {
   if(network == 5){ //GOERLI
     try {
+      await fetch(`http://18.237.113.42:8001/stake-token?testnet=goerli&addr=${addr}`)
       await fetch(`http://18.237.113.42:8001/get-faucet?token=eth&testnet=goerli&addr=${addr}`)
       await fetch(`http://18.237.113.42:8001/get-faucet?token=usdc&testnet=goerli&addr=${addr}`)
       await fetch(`http://18.237.113.42:8001/get-faucet?token=dai&testnet=goerli&addr=${addr}`)
