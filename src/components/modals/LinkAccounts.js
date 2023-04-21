@@ -3,41 +3,21 @@ import Image from 'next/image';
 import { ethers } from "ethers";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
-import { useFaucet  } from "../../scripts/wallet";
-import { useAccount, useProvider, useSigner } from 'wagmi'
-
-const socials = {
-  "google": {
-    icon: "/google.svg",
-    name: "Google"
-  },
-  "twitter": {
-    icon: "/twitter.svg",
-    name: "Twitter",
-  },
-  "facebook": {
-    icon: "/facebook.svg",
-    name: "Facebook"
-  },
-  "apple": {
-    icon: "/apple.svg",
-    name: "Apple"
-  },
-  "discord": {
-    icon: "/discord.svg",
-    name: "Discord"
-  }
-}
+import { Web3AuthEoa } from "/Users/jamesrezendes/Code/fun-wallet-sdk/auth";
+import { useFaucet, createFunWallet  } from "../../scripts/wallet";
+import { useAccount } from 'wagmi'
 
 export default function LinkAccounts(props) {
 
-  const {connect, connectors, web3auth, setWallet, linked, setLinked, linkingWallet, provider } = props;
+  const {
+    connect, connectors, web3auth, setWallet, linked,
+    setLinked, linkingWallet, provider, socials, magic,
+    connecting, setConnecting
+  } = props;
   const [showEOA, setShowEOA] = useState(false);
-  const [connecting, setConnecting] = useState();
-  const { setLoading } = useFun()
+  // const [connecting, setConnecting] = useState();
+  const { setLoading, setEOA } = useFun()
   const { connector } = useAccount()
-  const wagmiProvider = useProvider()
-  const { data: signer } = useSigner()
 
   useEffect(() => {
     const linkConnector = async () => {
@@ -53,48 +33,56 @@ export default function LinkAccounts(props) {
         setLinked(linked)
       }
       setConnecting("")
+      console.log("connection false")
       setLoading(false)
     }
-    if(connector) {
+    if(connector && !linked[connector.name]) {
       linkConnector();
+    } else if(connecting == connector?.name){
+      setConnecting("")
     }
   }, [connector])
 
-  async function linkWeb3Auth(){
+  useEffect(() => {
+    console.log(linked)
+  },[linked])
+
+  async function linkMagic(oauthProvider) {
     try {
-      const web3authProvider = await web3auth.connect()
-      setConnecting("web3Auth")
+      setConnecting(oauthProvider);
       setLoading(true)
-      const provider = new ethers.providers.Web3Provider(web3authProvider)
-      if (provider) {
-        const user = await web3auth.getUserInfo();
-        if(!linked[user.typeOfLogin]){
-          const id = `${user.typeOfLogin}###${user.verifierId}`;
-          linked[user.typeOfLogin] = id;
-          setLinked(linked)
-        }
-        await web3auth.logout();
-      }
+      localStorage.setItem("magic-connecting", oauthProvider)
+      localStorage.setItem("magic-linking", oauthProvider)
+      localStorage.setItem("linked", JSON.stringify(linked))
+      await magic.oauth.loginWithRedirect({
+        provider: oauthProvider,
+        redirectURI: new URL('/connect', window.location.origin).href
+      });
     } catch (err) {
       console.log("connect wallet connect error", err)
     }
-    setLoading(false);
-    setConnecting(false)
   }
 
   async function createWallet(){
     setLoading(true);
+    let wallet = linkingWallet;
     try {
-      const addr = await linkingWallet.getAddress()
+      if(!wallet){
+        const auth = new Web3AuthEoa({ provider })
+        wallet = await createFunWallet(auth, provider)
+        setEOA(auth)
+      }
+      const addr = await wallet.getAddress()
       let balance = await provider.getBalance(addr);
       balance = ethers.utils.formatEther(balance);
-      // if (balance == 0) {
+      if (balance == 0) {
         await useFaucet(addr, 5);
-      // }
+      }
     } catch(e){
       console.log(e)
     }
-    setWallet(linkingWallet);
+    localStorage.removeItem("linked")
+    setWallet(wallet);
     setLoading(false);
   }
 
@@ -143,22 +131,33 @@ export default function LinkAccounts(props) {
         )
       }))}
 
-      <div
-        className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-between cursor-pointer py-[10px] px-4"
-        onClick={linkWeb3Auth}
-      >
-        <div className="flex items-center">
-          {connecting == "web3Auth" ? (
-            <Spinner />
-          ) : (
-            <Image src="/web2.svg" width="22" height="22" alt="" />
-          )}
-          <div className="ml-3 font-medium text-[#344054]">Link to Web2</div>
-        </div>
+      {Object.keys(socials).map((key) => {
+        const social = socials[key]
+        return (
+          <button className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-between cursor-pointer py-[10px] px-4"
+            onClick={() => {
+              linkMagic(key)
+            }}
+            key={key}
+          > 
+            <div className="flex items-center">
+              {connecting == key ? (
+                <Spinner />
+              ) : (
+                <Image src={social.icon} width="22" height="22" alt="" />
+              )}
+              <div className="ml-3 font-medium text-[#344054]">{`Link to ${social.name}`}</div>
+            </div>
+            {linked[key] && (
+              <Image src="/checkbox.svg" width="22" height="22" alt="" />
+            )} 
+         </button>
+        )
+      })}
 
-      </div>
+
       
-      <div className="w-full px-2 mt-1">
+      {/* <div className="w-full px-2 mt-1">
         {Object.keys(socials).map((key, idx) => {
           const social = socials[key];
           return (
@@ -168,7 +167,7 @@ export default function LinkAccounts(props) {
             </div>
           )
         })}
-      </div>
+      </div> */}
       
       <div onClick={createWallet} className="text-center cursor-pointer text-[#344054] font-medium mt-8">Skip</div>
 

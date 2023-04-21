@@ -5,28 +5,13 @@ const options = {
   chain: 5,
   apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf"
 }
-export async function createFunWallet(auth, uniqueID, provider) {
+export async function createFunWallet(uniqueID, provider) {
   await configureEnvironment(options)
-
   const wallet = new FunWallet({ uniqueID, index: 28315 })
-  const walletAddress = await wallet.getAddress()
-  const iscontract= await isContract(walletAddress, provider)
-  if(!iscontract){
-    //stake
-    await fetch(`http://18.237.113.42:8001/stake-token?testnet=goerli&addr=${walletAddress}`)
-    console.log("Staked")
-  }
-
-  console.log(auth)
-  console.log(wallet)
-
-  // await prefundWallet(auth, wallet, 0)
-
   return wallet;
 }
 
 export const isContract = async (address, provider) => {
-  console.log(address)
   if(!provider) provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
   try {
     const code = await provider.getCode(address);

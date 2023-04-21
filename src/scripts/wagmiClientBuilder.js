@@ -4,9 +4,8 @@ import { InjectedConnector } from 'wagmi/connectors/injected'
 import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { WalletConnectLegacyConnector } from 'wagmi/connectors/walletConnectLegacy'
-import { MagicAuthConnector } from '@everipedia/wagmi-magic-connector';
-
 import { publicProvider } from 'wagmi/providers/public';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 
 export default function wagmiClientBuilder() {
 
@@ -38,16 +37,6 @@ export default function wagmiClientBuilder() {
               qrcode: true,
               name: 'WalletConnect',
             }
-          }),
-          new MagicAuthConnector({
-            chains,
-            options: {
-              apiKey: "pk_live_846F1095F0E1303C",
-              oauthOptions: {
-                providers: ['facebook', 'google', 'twitter'],
-                // callbackUrl: 'https://your-callback-url.com', //optional
-              }
-            },
           })
         ],
         provider,

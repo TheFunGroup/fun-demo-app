@@ -11,7 +11,7 @@ import erc20Abi from "../../utils/erc20Abi";
 
 export default function WalletView(props) {
 
-  const { wallet, setWallet, setEOA, network, setLoading } = useFun()
+  const { wallet, setWallet, eoa, setEOA, network, setLoading } = useFun()
 
   const router = useRouter()
   const [addr, setAddr] = useState()
