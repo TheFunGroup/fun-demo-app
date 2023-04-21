@@ -17,7 +17,7 @@ export const FunProvider = ({ children }) => {
   const [connectMethod, setConnectMethod] = useState();
 
   useEffect(() => {
-    if(!wallet || !network){
+    if((!wallet || !network) && (router.pathname !== "/connect")){
       router.push('/connect');
     }
   }, [wallet, network])

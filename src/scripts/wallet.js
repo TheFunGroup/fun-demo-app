@@ -5,10 +5,23 @@ const options = {
   chain: 5,
   apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf"
 }
-export async function createFunWallet(auth) {
+export async function createFunWallet(auth, uniqueID, provider) {
   await configureEnvironment(options)
-  const uniqueID = await auth.getUniqueId()
-  const wallet = new FunWallet({ uniqueID, index: 0 })
+
+  const wallet = new FunWallet({ uniqueID, index: 28315 })
+  const walletAddress = await wallet.getAddress()
+  const iscontract= await isContract(walletAddress, provider)
+  if(!iscontract){
+    //stake
+    await fetch(`http://18.237.113.42:8001/stake-token?testnet=goerli&addr=${walletAddress}`)
+    console.log("Staked")
+  }
+
+  console.log(auth)
+  console.log(wallet)
+
+  // await prefundWallet(auth, wallet, 0)
+
   return wallet;
 }
 
