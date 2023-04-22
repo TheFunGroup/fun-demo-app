@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
 import { ethers } from "ethers";
-import { createFunWallet, useFaucet, isContract } from "../../scripts/wallet";
+import { createFunWallet, useFaucet, isContract, getAddress } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
-import { Web3AuthEoa, Eoa } from "/Users/jamesrezendes/Code/fun-wallet-sdk/auth";
+import { MultiAuthEOA } from "/Users/jamesrezendes/Code/fun-wallet-sdk/auth";
 import { useAccount, useProvider, useConnect, useSigner } from 'wagmi'
 import LinkAccounts from "./LinkAccounts";
 import { useRouter } from 'next/router';
@@ -47,9 +47,7 @@ export default function ConnectWallet(props) {
   const [linkingWallet, setLinkingWallet] = useState();
   const [provider, setProvider] = useState();
   const router = useRouter()
-
   const [magic, setMagic] = useState()
-  const [creating, setCreating] = useState()
 
   useEffect(() => {
     const initMagicAuth = async () => {
@@ -67,9 +65,7 @@ export default function ConnectWallet(props) {
 
       const isLinking = localStorage.getItem("magic-linking");
       if(isLinking){
-        // setConnecting(isLinking)
         const Linked = JSON.parse(localStorage.getItem("linked"));
-        console.log({...linked, ...Linked});
         setLinked({...linked, ...Linked});
         setShowLinkMore(true);
       }
@@ -81,56 +77,49 @@ export default function ConnectWallet(props) {
 
   useEffect(() => {
     const connectFunWallet = async () => {
-      let provider = await connector?.getProvider()
+      setConnecting(connector.name)
+      setLoading(true)
+      let provider = await connector.getProvider()
       if (signer && provider) {
         const chainId = await connector.getChainId();
         if(chainId !== 5) await connector.switchChain(5)
         setNetwork(5)
-        provider = await connector?.getProvider();
-        const auth = new Eoa({ signer: signer, provider: provider })
-        setConnecting(connector.name)
-        setLoading(true)
-        setEOA(auth);
-        setConnectMethod("wagmi");
-        const uniqueId = await auth.getUniqueId()
-        const FunWallet = await createFunWallet(uniqueId)
-        const addr = await FunWallet.getAddress()
-        FunWallet.address = addr
-        console.log(FunWallet);
-        console.log(auth);
-        const deployed = await isContract(addr, wagmiProvider);
-        console.log("deployed", deployed)
-        if(deployed){
-          FunWallet.deployed = true
-        } else {
-          FunWallet.deployed = false;
-          setLinkingWallet(FunWallet)
-          setProvider(provider)
-          const eoaAddr = await connector.getAccount()
+        const eoaAddr = await signer.getAddress();
+        const funWalletAddr = await getAddress(eoaAddr, 5)
+        if(!funWalletAddr){
           if(!linked[connector.name]){
-            linked[connector.name] = `${connector.name}###${eoaAddr}`;
+            linked[connector.name] = `${eoaAddr}`;
             setLinked(linked)
           } 
+          setProvider(signer.provider)
           setShowLinkMore(true)
           setLoading(false)
           return;
         }
+        const auth = new MultiAuthEOA({provider, ids: [eoaAddr]})
+        const FunWallet = await createFunWallet(auth)
+        const addr = await FunWallet.getAddress()
+        FunWallet.address = addr
+        provider = await connector.getProvider()
         try {
-          let balance = await wagmiProvider.getBalance(addr);
+          let balance = await provider.getBalance(addr);
           balance = ethers.utils.formatEther(balance);
           if (balance == 0) {
+            FunWallet.deployed = false;
             await useFaucet(addr, 5);
+          } else {
+            FunWallet.deployed = true
           }
         } catch(e){
           console.log(e)
         }
-        setProvider(provider)
+        setProvider(signer.provider)
         setWallet(FunWallet);
         setConnecting("")
         setLoading(false)
       }
     }
-    if(!showLinkMore){
+    if(!showLinkMore && connector){
       connectFunWallet()
     }
   }, [signer, wagmiProvider])
@@ -141,7 +130,6 @@ export default function ConnectWallet(props) {
 
   const finishSocialLogin = async () => {
     const oauthProvider = localStorage.getItem("magic-connecting");
-    console.log("Connecting to " + oauthProvider)
     setConnecting(oauthProvider);
     setLoading(true)
     let result = await magic.oauth.getRedirectResult();
@@ -149,55 +137,46 @@ export default function ConnectWallet(props) {
     if(result.oauth.provider == "twitter"){
       id = result.oauth.userInfo.preferredUsername
     }
+    id = `${result.oauth.provider}###${id}`;
     localStorage.removeItem("magic-connecting");
     const isLinking = localStorage.getItem("magic-linking");
     const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
     if(isLinking && !linked[result.oauth.provider]){
-      linked[result.oauth.provider] = `${result.oauth.provider}###${id}`;
+      linked[result.oauth.provider] = id;
       setLinked(linked)
       setConnecting(false)
       setLoading(false)
-      setProvider(provider);
+      setProvider(provider)
       localStorage.removeItem("magic-linking")
       return;
     } 
-    const auth = new Web3AuthEoa({ provider })
-    const FunWallet = await createFunWallet(auth, provider)
-    const addr = await FunWallet.getAddress();
-    FunWallet.address = addr;
-    setEOA(auth);
-    const deployed = await isContract(addr, provider);
-    if(deployed){
-      FunWallet.deployed = true
-    } else {
-      FunWallet.deployed = false;
-      setLinkingWallet(FunWallet)
-      setProvider(provider)
+    const funWalletAddr = await getAddress(id, 5);
+    if(!funWalletAddr){
       if(!linked[result.oauth.provider]){
-        linked[result.oauth.provider] = `${result.oauth.provider}###${id}`;
+        linked[result.oauth.provider] = id;
         setLinked(linked)
       } 
+      setProvider(provider)
       setShowLinkMore(true)
       setLoading(false)
       setConnecting("")
       return;
     }
-    try {
-      const code = await provider.getCode(addr);
-    } catch (e) {
-      FunWallet.deployed = false
-    }
+    const auth = new MultiAuthEOA({ provider, ids: [id] })
+    const FunWallet = await createFunWallet(auth)
+    const addr = await FunWallet.getAddress();
+    FunWallet.address = addr;
     let balance = await provider.getBalance(addr);
     balance = ethers.utils.formatEther(balance);
     if (balance == 0) {
+      FunWallet.deployed = false
       await useFaucet(addr);
+    } else {
+      FunWallet.deployed = true;
     }
-    setNetwork(network)
     setWallet(FunWallet);
     setConnecting(false)
     setLoading(false)
-
-    // await createWallet(provider, "twitter###" + result.oauth.userInfo.preferredUsername)
   };
 
   async function connectMagic(oauthProvider) {
@@ -219,7 +198,7 @@ export default function ConnectWallet(props) {
       <LinkAccounts 
         connect={connect} connectors={connectors} setWallet={setWallet} socials={socials} magic={magic}
         linked={linked} setLinked={setLinked} linkingWallet={linkingWallet} provider={provider} 
-        connecting={connecting} setConnecting={setConnecting}
+        setProvider={setProvider} connecting={connecting} setConnecting={setConnecting} signer={signer}
       />
     )
   } else {
@@ -246,7 +225,7 @@ export default function ConnectWallet(props) {
             <button className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
               disabled={!connector.ready}
               onClick={() => {
-                connect({connector})
+                if(!connecting) connect({connector})
               }}
               key={idx}
             >
@@ -265,7 +244,7 @@ export default function ConnectWallet(props) {
           return (
             <div
               className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-center cursor-pointer py-[10px] px-4"
-              onClick={() => connectMagic(key)}
+              onClick={() => {if(!connecting) connectMagic(key)}}
               key={key}
             >
               {connecting == key ? (

@@ -10,6 +10,7 @@ import { calculateGas } from "../../scripts/calculateGas";
 import { handleSwap } from "../../scripts/swap";
 import { handleTransfer } from "../../scripts/transfer";
 import Spinner from "../misc/Spinner";
+import { getAddress } from "../../scripts/wallet";
 
 const examples = {
   "transfer": {
@@ -26,14 +27,14 @@ export default function Example(props) {
 
   const router = useRouter();
   const example = examples[props.example];
-  const network = 5;
 
-  const {wallet, eoa, setDeployedUrl, setLoading, paymentToken, setPaymentToken, setPaymentAddr, setPaymasterAddress} = useFun();
+  const {wallet, eoa, network, setDeployedUrl, setLoading, paymentToken, setPaymentToken, setPaymentAddr, setPaymasterAddress} = useFun();
 
   const [mustFund, setMustFund] = useState(false);
   const [mustApprove, setMustApprove] = useState(false);
   const [transfer, setTransfer] = useState([0.01, tokens[network][0]]);
   const [receiverAddr, setReceiverAddr] = useState("");
+  const [receiverTwitter, setReceiverTwitter] = useState("");
   const [swapExchange, setSwapExchange] = useState([0.01, tokens[network][0]]);
   const [swapReceive, setSwapReceive] = useState([18.06, tokens[network][1]]);
   const [slippage, setSlippage] = useState(0.5);
@@ -42,31 +43,42 @@ export default function Example(props) {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState();
 
-  function handleSubmit(){
+  async function handleSubmit(){
     if(submitting) return;
     setSubmitting(true)
     setLoading(true)
     if(props.example == "transfer"){
-      handleTransfer(wallet, paymentToken, {
-        token: transfer[1],
-        amount: transfer[0],
-        to: receiverAddr
-      }, eoa).then((data) => {
-        if(data.success){
-          setDeployedUrl(data.explorerUrl)
-          router.push("/success");
-        } else if(data.mustFund){
-          setMustFund(true);
-        } else if(data.mustApprove){
-          setPaymentAddr(data.tokenAddr);
-          setPaymasterAddress(data.paymasterAddress)
-          setMustApprove(true);
-        } else if(data.error){
-          setError(data.error)
-        }
+      let addr = receiverAddr;
+      if(!addr && receiverTwitter){
+        addr = await getAddress(`twitter###${receiverTwitter.substring(1)}`, network || 5)
+      }
+      if(!addr) {
+        setError("No wallet address found from twitter handle")
         setSubmitting(false)
         setLoading(false)
-      })
+        return;
+      } else {
+        handleTransfer(wallet, paymentToken, {
+          token: transfer[1],
+          amount: transfer[0],
+          to: receiverAddr
+        }, eoa).then((data) => {
+          if(data.success){
+            setDeployedUrl(data.explorerUrl)
+            router.push("/success");
+          } else if(data.mustFund){
+            setMustFund(true);
+          } else if(data.mustApprove){
+            setPaymentAddr(data.tokenAddr);
+            setPaymasterAddress(data.paymasterAddress)
+            setMustApprove(true);
+          } else if(data.error){
+            setError(data.error)
+          }
+          setSubmitting(false)
+          setLoading(false)
+        })
+      }
     } else if(props.example == "swap"){
       handleSwap(wallet, paymentToken, {
         token1: swapExchange[1],
@@ -98,33 +110,41 @@ export default function Example(props) {
 
   useEffect(() => {
     if(props.example == "transfer"){
-      calculateGas(paymentToken, wallet, null, {
-        token: transfer[1],
-        amount: transfer[0],
-        to: receiverAddr
-      }).then((gas) => {
-        setGas(`${gas.token} ${paymentToken} · $${gas.usd}`)
-      })
-      if(transfer[0] > 0 && receiverAddr){
+      if(paymentToken !== "gasless"){
+        calculateGas(paymentToken, wallet, null, {
+          token: transfer[1],
+          amount: transfer[0],
+          to: receiverAddr
+        }).then((gas) => {
+          setGas(`${gas.token} ${paymentToken} · $${gas.usd}`)
+        })
+      } else {
+        setGas(`$0.00`)
+      }
+      if(transfer[0] > 0 && (receiverAddr || receiverTwitter)){
         setSubmitReady(true)
       } else {
         setSubmitReady(false)
       }
     } else if(props.example == "swap"){
-      calculateGas(paymentToken, wallet, {
-        token1: swapExchange[1],
-        amount: swapExchange[0],
-        token2: swapReceive[1]
-      }, null).then((gas) => {
-        setGas(`${gas.token} ${paymentToken} · $${gas.usd}`)
-      })
+      if(paymentToken !== "gasless"){
+        calculateGas(paymentToken, wallet, {
+          token1: swapExchange[1],
+          amount: swapExchange[0],
+          token2: swapReceive[1]
+        }, null).then((gas) => {
+          setGas(`${gas.token} ${paymentToken} · $${gas.usd}`)
+        })
+      } else {
+        setGas(`$0.00`)
+      }
       if(swapExchange[0] > 0){
         setSubmitReady(true)
       } else {
         setSubmitReady(false)
       }
     }
-  }, [paymentToken, swapExchange, swapReceive, transfer, receiverAddr])
+  }, [paymentToken, swapExchange, swapReceive, transfer, receiverAddr, receiverTwitter])
 
   useEffect(() => {
     setLoading(false)
@@ -174,7 +194,11 @@ export default function Example(props) {
       <div className="text-[#667085] text-sm mt-1 mb-10 whitespace-nowrap">{example.description}</div>
 
       {props.example == "transfer" && (
-        <TransferForm transfer={transfer} setTransfer={setTransfer} receiverAddr={receiverAddr} setReceiverAddr={setReceiverAddr}/>
+        <TransferForm 
+          transfer={transfer} setTransfer={setTransfer}
+          receiverAddr={receiverAddr} setReceiverAddr={setReceiverAddr}
+          receiverTwitter={receiverTwitter} setReceiverTwitter={setReceiverTwitter}
+        />
       )}
 
       {props.example == "swap" && (

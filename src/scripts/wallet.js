@@ -5,9 +5,13 @@ const options = {
   chain: 5,
   apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf"
 }
-export async function createFunWallet(uniqueID, provider) {
+export async function createFunWallet(auth) {
   await configureEnvironment(options)
+  const uniqueID = auth.getUniqueId();
+  console.log(uniqueID)
   const wallet = new FunWallet({ uniqueID, index: 28315 })
+  const addr = await wallet.getAddress();
+  wallet.address = addr;
   return wallet;
 }
 
@@ -59,4 +63,13 @@ export async function useFaucet(addr, network) {
     }
   }
 
+}
+
+export async function getAddress(uniqueID, chainId){
+  try {
+    const addr = await FunWallet.getAddress(uniqueID, chainId)
+    return addr;
+  } catch(e){
+    return false;
+  }
 }

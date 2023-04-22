@@ -33,11 +33,10 @@ export default function WalletView(props) {
 
 
   useEffect(() => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
     if(networks[network]){
       if(wallet.address){
         setAddr(wallet.address);
-        let provider = eoa.signer ? eoa.signer.provider : eoa.provider
+        let provider = eoa.signer ? eoa.signer.provider : eoa.provider;
         provider.getBalance(wallet.address).then((balance) => {
           balance = ethers.utils.formatEther(balance);
           setBalance(Number(balance).toFixed(6))
@@ -54,7 +53,6 @@ export default function WalletView(props) {
   }, [network])
 
   async function getCoinBalances(provider) {
-    console.log("within getCoinBalances")
     const usdcContract = new ethers.Contract("0xaa8958047307da7bb00f0766957edec0435b46b5" , erc20Abi, provider);
     let usdcBalance = await usdcContract.balanceOf(wallet.address)
     usdcBalance = ethers.utils.formatUnits(usdcBalance, 6)
