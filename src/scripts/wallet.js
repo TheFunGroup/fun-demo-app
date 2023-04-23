@@ -1,4 +1,4 @@
-import { FunWallet, configureEnvironment } from "/Users/jamesrezendes/Code/fun-wallet-sdk";
+import { FunWallet, configureEnvironment } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk";
 import { ethers } from "ethers";
 
 const options = {
@@ -7,16 +7,15 @@ const options = {
 }
 export async function createFunWallet(auth) {
   await configureEnvironment(options)
-  const uniqueID = auth.getUniqueId();
-  console.log(uniqueID)
-  const wallet = new FunWallet({ uniqueID, index: 28315 })
+  const uniqueId = await auth.getUniqueId();
+  const wallet = new FunWallet({ uniqueId, index: 28315 })
   const addr = await wallet.getAddress();
   wallet.address = addr;
   return wallet;
 }
 
 export const isContract = async (address, provider) => {
-  if(!provider) provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
+  if (!provider) provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
   try {
     const code = await provider.getCode(address);
     if (code == '0x') return false
@@ -27,7 +26,7 @@ export const isContract = async (address, provider) => {
 }
 
 export async function useFaucet(addr, network) {
-  if(network == 5){ //GOERLI
+  if (network == 5) { //GOERLI
     try {
       await fetch(`http://18.237.113.42:8001/stake-token?testnet=goerli&addr=${addr}`)
       await fetch(`http://18.237.113.42:8001/get-faucet?token=eth&testnet=goerli&addr=${addr}`)
@@ -41,35 +40,35 @@ export async function useFaucet(addr, network) {
 
     }
   }
-  else if(network == 1){ //MAINNET
+  else if (network == 1) { //MAINNET
     try {
 
-    } catch(e){
+    } catch (e) {
 
     }
   }
-  else if(network == 137){ //POLYGON
+  else if (network == 137) { //POLYGON
     try {
 
-    } catch(e){
+    } catch (e) {
 
     }
   }
-  else if(network == 56){ //BSC
+  else if (network == 56) { //BSC
     try {
 
-    } catch(e){
+    } catch (e) {
 
     }
   }
 
 }
 
-export async function getAddress(uniqueID, chainId){
+export async function getAddress(uniqueId, index, chainId) {
   try {
-    const addr = await FunWallet.getAddress(uniqueID, chainId)
+    const addr = await FunWallet.getAddress(uniqueId, index, chainId)
     return addr;
-  } catch(e){
+  } catch (e) {
     return false;
   }
 }

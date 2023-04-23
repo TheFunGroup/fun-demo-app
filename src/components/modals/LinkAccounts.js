@@ -3,8 +3,8 @@ import Image from 'next/image';
 import { ethers } from "ethers";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
-import { MultiAuthEoa } from "/Users/jamesrezendes/Code/fun-wallet-sdk/auth";
-import { useFaucet, createFunWallet  } from "../../scripts/wallet";
+import { MultiAuthEoa } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/auth";
+import { useFaucet, createFunWallet } from "../../scripts/wallet";
 import { useAccount } from 'wagmi'
 
 export default function LinkAccounts(props) {
@@ -23,10 +23,10 @@ export default function LinkAccounts(props) {
       setConnecting(connector.name)
       setLoading(true)
       const chainId = await connector.getChainId();
-      if(chainId !== 5) await connector.switchChain(5)
+      if (chainId !== 5) await connector.switchChain(5)
       const signer = await connector.getSigner();
       const provider = signer.provider;
-      if(!linked[connector.name]){
+      if (!linked[connector.name]) {
         const eoaAddr = await connector.getAccount()
         linked[connector.name] = `${eoaAddr}`;
         setLinked(linked)
@@ -35,9 +35,9 @@ export default function LinkAccounts(props) {
       setConnecting("")
       setLoading(false)
     }
-    if(connector && !linked[connector.name]) {
+    if (connector && !linked[connector.name]) {
       linkConnector();
-    } else if(connecting == connector?.name){
+    } else if (connecting == connector?.name) {
       setConnecting("")
     }
   }, [connector])
@@ -58,17 +58,17 @@ export default function LinkAccounts(props) {
     }
   }
 
-  async function createWallet(){
-    if(creating) return;
+  async function createWallet() {
+    if (creating) return;
     setLoading(true);
     setCreating(true)
     try {
       let ids = [];
       const methods = Object.keys(linked);
-      for(let i=0;i<methods.length;i++){
-        ids.push(linked[methods])
+      for (let i = 0; i < methods.length; i++) {
+        ids.push(linked[methods[i]])
       }
-      const auth = new MultiAuthEoa({ provider, ids })
+      const auth = new MultiAuthEoa({ provider, authIds: ids })
       const wallet = await createFunWallet(auth)
       setEOA(auth)
       const addr = await wallet.getAddress()
@@ -78,7 +78,7 @@ export default function LinkAccounts(props) {
         await useFaucet(addr, 5);
       }
       setWallet(wallet);
-    } catch(e){
+    } catch (e) {
       console.log(e)
     }
     localStorage.removeItem("linked")
@@ -107,15 +107,15 @@ export default function LinkAccounts(props) {
 
       {(connectors.map((connector, idx) => {
         let name = connector.name;
-        if(name == "WalletConnectLegacy") name = "WalletConnect"
+        if (name == "WalletConnectLegacy") name = "WalletConnect"
         return (
           <button className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-between cursor-pointer py-[10px] px-4"
             disabled={!connector.ready}
             onClick={() => {
-              if(!connecting) connect({connector})
+              if (!connecting) connect({ connector })
             }}
             key={idx}
-          > 
+          >
             <div className="flex items-center">
               {connecting == connector.name ? (
                 <Spinner />
@@ -126,8 +126,8 @@ export default function LinkAccounts(props) {
             </div>
             {linked[connector.name] && (
               <Image src="/checkbox.svg" width="22" height="22" alt="" />
-            )} 
-         </button>
+            )}
+          </button>
         )
       }))}
 
@@ -136,10 +136,10 @@ export default function LinkAccounts(props) {
         return (
           <button className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-between cursor-pointer py-[10px] px-4"
             onClick={() => {
-              if(!connecting) linkMagic(key)
+              if (!connecting) linkMagic(key)
             }}
             key={key}
-          > 
+          >
             <div className="flex items-center">
               {connecting == key ? (
                 <Spinner />
@@ -150,11 +150,11 @@ export default function LinkAccounts(props) {
             </div>
             {linked[key] && (
               <Image src="/checkbox.svg" width="22" height="22" alt="" />
-            )} 
-         </button>
+            )}
+          </button>
         )
       })}
-      
+
       <div onClick={createWallet} className={`
         flex justify-center items-center text-center cursor-pointer
         mt-8 button-dark font-medium w-full p-4

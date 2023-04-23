@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
-import { configureEnvironment } from "/Users/jamesrezendes/Code/fun-wallet-sdk/managers"
-import { TokenSponsor } from "/Users/jamesrezendes/Code/fun-wallet-sdk/sponsors"
-import { Token } from "/Users/jamesrezendes/Code/fun-wallet-sdk/data"
+import { configureEnvironment } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/managers"
+import { TokenSponsor } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/sponsors"
+import { Token } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/data"
 import { tokens } from "../utils/tokens"
 import erc20ABI from "../utils/funTokenAbi.json";
 import { isContract } from "./wallet";
@@ -81,6 +81,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
     })
 
     //Tells frontend swap was success
+    console.log("txId: ", receipt.txid)
     return { success: true, explorerUrl: `https://goerli.etherscan.io/tx/${receipt.txid}` }
 
 

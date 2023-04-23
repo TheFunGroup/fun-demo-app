@@ -23,6 +23,8 @@ const examples = {
   }
 }
 
+const WALLET_INDEX = 28315
+
 export default function Example(props) {
 
   const router = useRouter();
@@ -50,7 +52,7 @@ export default function Example(props) {
     if(props.example == "transfer"){
       let addr = receiverAddr;
       if(!addr && receiverTwitter){
-        addr = await getAddress(`twitter###${receiverTwitter.substring(1)}`, network || 5)
+        addr = await getAddress(`twitter###${receiverTwitter.substring(1)}`, WALLET_INDEX, network || 5)
       }
       if(!addr) {
         setError("No wallet address found from twitter handle")
@@ -61,7 +63,7 @@ export default function Example(props) {
         handleTransfer(wallet, paymentToken, {
           token: transfer[1],
           amount: transfer[0],
-          to: receiverAddr
+          to: addr
         }, eoa).then((data) => {
           if(data.success){
             setDeployedUrl(data.explorerUrl)
