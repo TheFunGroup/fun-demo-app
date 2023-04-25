@@ -64,7 +64,7 @@ export default function ConnectWallet(props) {
         setNetwork(5)
         const eoaAddr = await signer.getAddress();
         if(!provider.getBalance) provider = (await connector.getSigner()).provider;
-        connectFunWallet(connector.name, eoaAddr, provider);
+        connectFunWallet(connector.name, eoaAddr, provider, eoaAddr);
       }
     }
     if (!showLinkMore && connector) {
@@ -76,23 +76,21 @@ export default function ConnectWallet(props) {
     if (router.query.provider) finishSocialLogin();
   }, [router.query]);
 
-  async function connectFunWallet(connector, authId, provider){
+  async function connectFunWallet(connector, authId, provider, publicKey){
     const funWalletAddr = await getAddress(authId, 5)
     const contractFlag = await isContract(funWalletAddr)
     if (!contractFlag) {
-      console.log(linked)
       if (!linked[connector]) {
-        linked[connector] = authId;
+        linked[connector] = [authId, publicKey];
         setLinked(linked)
       }
-      console.log(linked)
       setProvider(provider)
       setShowLinkMore(true)
       setLoading(false)
       setConnecting("")
       return;
     }
-    const auth = new MultiAuthEoa({ provider, authIds: [authId] })
+    const auth = new MultiAuthEoa({ provider, authIds: [[authId, publicKey]] })
     const FunWallet = await createFunWallet(auth)
     const addr = await FunWallet.getAddress()
     FunWallet.address = addr
@@ -120,7 +118,6 @@ export default function ConnectWallet(props) {
     setConnecting(oauthProvider);
     setLoading(true)
     let result = await magic.oauth.getRedirectResult();
-    console.log(result);
     let authId = result.oauth.userInfo.email;
     let publicAddress = result.magic.userMetadata.publicAddress
     if (result.oauth.provider == "twitter") {
@@ -134,7 +131,7 @@ export default function ConnectWallet(props) {
       const addr = await getAddress(authId, network || 5);
       const contractFlag = await isContract(addr)
       if(!contractFlag){
-        linked[result.oauth.provider] = authId;
+        linked[result.oauth.provider] = [authId, publicAddress]
       } else {
         alert("This account is already connected to a FunWallet")
       }
@@ -145,7 +142,7 @@ export default function ConnectWallet(props) {
       localStorage.removeItem("magic-linking")
       return;
     }
-    connectFunWallet(result.oauth.provider, authId, provider)
+    connectFunWallet(result.oauth.provider, authId, provider, publicAddress)
   };
 
   async function connectMagic(oauthProvider) {

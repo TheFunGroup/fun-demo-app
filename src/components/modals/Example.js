@@ -53,9 +53,8 @@ export default function Example(props) {
     if(props.example == "transfer"){
       let addr = receiverAddr;
       if(!addr && receiverTwitter){
-        addr = await getAddress(`twitter###${receiverTwitter.substring(1)}`, WALLET_INDEX, network || 5, API_KEY)
+        addr = await getAddress(`twitter###${receiverTwitter.substring(1)}`, network || 5);
       }
-      console.log("Transfer to addr: ", addr)
       if(!addr) {
         setError("No wallet address found from twitter handle")
         setSubmitting(false)
@@ -236,9 +235,9 @@ export default function Example(props) {
           onClick={handleSubmit}
           style={ (!submitReady || submitting) ? { opacity: 0.8, pointerEvents: "none" } : {}}
         >
-          <div>{props.example == "transfer" ? "Transfer" : "Swap"}</div>
+          <div className={submitting ? "mr-2" : ""}>{props.example == "transfer" ? "Transfer" : "Swap"}</div>
           {submitting && (
-            <Spinner marginLeft="8px"/>
+            <Spinner/>
           )}
         </div>
 

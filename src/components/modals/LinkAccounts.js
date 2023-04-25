@@ -33,7 +33,7 @@ export default function LinkAccounts(props) {
         const addr = await getAddress(eoaAddr, network || 5);
         const contractFlag = await isContract(addr)
         if(!contractFlag){
-          linked[connector.name] = eoaAddr
+          linked[connector.name] = [eoaAddr, eoaAddr]
         } else {
           alert("This account is already connected to a FunWallet")
         }
@@ -80,9 +80,7 @@ export default function LinkAccounts(props) {
       const wallet = await createFunWallet(auth)
       setEOA(auth)
       const addr = await wallet.getAddress()
-      console.log(addr)
       let balance = await provider.getBalance(addr);
-      console.log(balance)
       balance = ethers.utils.formatEther(balance);
       if (balance == 0) {
         await useFaucet(addr, 5);
