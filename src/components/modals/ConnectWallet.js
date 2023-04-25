@@ -4,40 +4,13 @@ import { ethers } from "ethers";
 import { createFunWallet, useFaucet, isContract, getAddress } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
-import { MultiAuthEoa } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/auth";
+import { MultiAuthEoa } from "/Users/jamesrezendes/Code/fun-wallet-sdk/auth";
 import { useAccount, useProvider, useConnect, useSigner } from 'wagmi'
 import LinkAccounts from "./LinkAccounts";
 import { useRouter } from 'next/router';
 import { Magic } from 'magic-sdk';
 import { OAuthExtension } from '@magic-ext/oauth';
-
-// move to somewhere else
-const socials = {
-  "google": {
-    icon: "/google.svg",
-    name: "Google"
-  },
-  "twitter": {
-    icon: "/twitter.svg",
-    name: "Twitter",
-  },
-  "facebook": {
-    icon: "/facebook.svg",
-    name: "Facebook"
-  },
-  "apple": {
-    icon: "/apple.svg",
-    name: "Apple"
-  },
-  "discord": {
-    icon: "/discord.svg",
-    name: "Discord"
-  }
-}
-
-// same, move to somewhere else, and reuse everywhere
-const WALLET_INDEX = 28316
-const API_KEY = "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf"
+import socials from "../../utils/socials";
 
 export default function ConnectWallet(props) {
   const { connect, connectors } = useConnect()
@@ -81,53 +54,21 @@ export default function ConnectWallet(props) {
 
 
   useEffect(() => {
-    const connectFunWallet = async () => {
+    async function connectEOA(){
       setConnecting(connector.name)
       setLoading(true)
-      let provider = await connector.getProvider()
+      let provider = await connector.getProvider({chainId: 5})
       if (signer && provider) {
         const chainId = await connector.getChainId();
         if (chainId !== 5) await connector.switchChain(5)
         setNetwork(5)
         const eoaAddr = await signer.getAddress();
-        const funWalletAddr = await getAddress(eoaAddr, WALLET_INDEX, 5, API_KEY)
-        const contractFlag = await isContract(funWalletAddr)
-        if (!contractFlag) {
-          if (!linked[connector.name]) {
-            linked[connector.name] = [`${eoaAddr}`, `${eoaAddr}`];
-            setLinked(linked)
-          }
-          setProvider(signer.provider)
-          setShowLinkMore(true)
-          setLoading(false)
-          return;
-        }
-        const auth = new MultiAuthEoa({ provider, authIds: [[eoaAddr, eoaAddr]] })
-        const FunWallet = await createFunWallet(auth)
-        const addr = await FunWallet.getAddress()
-        FunWallet.address = addr
-        provider = await connector.getProvider()
-        try {
-          let balance = await provider.getBalance(addr);
-          balance = ethers.utils.formatEther(balance);
-          if (balance == 0) {
-            FunWallet.deployed = false;
-            await useFaucet(addr, 5);
-          } else {
-            FunWallet.deployed = true
-          }
-        } catch (e) {
-          console.log(e)
-        }
-        setProvider(signer.provider)
-        setWallet(FunWallet);
-        setEOA(auth)
-        setConnecting("")
-        setLoading(false)
+        if(!provider.getBalance) provider = (await connector.getSigner()).provider;
+        connectFunWallet(connector.name, eoaAddr, provider);
       }
     }
     if (!showLinkMore && connector) {
-      connectFunWallet()
+      connectEOA()
     }
   }, [signer, wagmiProvider])
 
@@ -135,22 +76,68 @@ export default function ConnectWallet(props) {
     if (router.query.provider) finishSocialLogin();
   }, [router.query]);
 
+  async function connectFunWallet(connector, authId, provider){
+    const funWalletAddr = await getAddress(authId, 5)
+    const contractFlag = await isContract(funWalletAddr)
+    if (!contractFlag) {
+      console.log(linked)
+      if (!linked[connector]) {
+        linked[connector] = authId;
+        setLinked(linked)
+      }
+      console.log(linked)
+      setProvider(provider)
+      setShowLinkMore(true)
+      setLoading(false)
+      setConnecting("")
+      return;
+    }
+    const auth = new MultiAuthEoa({ provider, authIds: [authId] })
+    const FunWallet = await createFunWallet(auth)
+    const addr = await FunWallet.getAddress()
+    FunWallet.address = addr
+    try {
+      let balance = await provider.getBalance(addr);
+      balance = ethers.utils.formatEther(balance);
+      if (balance == 0) {
+        FunWallet.deployed = false;
+        await useFaucet(addr, 5);
+      } else {
+        FunWallet.deployed = true
+      }
+    } catch (e) {
+      console.log(e)
+    }
+    setProvider(provider)
+    setWallet(FunWallet);
+    setEOA(auth)
+    setConnecting("")
+    setLoading(false)
+  }
+
   const finishSocialLogin = async () => {
     const oauthProvider = localStorage.getItem("magic-connecting");
     setConnecting(oauthProvider);
     setLoading(true)
     let result = await magic.oauth.getRedirectResult();
-    let id = result.oauth.userInfo.email;
+    console.log(result);
+    let authId = result.oauth.userInfo.email;
     let publicAddress = result.magic.userMetadata.publicAddress
     if (result.oauth.provider == "twitter") {
-      id = result.oauth.userInfo.preferredUsername
+      authId = result.oauth.userInfo.preferredUsername
     }
-    id = `${result.oauth.provider}###${id}`;
+    authId = `${result.oauth.provider}###${authId}`;
     localStorage.removeItem("magic-connecting");
     const isLinking = localStorage.getItem("magic-linking");
     const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
     if (isLinking && !linked[result.oauth.provider]) {
-      linked[result.oauth.provider] = [id, publicAddress];
+      const addr = await getAddress(authId, network || 5);
+      const contractFlag = await isContract(addr)
+      if(!contractFlag){
+        linked[result.oauth.provider] = authId;
+      } else {
+        alert("This account is already connected to a FunWallet")
+      }
       setLinked(linked)
       setConnecting(false)
       setLoading(false)
@@ -158,39 +145,7 @@ export default function ConnectWallet(props) {
       localStorage.removeItem("magic-linking")
       return;
     }
-    console.log("FunWallet before get addr: ", id, WALLET_INDEX)
-    const funWalletAddr = await getAddress(id, WALLET_INDEX, 5, API_KEY);
-    console.log("FunWallet after get addr: ", funWalletAddr)
-    const contractFlag = await isContract(funWalletAddr)
-    if (!contractFlag) {
-      if (!linked[result.oauth.provider]) {
-        linked[result.oauth.provider] = [id, publicAddress];
-        setLinked(linked)
-      }
-      setProvider(provider)
-      setShowLinkMore(true)
-      setLoading(false)
-      setConnecting("")
-      return;
-    }
-    const auth = new MultiAuthEoa({ provider, authIds: [[id, publicAddress]] })
-    const FunWallet = await createFunWallet(auth)
-    console.log("CreateFunWallet before")
-    const addr = await FunWallet.getAddress();
-    console.log("CreateFunWallet after addr: ", addr)
-    FunWallet.address = addr;
-    let balance = await provider.getBalance(addr);
-    balance = ethers.utils.formatEther(balance);
-    if (balance == 0) {
-      FunWallet.deployed = false
-      await useFaucet(addr);
-    } else {
-      FunWallet.deployed = true;
-    }
-    setWallet(FunWallet)
-    setEOA(auth)
-    setConnecting(false)
-    setLoading(false)
+    connectFunWallet(result.oauth.provider, authId, provider)
   };
 
   async function connectMagic(oauthProvider) {
@@ -210,7 +165,7 @@ export default function ConnectWallet(props) {
   if (showLinkMore) {
     return (
       <LinkAccounts
-        connect={connect} connectors={connectors} setWallet={setWallet} socials={socials} magic={magic}
+        connect={connect} connectors={connectors} setWallet={setWallet} magic={magic}
         linked={linked} setLinked={setLinked} linkingWallet={linkingWallet} provider={provider}
         setProvider={setProvider} connecting={connecting} setConnecting={setConnecting} signer={signer}
       />

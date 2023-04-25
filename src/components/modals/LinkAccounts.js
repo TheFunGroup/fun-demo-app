@@ -3,15 +3,16 @@ import Image from 'next/image';
 import { ethers } from "ethers";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
-import { MultiAuthEoa } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/auth";
+import { MultiAuthEoa } from "/Users/jamesrezendes/Code/fun-wallet-sdk/auth";
 import { useFaucet, createFunWallet } from "../../scripts/wallet";
 import { useAccount } from 'wagmi'
+import socials from "../../utils/socials";
 
 export default function LinkAccounts(props) {
 
   const {
     connect, connectors, setWallet, linked,
-    setLinked, provider, setProvider, socials, magic,
+    setLinked, provider, setProvider, magic,
     connecting, setConnecting, signer
   } = props;
   const { setLoading, setEOA } = useFun()
@@ -25,10 +26,17 @@ export default function LinkAccounts(props) {
       const chainId = await connector.getChainId();
       if (chainId !== 5) await connector.switchChain(5)
       const signer = await connector.getSigner();
-      const provider = signer.provider;
+      const provider = await connector.getProvider();
+      // const provider = signer.provider;
       if (!linked[connector.name]) {
         const eoaAddr = await connector.getAccount()
-        linked[connector.name] = `${eoaAddr}`;
+        const addr = await getAddress(eoaAddr, network || 5);
+        const contractFlag = await isContract(addr)
+        if(!contractFlag){
+          linked[connector.name] = eoaAddr
+        } else {
+          alert("This account is already connected to a FunWallet")
+        }
         setLinked(linked)
       }
       setProvider(provider)
@@ -72,7 +80,9 @@ export default function LinkAccounts(props) {
       const wallet = await createFunWallet(auth)
       setEOA(auth)
       const addr = await wallet.getAddress()
+      console.log(addr)
       let balance = await provider.getBalance(addr);
+      console.log(balance)
       balance = ethers.utils.formatEther(balance);
       if (balance == 0) {
         await useFaucet(addr, 5);
@@ -91,19 +101,6 @@ export default function LinkAccounts(props) {
       <Image src="/fun.svg" width="52" height="42" alt="" />
       <div className="font-semibold text-2xl mt-6 text-[#101828]">Unlock more options for accessing your FunWallet</div>
       <div className="text-sm text-[#667085] mt-1">Add sign-in methods. Please note you can only add them during creation.</div>
-
-      {/* {!showEOA && (
-        <div
-          className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-between cursor-pointer py-[10px] px-4"
-          onClick={() => setShowEOA(true)}
-        > 
-          <div className="flex items-center">
-            <Image src="/wallet.svg" width="22" height="22" alt="" />
-            <div className="ml-3 font-medium text-[#344054]">Link to EOA</div>
-          </div>
-          <div></div>
-        </div>
-      )} */}
 
       {(connectors.map((connector, idx) => {
         let name = connector.name;

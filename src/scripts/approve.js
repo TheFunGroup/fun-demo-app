@@ -1,4 +1,4 @@
-import { configureEnvironment } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/managers";
+import { configureEnvironment } from "/Users/jamesrezendes/Code/fun-wallet-sdk/managers";
 //Amount is in USDC
 export const handleApprove = async function (wallet, auth, paymasterAddress, paymentAddr, amount = 500) {
   await configureEnvironment({

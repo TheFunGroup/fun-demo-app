@@ -1,4 +1,4 @@
-import { FunWallet, configureEnvironment } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk";
+import { FunWallet, configureEnvironment } from "/Users/jamesrezendes/Code/fun-wallet-sdk";
 import { ethers } from "ethers";
 
 const options = {
@@ -67,7 +67,7 @@ export async function useFaucet(addr, network) {
 
 }
 
-export async function getAddress(uniqueId, index, chainId, apiKey) {
+export async function getAddress(uniqueId, chainId, index=WALLET_INDEX, apiKey=options.apiKey) {
   try {
     const addr = await FunWallet.getAddress(uniqueId, index, chainId, apiKey)
     return addr;
