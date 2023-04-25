@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Image from 'next/image';
 import { ethers } from "ethers";
 import { createFunWallet, useFaucet, isContract, getAddress } from "../../scripts/wallet";
@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import { Magic } from 'magic-sdk';
 import { OAuthExtension } from '@magic-ext/oauth';
 
+// move to somewhere else
 const socials = {
   "google": {
     icon: "/google.svg",
@@ -34,7 +35,9 @@ const socials = {
   }
 }
 
-const WALLET_INDEX = 28315
+// same, move to somewhere else, and reuse everywhere
+const WALLET_INDEX = 28316
+const API_KEY = "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf"
 
 export default function ConnectWallet(props) {
   const { connect, connectors } = useConnect()
@@ -87,11 +90,11 @@ export default function ConnectWallet(props) {
         if (chainId !== 5) await connector.switchChain(5)
         setNetwork(5)
         const eoaAddr = await signer.getAddress();
-        const funWalletAddr = await getAddress(eoaAddr, WALLET_INDEX, 5)
+        const funWalletAddr = await getAddress(eoaAddr, WALLET_INDEX, 5, API_KEY)
         const contractFlag = await isContract(funWalletAddr)
         if (!contractFlag) {
           if (!linked[connector.name]) {
-            linked[connector.name] = `${eoaAddr}`;
+            linked[connector.name] = [`${eoaAddr}`, `${eoaAddr}`];
             setLinked(linked)
           }
           setProvider(signer.provider)
@@ -99,7 +102,7 @@ export default function ConnectWallet(props) {
           setLoading(false)
           return;
         }
-        const auth = new MultiAuthEoa({ provider, authIds: [eoaAddr] })
+        const auth = new MultiAuthEoa({ provider, authIds: [[eoaAddr, eoaAddr]] })
         const FunWallet = await createFunWallet(auth)
         const addr = await FunWallet.getAddress()
         FunWallet.address = addr
@@ -138,6 +141,7 @@ export default function ConnectWallet(props) {
     setLoading(true)
     let result = await magic.oauth.getRedirectResult();
     let id = result.oauth.userInfo.email;
+    let publicAddress = result.magic.userMetadata.publicAddress
     if (result.oauth.provider == "twitter") {
       id = result.oauth.userInfo.preferredUsername
     }
@@ -146,7 +150,7 @@ export default function ConnectWallet(props) {
     const isLinking = localStorage.getItem("magic-linking");
     const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
     if (isLinking && !linked[result.oauth.provider]) {
-      linked[result.oauth.provider] = id;
+      linked[result.oauth.provider] = [id, publicAddress];
       setLinked(linked)
       setConnecting(false)
       setLoading(false)
@@ -154,11 +158,13 @@ export default function ConnectWallet(props) {
       localStorage.removeItem("magic-linking")
       return;
     }
-    const funWalletAddr = await getAddress(id, WALLET_INDEX, 5);
+    console.log("FunWallet before get addr: ", id, WALLET_INDEX)
+    const funWalletAddr = await getAddress(id, WALLET_INDEX, 5, API_KEY);
+    console.log("FunWallet after get addr: ", funWalletAddr)
     const contractFlag = await isContract(funWalletAddr)
     if (!contractFlag) {
       if (!linked[result.oauth.provider]) {
-        linked[result.oauth.provider] = id;
+        linked[result.oauth.provider] = [id, publicAddress];
         setLinked(linked)
       }
       setProvider(provider)
@@ -167,9 +173,11 @@ export default function ConnectWallet(props) {
       setConnecting("")
       return;
     }
-    const auth = new MultiAuthEoa({ provider, authIds: [id] })
+    const auth = new MultiAuthEoa({ provider, authIds: [[id, publicAddress]] })
     const FunWallet = await createFunWallet(auth)
+    console.log("CreateFunWallet before")
     const addr = await FunWallet.getAddress();
+    console.log("CreateFunWallet after addr: ", addr)
     FunWallet.address = addr;
     let balance = await provider.getBalance(addr);
     balance = ethers.utils.formatEther(balance);

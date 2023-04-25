@@ -23,7 +23,8 @@ const examples = {
   }
 }
 
-const WALLET_INDEX = 28315
+const WALLET_INDEX = 28316
+const API_KEY = "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf"
 
 export default function Example(props) {
 
@@ -52,8 +53,9 @@ export default function Example(props) {
     if(props.example == "transfer"){
       let addr = receiverAddr;
       if(!addr && receiverTwitter){
-        addr = await getAddress(`twitter###${receiverTwitter.substring(1)}`, WALLET_INDEX, network || 5)
+        addr = await getAddress(`twitter###${receiverTwitter.substring(1)}`, WALLET_INDEX, network || 5, API_KEY)
       }
+      console.log("Transfer to addr: ", addr)
       if(!addr) {
         setError("No wallet address found from twitter handle")
         setSubmitting(false)
