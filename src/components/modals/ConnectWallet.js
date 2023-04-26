@@ -117,32 +117,38 @@ export default function ConnectWallet(props) {
     const oauthProvider = localStorage.getItem("magic-connecting");
     setConnecting(oauthProvider);
     setLoading(true)
-    let result = await magic.oauth.getRedirectResult();
-    let authId = result.oauth.userInfo.email;
-    let publicAddress = result.magic.userMetadata.publicAddress
-    if (result.oauth.provider == "twitter") {
-      authId = result.oauth.userInfo.preferredUsername
-    }
-    authId = `${result.oauth.provider}###${authId}`;
-    localStorage.removeItem("magic-connecting");
-    const isLinking = localStorage.getItem("magic-linking");
-    const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
-    if (isLinking && !linked[result.oauth.provider]) {
-      const addr = await getAddress(authId, network || 5);
-      const contractFlag = await isContract(addr)
-      if(!contractFlag){
-        linked[result.oauth.provider] = [authId, publicAddress]
-      } else {
-        alert("This account is already connected to a FunWallet")
+    try {
+      let result = await magic.oauth.getRedirectResult();
+      let authId = result.oauth.userInfo.email;
+      let publicAddress = result.magic.userMetadata.publicAddress
+      if (result.oauth.provider == "twitter") {
+        authId = result.oauth.userInfo.preferredUsername
       }
-      setLinked(linked)
-      setConnecting(false)
+      authId = `${result.oauth.provider}###${authId}`;
+      localStorage.removeItem("magic-connecting");
+      const isLinking = localStorage.getItem("magic-linking");
+      const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
+      if (isLinking && !linked[result.oauth.provider]) {
+        const addr = await getAddress(authId, network || 5);
+        const contractFlag = await isContract(addr)
+        if(!contractFlag){
+          linked[result.oauth.provider] = [authId, publicAddress]
+        } else {
+          alert("This account is already connected to a FunWallet")
+        }
+        setLinked(linked)
+        setConnecting(false)
+        setLoading(false)
+        setProvider(provider)
+        localStorage.removeItem("magic-linking")
+        return;
+      }
+      connectFunWallet(result.oauth.provider, authId, provider, publicAddress)
+    } catch(e){
+      setConnecting("");
       setLoading(false)
-      setProvider(provider)
-      localStorage.removeItem("magic-linking")
-      return;
+      localStorage.removeItem("magic-connecting");
     }
-    connectFunWallet(result.oauth.provider, authId, provider, publicAddress)
   };
 
   async function connectMagic(oauthProvider) {
