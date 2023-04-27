@@ -10,6 +10,7 @@ export const FunProvider = ({ children }) => {
   const [wallet, setWallet] = useState();
   const [network, setNetwork] = useState(5);
   const [deployedUrl, setDeployedUrl] = useState();
+  const [minted, setMinted] = useState();
   const [loading, setLoading] = useState()
   const [paymentToken, setPaymentToken] = useState("ETH");
   const [paymentAddr, setPaymentAddr] = useState();
@@ -28,6 +29,7 @@ export const FunProvider = ({ children }) => {
       wallet, setWallet,
       network, setNetwork,
       deployedUrl, setDeployedUrl,
+      minted, setMinted,
       loading, setLoading,
       paymentToken, setPaymentToken,
       paymentAddr, setPaymentAddr,

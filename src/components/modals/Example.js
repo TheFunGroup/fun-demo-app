@@ -5,21 +5,30 @@ import { useFun } from "../../contexts/funContext";
 import { tokens } from "../../utils/tokens";
 import TransferForm from "../forms/TransferForm";
 import SwapForm from "../forms/SwapForm";
+import NFTForm from "../forms/NFTForm";
 import PaymentMethod from "../forms/PaymentMethod";
 import { calculateGas } from "../../scripts/calculateGas";
 import { handleSwap } from "../../scripts/swap";
 import { handleTransfer } from "../../scripts/transfer";
+import { handleMintNFT } from "../../scripts/mintNFT";
 import Spinner from "../misc/Spinner";
 import { getAddress } from "../../scripts/wallet";
 
 const examples = {
+  "nft": {
+    title: "Mint NFT",
+    description: "Use your FunWallet to mint the selected NFT",
+    submit: "Mint"
+  },
   "transfer": {
     title: "Transfer",
-    description: "Specify the amount you are transferring and the address it is being sent to."
+    description: "Specify the amount you are transferring and the address it is being sent to.",
+    submit: "Transfer"
   },
   "swap": {
     title: "Uniswap",
-    description: "Specify the amount and token you are exchanging, and the amount and token you will receive."
+    description: "Specify the amount and token you are exchanging, and the amount and token you will receive.",
+    submit: "Swap"
   }
 }
 
@@ -31,7 +40,7 @@ export default function Example(props) {
   const router = useRouter();
   const example = examples[props.example];
 
-  const {wallet, eoa, network, setDeployedUrl, setLoading, paymentToken, setPaymentToken, setPaymentAddr, setPaymasterAddress} = useFun();
+  const {wallet, eoa, network, setDeployedUrl, setMinted, setLoading, paymentToken, setPaymentToken, setPaymentAddr, setPaymasterAddress} = useFun();
 
   const [mustFund, setMustFund] = useState(false);
   const [mustApprove, setMustApprove] = useState(false);
@@ -103,6 +112,26 @@ export default function Example(props) {
         setSubmitting(false)
         setLoading(false)
       })
+    } else if(props.example == "nft"){
+      handleMintNFT(wallet, paymentToken, {
+        nft: props.nft, //add extra nft data here
+      }, eoa).then((data) => {
+        if(data.success){
+          setMinted(data.nft?.nft)
+          setDeployedUrl(data.explorerUrl)
+          router.push('/success');
+        } else if(data.mustFund){
+          setMustFund(true);
+        } else if(data.mustApprove){
+          setPaymentAddr(data.tokenAddr);
+          setPaymasterAddress(data.paymasterAddress)
+          setMustApprove(true);
+        } else if(data.error){
+          setError(data.error)
+        }
+        setSubmitting(false)
+        setLoading(false)
+      })
     }
   }
 
@@ -146,6 +175,8 @@ export default function Example(props) {
       } else {
         setSubmitReady(false)
       }
+    } else if(props.example == "nft"){
+      if(props.nft) setSubmitReady(true);
     }
   }, [paymentToken, swapExchange, swapReceive, transfer, receiverAddr, receiverTwitter])
 
@@ -196,6 +227,10 @@ export default function Example(props) {
       <div className="text-[#101828] font-semibold text-xl">{example.title}</div>
       <div className="text-[#667085] text-sm mt-1 mb-10 whitespace-nowrap">{example.description}</div>
 
+      {props.example == "nft" && (
+        <NFTForm nft={props.nft}/>
+      )}
+
       {props.example == "transfer" && (
         <TransferForm 
           transfer={transfer} setTransfer={setTransfer}
@@ -235,7 +270,7 @@ export default function Example(props) {
           onClick={handleSubmit}
           style={ (!submitReady || submitting) ? { opacity: 0.8, pointerEvents: "none" } : {}}
         >
-          <div className={submitting ? "mr-2" : ""}>{props.example == "transfer" ? "Transfer" : "Swap"}</div>
+          <div className={submitting ? "mr-2" : ""}>{examples[props.example].submit}</div>
           {submitting && (
             <Spinner/>
           )}

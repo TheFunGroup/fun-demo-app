@@ -8,7 +8,6 @@ import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
 import { useAccount, useSigner } from 'wagmi'
 import { Eoa } from "/Users/jamesrezendes/Code/fun-wallet-sdk/auth";
-import web3AuthClient from "../../scripts/web3auth";
 
 export default function NetworkSelect(props) {
 

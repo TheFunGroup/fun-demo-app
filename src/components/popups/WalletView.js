@@ -31,6 +31,7 @@ export default function WalletView(props) {
   const [usdtBalance, setUsdtBalance] = useState();
   const [usdtBalanceUSD, setUsdtBalanceUSD] = useState();
 
+  const [tab, setTab] = useState("balance");
 
   useEffect(() => {
     if(networks[network]){
@@ -81,6 +82,15 @@ export default function WalletView(props) {
   useEffect(() => {
     if(!dropdown) setShowSettings(false)
   }, [dropdown])
+
+  useEffect(() => {
+    if(router.query.view){
+      if(router.query.view == "nfts"){
+        setTab("nfts")
+        setDropdown(true);
+      }
+    }
+  }, [router.query])
 
   function handleCopyAddr(){
     var copyText = document.createElement('input');
@@ -148,56 +158,91 @@ export default function WalletView(props) {
                 </div>
                 <Image src="/gear.svg" width="24" height="24" alt="" className="cursor-pointer" onClick={() => setShowSettings(true)}/>
               </div>
-              <div className="p-6 pt-0 w-full flex items-center flex-col">
-                <Image src="/profile.svg" width="80" height="80" className="mt-4" alt=""/>
-                <div className="flex items-end">
-                  <div className="text-[32px] font-semibold mr-1">{Number(balance).toFixed(6)}</div>
-                  <div className="text-[#667085] mb-2">{networks[network]?.nativeCurrency.symbol}</div>
+              {tab == "balance" && (
+                <div className="p-6 pt-0 w-full flex items-center flex-col max-h-[427px] overflow-y-scroll">
+                  <Image src="/profile.svg" width="80" height="80" className="mt-4" alt=""/>
+                  <div className="flex items-end">
+                    <div className="text-[32px] font-semibold mr-1">{Number(balance).toFixed(6)}</div>
+                    <div className="text-[#667085] mb-2">{networks[network]?.nativeCurrency.symbol}</div>
+                  </div>
+                  <div className="text-[#667085] text-lg -mt-1">{`$${balanceUSD} USD`}</div>
+                  <div className="button-dark text-center py-3 px-4 w-full mt-6 font-medium" onClick={handleFund}>Fund</div>
+                  <div className="self-start text-black text-lg font-[590] mt-6 mb-2">Coins</div>
+                  
+                  {usdcBalance && (
+                    <div className="w-full flex justify-between items-center my-2 mb-[6px]">
+                      <div className="flex items-center">
+                        <Image src="/usdc-coin.svg" width="40" height="40" alt="" className="mr-4"/>
+                        <div>
+                          <div className="text-black">USD Coin</div>
+                          <div className="text-[#667085] text-sm">{`${usdcBalance} USDC`}</div>
+                        </div>
+                      </div>
+                      <div className="text-black">{`$${usdcBalanceUSD}`}</div>
+                    </div>
+                  )}
+
+                  {daiBalance && (
+                    <div className="w-full flex justify-between items-center my-[6px]">
+                      <div className="flex items-center">
+                        <Image src="/dai-coin.svg" width="40" height="40" alt="" className="mr-4"/>
+                        <div>
+                          <div className="text-black">DAI</div>
+                          <div className="text-[#667085] text-sm">{`${daiBalance} DAI`}</div>
+                        </div>
+                      </div>
+                      <div className="text-black">{`$${daiBalanceUSD}`}</div>
+                    </div>
+                  )}
+
+                  {usdtBalance && (
+                    <div className="w-full flex justify-between items-center mt-[6px]">
+                      <div className="flex items-center">
+                        <Image src="/usdt-coin.svg" width="40" height="40" alt="" className="mr-4"/>
+                        <div>
+                          <div className="text-black">USD Tether</div>
+                          <div className="text-[#667085] text-sm">{`${usdtBalance} USDT`}</div>
+                        </div>
+                      </div>
+                      <div className="text-black">{`$${usdtBalanceUSD}`}</div>
+                    </div>
+                  )}
+
                 </div>
-                <div className="text-[#667085] text-lg -mt-1">{`$${balanceUSD} USD`}</div>
-                <div className="button-dark text-center py-3 px-4 w-full mt-6 font-medium" onClick={handleFund}>Fund</div>
-                <div className="self-start text-black text-lg font-[590] mt-6 mb-2">Coins</div>
-                
-                {usdcBalance && (
-                  <div className="w-full flex justify-between items-center my-2 mb-[6px]">
-                    <div className="flex items-center">
-                      <Image src="/usdc-coin.svg" width="40" height="40" alt="" className="mr-4"/>
-                      <div>
-                        <div className="text-black">USD Coin</div>
-                        <div className="text-[#667085] text-sm">{`${usdcBalance} USDC`}</div>
-                      </div>
-                    </div>
-                    <div className="text-black">{`$${usdcBalanceUSD}`}</div>
-                  </div>
-                )}
+              )}
 
-                {daiBalance && (
-                  <div className="w-full flex justify-between items-center my-[6px]">
+              {tab == "nfts" && (
+                <div className="w-full max-h-[427px] min-h-[427px] overflow-y-scroll p-6 pt-0 flex flex-col items-center">
+                  <div className="w-full flex items-center justify-between my-6">
                     <div className="flex items-center">
-                      <Image src="/dai-coin.svg" width="40" height="40" alt="" className="mr-4"/>
-                      <div>
-                        <div className="text-black">DAI</div>
-                        <div className="text-[#667085] text-sm">{`${daiBalance} DAI`}</div>
-                      </div>
+                      <div className="text-xl font-semibold text-black mr-1">NFTs</div>
+                      <div className="text-[#74777C] text-xl font-semibold">1</div>
                     </div>
-                    <div className="text-black">{`$${daiBalanceUSD}`}</div>
-                  </div>
-                )}
-
-                {usdtBalance && (
-                  <div className="w-full flex justify-between items-center mt-[6px]">
-                    <div className="flex items-center">
-                      <Image src="/usdt-coin.svg" width="40" height="40" alt="" className="mr-4"/>
-                      <div>
-                        <div className="text-black">USD Tether</div>
-                        <div className="text-[#667085] text-sm">{`${usdtBalance} USDT`}</div>
-                      </div>
+                    <div className="flex items-center cursor-pointer" onClick={() => router.push("/nft")}>
+                      <img width="20" height="20" src="/mint-fill.svg"/>
+                      <div className="text-[#2D4EA2] text-sm font-semibold ml-1">Mint an NFT</div>
                     </div>
-                    <div className="text-black">{`$${usdtBalanceUSD}`}</div>
                   </div>
-                )}
+                  <img src="/nft1.png" width="312" height="312" />
+                </div>
+              )}
 
+
+              <div className="w-full border-t-[1px] border-[#E4E7EC] flex items-center h-[64px]">
+                <div 
+                  className={`w-full h-[64px] flex items-center justify-center ${tab == "balance" ? "" : "cursor-pointer opacity-50"}`}
+                  onClick={() => setTab("balance")}
+                >
+                  <img src="home.svg" width="24" height="24"/>
+                </div>
+                <div 
+                  className={`w-full h-[64px] flex items-center justify-center ${tab == "nfts" ? "" : "cursor-pointer opacity-50"}`}
+                  onClick={() => setTab("nfts")}
+                >
+                  <img src="nfts.svg" width="24" height="24"/>
+                </div>
               </div>
+
             </div>
           )}
 
