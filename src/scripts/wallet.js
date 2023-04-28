@@ -1,4 +1,4 @@
-import { FunWallet, configureEnvironment } from "/Users/jamesrezendes/Code/fun-wallet-sdk";
+import { FunWallet, configureEnvironment } from "/Users/aaronchew/CodeProjects/fun-wallet-sdk";
 import { ethers } from "ethers";
 
 const options = {
