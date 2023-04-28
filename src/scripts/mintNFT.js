@@ -10,22 +10,12 @@ import { Eoa } from '/Users/aaronchew/CodeProjects/fun-wallet-sdk/auth'
 import nftABI from "../utils/nftABI.json"
 export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
   try {
-    // const privateKey = "0x6270ba97d41630c84de28dd8707b0d1c3a9cd465f7a2dba7d21b69e7a1981064"
-    // const rpcUrl = "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
-    // const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
-    // const signer = new ethers.Wallet(privateKey, provider)
-    // const auth = new Eoa({ signer })
-    // Get FunWallet associated with EOA
-    // const uniqueId = await auth.getUniqueId()
-    // const funWallet = new FunWallet({ uniqueId, index: 10232 })
-    // console.log(global.chain)
+   
     const nft = new ethers.Contract("0x18e6a90659114a53ef143045e8b36d790ee3cd6c", nftABI)
     const address = await wallet.getAddress()
     const tx = await nft.populateTransaction.safeMint(address)
-    console.log(tx)
     let rec = await wallet.execRawTx(auth, tx)
-    // rec = await rec.wait()
-    console.log(rec)
+
     return { success: true, explorerUrl: `https://goerli.etherscan.io/tx/${rec.txid}`, nft }
   } catch (e) {
     console.log(e)
