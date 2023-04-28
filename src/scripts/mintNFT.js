@@ -15,16 +15,17 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
     // const provider = new ethers.providers.JsonRpcProvider(rpcUrl)
     // const signer = new ethers.Wallet(privateKey, provider)
     // const auth = new Eoa({ signer })
-    // // Get FunWallet associated with EOA
+    // Get FunWallet associated with EOA
     // const uniqueId = await auth.getUniqueId()
     // const funWallet = new FunWallet({ uniqueId, index: 10232 })
-
-    const signer = await auth.getSigner()
-    const nft = new ethers.Contract("0x18e6a90659114a53ef143045e8b36d790ee3cd6c", nftABI, signer)
+    // console.log(global.chain)
+    const nft = new ethers.Contract("0x18e6a90659114a53ef143045e8b36d790ee3cd6c", nftABI)
     const address = await wallet.getAddress()
     const tx = await nft.populateTransaction.safeMint(address)
-    const rec = await wallet.execRawTx(auth, tx)
-
+    console.log(tx)
+    let rec = await wallet.execRawTx(auth, tx)
+    // rec = await rec.wait()
+    console.log(rec)
     return { success: true, explorerUrl: `https://goerli.etherscan.io/tx/${rec.txid}`, nft }
   } catch (e) {
     console.log(e)

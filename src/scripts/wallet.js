@@ -6,11 +6,12 @@ const options = {
   apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf"
 }
 
-const WALLET_INDEX = 28319
+const WALLET_INDEX = 38719
 
 export async function createFunWallet(auth) {
   await configureEnvironment(options)
   const uniqueId = await auth.getUniqueId();
+  console.log("uniqueid", uniqueId)
   const wallet = new FunWallet({ uniqueId, index: WALLET_INDEX })
   const addr = await wallet.getAddress();
   wallet.address = addr;
