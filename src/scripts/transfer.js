@@ -15,6 +15,7 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
     const walletAddress = await wallet.getAddress()
     let tokenaddr = "eth"
     let paymentaddr = ""
+    
     for (let i of tokens["5"]) {
       if (i.name == transferData.token.name && transferData.token.name != "ETH") {
         tokenaddr = i.addr
@@ -23,7 +24,7 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
         paymentaddr = i.addr
       }
     }
-
+    
     let balance = 0;
     const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
     if (transferData.token.name == "ETH") {
@@ -37,12 +38,12 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
       return { success: false, mustFund: true }
     }
 
-    if (paymentToken != "ETH") { //use paymaster
+    if (paymentToken != "ETH" && paymentToken != "gasless") { //use paymaster
       await configureEnvironment({
         chain: 5,
         apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
         gasSponsor: {
-          sponsorAddress: '0x175C5611402815Eba550Dad16abd2ac366a63329',
+          sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
           token: paymentaddr
         }
       })
@@ -62,6 +63,16 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
       }
 
     }
+    else if(paymentToken=="gasless"){
+      console.log('using gasless')
+      await configureEnvironment({
+        chain: 5,
+        apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
+        gasSponsor: {
+          sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
+        }
+      })
+    }
     else {
       await configureEnvironment({
         chain: 5,
@@ -73,12 +84,12 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
     if (transferData.token.name != "ETH") {
       const receipt = await wallet.transfer(auth, { to: transferData.to, amount: transferData.amount, token: tokenaddr })
       console.log("txId: ", receipt.txid)
-      return { success: true, explorerUrl: `https://goerli.etherscan.io/tx/${receipt.txid}` }
+      return { success: true, explorerUrl: `https://goerli.etherscan.io/address/${walletAddress}#internaltx` }
     }
     else {
       const receipt = await wallet.transfer(auth, { to: transferData.to, amount: transferData.amount })
       console.log("txId: ", receipt.txid)
-      return { success: true, explorerUrl: `https://goerli.etherscan.io/tx/${receipt.txid}` }
+      return { success: true, explorerUrl: `https://goerli.etherscan.io/address/${walletAddress}#internaltx` }
     }
   } catch (e) {
     console.log(e)

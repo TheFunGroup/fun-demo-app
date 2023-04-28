@@ -11,12 +11,60 @@ import nftABI from "../utils/nftABI.json"
 export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
   try {
 
+    const walletAddress = await wallet.getAddress()
+    let paymentaddr = ""
+    for (let i of tokens["5"]) {
+      if (i.name == paymentToken && paymentToken != "ETH") {
+        paymentaddr = i.addr
+      }
+    }
+    //token paymaster
+    if(paymentToken != "ETH" && paymentToken != "gasless"){
+      await configureEnvironment({
+        chain: 5,
+        apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
+        gasSponsor: {
+          sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
+          token: paymentaddr
+        }
+      })
+
+      const gasSponsor = new TokenSponsor()
+      const paymasterAddress = await gasSponsor.getPaymasterAddress()
+      const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
+      const erc20Contract = new ethers.Contract(paymentaddr, erc20ABI.abi, provider)
+
+      const iscontract = await isContract(walletAddress)
+      if (iscontract) {
+        let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress)//paymaster address
+        allowance = ethers.utils.formatUnits(allowance, 6);
+        if (Number(allowance) < Number(5)) {//amt
+          //if approved, pop up modal, and ask for approval
+          return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
+        }
+      }
+    }
+    else if(paymentToken=="gasless"){
+      await configureEnvironment({
+        chain: 5,
+        apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
+        gasSponsor: {
+          sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
+        }
+      })
+    }
+    else{ //base
+      await configureEnvironment({
+        chain: 5,
+        apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
+        gasSponsor: false
+      })
+    }
     const nft = new ethers.Contract("0x18e6a90659114a53ef143045e8b36d790ee3cd6c", nftABI)
-    const address = await wallet.getAddress()
-    const tx = await nft.populateTransaction.safeMint(address)
+    const tx = await nft.populateTransaction.safeMint(walletAddress)
     let rec = await wallet.execRawTx(auth, tx)
 
-    return { success: true, explorerUrl: `https://goerli.etherscan.io/tx/${rec.txid}`, nft }
+    return { success: true, explorerUrl: `https://goerli.etherscan.io/address/${walletAddress}#internaltx`, nft }
   } catch (e) {
     console.log(e)
     return { success: false, error: e }

@@ -41,12 +41,12 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
       return { success: false, mustFund: true }
     }
     // // Tells frontend that funwallet must be funded  
-    if (paymentToken != "ETH") { //use paymaster
+    if (paymentToken != "ETH" && paymentToken != "gasless") { //use paymaster
       await configureEnvironment({
         chain: 5,
         apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
         gasSponsor: {
-          sponsorAddress: "0x175C5611402815Eba550Dad16abd2ac366a63329",
+          sponsorAddress: "0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9",
           token: paymentaddr
         }
       })
@@ -67,6 +67,15 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
         }
       }
     }
+    else if(paymentToken=="gasless"){
+      await configureEnvironment({
+        chain: 5,
+        apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
+        gasSponsor: {
+          sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
+        }
+      })
+    }
     else {
       await configureEnvironment({
         chain: 5,
@@ -82,7 +91,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
 
     //Tells frontend swap was success
     console.log("txId: ", receipt.txid)
-    return { success: true, explorerUrl: `https://goerli.etherscan.io/tx/${receipt.txid}` }
+    return { success: true, explorerUrl: `https://goerli.etherscan.io/address/${walletAddress}#internaltx`}
 
 
   } catch (e) {
