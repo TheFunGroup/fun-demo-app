@@ -1,9 +1,5 @@
-import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/router";
-import Image from 'next/image';
 import Layout from '../components/layout';
 import Example from "../components/modals/Example";
-import { useFun } from "../contexts/funContext";
 
 export default function Swap() {
     return (

@@ -1,7 +1,6 @@
-import { ethers } from "ethers";
-import { configureEnvironment } from "@fun-wallet/sdk/managers";
+import { configureEnvironment } from "fun-wallet/managers";
 //Amount is in USDC
-export const handleApprove = async function (wallet, auth, paymasterAddress, paymentAddr, amount=500) {
+export const handleApprove = async function (wallet, auth, paymasterAddress, paymentAddr, amount = 500) {
   await configureEnvironment({
     gasSponsor: false
   })

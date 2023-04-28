@@ -2,25 +2,33 @@ import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
 import { useRouter } from "next/router";
 import { useFun } from "../../contexts/funContext";
-import { networks,  connectToNetwork } from "../../utils/networks";
 import { tokens } from "../../utils/tokens";
-import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 import TransferForm from "../forms/TransferForm";
 import SwapForm from "../forms/SwapForm";
+import NFTForm from "../forms/NFTForm";
 import PaymentMethod from "../forms/PaymentMethod";
 import { calculateGas } from "../../scripts/calculateGas";
 import { handleSwap } from "../../scripts/swap";
 import { handleTransfer } from "../../scripts/transfer";
+import { handleMintNFT } from "../../scripts/mintNFT";
 import Spinner from "../misc/Spinner";
+import { getAddress } from "../../scripts/wallet";
 
 const examples = {
+  "nft": {
+    title: "Mint NFT",
+    description: "Use your FunWallet to mint the selected NFT",
+    submit: "Mint"
+  },
   "transfer": {
     title: "Transfer",
-    description: "Specify the amount you are transferring and the address it is being sent to."
+    description: "Specify the amount you are transferring and the address it is being sent to.",
+    submit: "Transfer"
   },
   "swap": {
     title: "Uniswap",
-    description: "Specify the amount and token you are exchanging, and the amount and token you will receive."
+    description: "Specify the amount and token you are exchanging, and the amount and token you will receive.",
+    submit: "Swap"
   }
 }
 
@@ -28,14 +36,14 @@ export default function Example(props) {
 
   const router = useRouter();
   const example = examples[props.example];
-  const network = 5;
 
-  const {wallet, eoa, setDeployedUrl, setLoading, paymentToken, setPaymentToken, setPaymentAddr, setPaymasterAddress} = useFun();
+  const {wallet, eoa, network, setDeployedUrl, setMinted, setLoading, paymentToken, setPaymentToken, setPaymentAddr, setPaymasterAddress} = useFun();
 
   const [mustFund, setMustFund] = useState(false);
   const [mustApprove, setMustApprove] = useState(false);
   const [transfer, setTransfer] = useState([0.01, tokens[network][0]]);
   const [receiverAddr, setReceiverAddr] = useState("");
+  const [receiverTwitter, setReceiverTwitter] = useState("");
   const [swapExchange, setSwapExchange] = useState([0.01, tokens[network][0]]);
   const [swapReceive, setSwapReceive] = useState([18.06, tokens[network][1]]);
   const [slippage, setSlippage] = useState(0.5);
@@ -44,19 +52,51 @@ export default function Example(props) {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState();
 
-  function handleSubmit(){
+  async function handleSubmit(){
     if(submitting) return;
     setSubmitting(true)
     setLoading(true)
     if(props.example == "transfer"){
-      handleTransfer(wallet, paymentToken, {
-        token: transfer[1],
-        amount: transfer[0],
-        to: receiverAddr
+      let addr = receiverAddr;
+      if(!addr && receiverTwitter){
+        addr = await getAddress(`twitter###${receiverTwitter.substring(1)}`, network || 5);
+      }
+      if(!addr) {
+        setError("No wallet address found from twitter handle")
+        setSubmitting(false)
+        setLoading(false)
+        return;
+      } else {
+        handleTransfer(wallet, paymentToken, {
+          token: transfer[1],
+          amount: transfer[0],
+          to: addr
+        }, eoa).then((data) => {
+          if(data.success){
+            setDeployedUrl(data.explorerUrl)
+            router.push("/success");
+          } else if(data.mustFund){
+            setMustFund(true);
+          } else if(data.mustApprove){
+            setPaymentAddr(data.tokenAddr);
+            setPaymasterAddress(data.paymasterAddress)
+            setMustApprove(true);
+          } else if(data.error){
+            setError(data.error)
+          }
+          setSubmitting(false)
+          setLoading(false)
+        })
+      }
+    } else if(props.example == "swap"){
+      handleSwap(wallet, paymentToken, {
+        token1: swapExchange[1],
+        amount: swapExchange[0],
+        token2: swapReceive[1]
       }, eoa).then((data) => {
         if(data.success){
           setDeployedUrl(data.explorerUrl)
-          router.push("/success");
+          router.push('/success');
         } else if(data.mustFund){
           setMustFund(true);
         } else if(data.mustApprove){
@@ -69,13 +109,12 @@ export default function Example(props) {
         setSubmitting(false)
         setLoading(false)
       })
-    } else if(props.example == "swap"){
-      handleSwap(wallet, paymentToken, {
-        token1: swapExchange[1],
-        amount: swapExchange[0],
-        token2: swapReceive[1]
+    } else if(props.example == "nft"){
+      handleMintNFT(wallet, paymentToken, {
+        nft: props.nft, //add extra nft data here
       }, eoa).then((data) => {
         if(data.success){
+          setMinted(data.nft?.nft)
           setDeployedUrl(data.explorerUrl)
           router.push('/success');
         } else if(data.mustFund){
@@ -100,33 +139,43 @@ export default function Example(props) {
 
   useEffect(() => {
     if(props.example == "transfer"){
-      calculateGas(paymentToken, wallet, null, {
-        token: transfer[1],
-        amount: transfer[0],
-        to: receiverAddr
-      }).then((gas) => {
-        setGas(`${gas.token} ${paymentToken} · $${gas.usd}`)
-      })
-      if(transfer[0] > 0 && receiverAddr){
+      if(paymentToken !== "gasless"){
+        calculateGas(paymentToken, wallet, null, {
+          token: transfer[1],
+          amount: transfer[0],
+          to: receiverAddr
+        }).then((gas) => {
+          setGas(`${gas.token} ${paymentToken} · $${gas.usd}`)
+        })
+      } else {
+        setGas(`$0.00`)
+      }
+      if(transfer[0] > 0 && (receiverAddr || receiverTwitter)){
         setSubmitReady(true)
       } else {
         setSubmitReady(false)
       }
     } else if(props.example == "swap"){
-      calculateGas(paymentToken, wallet, {
-        token1: swapExchange[1],
-        amount: swapExchange[0],
-        token2: swapReceive[1]
-      }, null).then((gas) => {
-        setGas(`${gas.token} ${paymentToken} · $${gas.usd}`)
-      })
+      if(paymentToken !== "gasless"){
+        calculateGas(paymentToken, wallet, {
+          token1: swapExchange[1],
+          amount: swapExchange[0],
+          token2: swapReceive[1]
+        }, null).then((gas) => {
+          setGas(`${gas.token} ${paymentToken} · $${gas.usd}`)
+        })
+      } else {
+        setGas(`$0.00`)
+      }
       if(swapExchange[0] > 0){
         setSubmitReady(true)
       } else {
         setSubmitReady(false)
       }
+    } else if(props.example == "nft"){
+      if(props.nft) setSubmitReady(true);
     }
-  }, [paymentToken, swapExchange, swapReceive, transfer, receiverAddr])
+  }, [paymentToken, swapExchange, swapReceive, transfer, receiverAddr, receiverTwitter])
 
   useEffect(() => {
     setLoading(false)
@@ -175,8 +224,16 @@ export default function Example(props) {
       <div className="text-[#101828] font-semibold text-xl">{example.title}</div>
       <div className="text-[#667085] text-sm mt-1 mb-10 whitespace-nowrap">{example.description}</div>
 
+      {props.example == "nft" && (
+        <NFTForm nft={props.nft}/>
+      )}
+
       {props.example == "transfer" && (
-        <TransferForm transfer={transfer} setTransfer={setTransfer} receiverAddr={receiverAddr} setReceiverAddr={setReceiverAddr}/>
+        <TransferForm 
+          transfer={transfer} setTransfer={setTransfer}
+          receiverAddr={receiverAddr} setReceiverAddr={setReceiverAddr}
+          receiverTwitter={receiverTwitter} setReceiverTwitter={setReceiverTwitter}
+        />
       )}
 
       {props.example == "swap" && (
@@ -210,9 +267,9 @@ export default function Example(props) {
           onClick={handleSubmit}
           style={ (!submitReady || submitting) ? { opacity: 0.8, pointerEvents: "none" } : {}}
         >
-          <div>{props.example == "transfer" ? "Transfer" : "Swap"}</div>
+          <div className={submitting ? "mr-2" : ""}>{examples[props.example].submit}</div>
           {submitting && (
-            <Spinner marginLeft="8px"/>
+            <Spinner/>
           )}
         </div>
 
