@@ -32,7 +32,7 @@ export default function LinkAccounts(props) {
         const eoaAddr = await connector.getAccount()
         const addr = await getAddress(eoaAddr, network || 5);
         const contractFlag = await isContract(addr)
-        if(!contractFlag){
+        if (!contractFlag) {
           linked[connector.name] = [eoaAddr, eoaAddr]
         } else {
           alert("This account is already connected to a FunWallet")

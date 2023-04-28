@@ -29,17 +29,10 @@ export default function NetworkSelect(props) {
     let provider;
     let auth;
     try {
-      if (connectMethod == "wagmi") {
-        const chainId = await connector.getChainId();
-        if (chainId !== id) await connector.switchChain(Number(id))
-        provider = await connector?.getProvider();
-        auth = new Eoa({ signer: signer, provider: provider })
-      } else {
-        const web3Auth = await web3AuthClient(id);
-        const web3authProvider = await web3Auth.connect()
-        provider = new ethers.providers.Web3Provider(web3authProvider)
-        auth = new Web3AuthEoa({ provider })
-      }
+      const chainId = await connector.getChainId();
+      if (chainId !== id) await connector.switchChain(Number(id))
+      provider = await connector?.getProvider();
+      auth = new Eoa({ signer: signer, provider: provider })
     } catch (e) {
       console.log(e)
     }

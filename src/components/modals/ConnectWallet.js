@@ -54,16 +54,16 @@ export default function ConnectWallet(props) {
 
 
   useEffect(() => {
-    async function connectEOA(){
+    async function connectEOA() {
       setConnecting(connector.name)
       setLoading(true)
-      let provider = await connector.getProvider({chainId: 5})
+      let provider = await connector.getProvider({ chainId: 5 })
       if (signer && provider) {
         const chainId = await connector.getChainId();
         if (chainId !== 5) await connector.switchChain(5)
         setNetwork(5)
         const eoaAddr = await signer.getAddress();
-        if(!provider.getBalance) provider = (await connector.getSigner()).provider;
+        if (!provider.getBalance) provider = (await connector.getSigner()).provider;
         connectFunWallet(connector.name, eoaAddr, provider, eoaAddr);
       }
     }
@@ -76,7 +76,7 @@ export default function ConnectWallet(props) {
     if (router.query.provider) finishSocialLogin();
   }, [router.query]);
 
-  async function connectFunWallet(connector, authId, provider, publicKey){
+  async function connectFunWallet(connector, authId, provider, publicKey) {
     const funWalletAddr = await getAddress(authId, 5)
     const contractFlag = await isContract(funWalletAddr)
     if (!contractFlag) {
@@ -131,7 +131,7 @@ export default function ConnectWallet(props) {
       if (isLinking && !linked[result.oauth.provider]) {
         const addr = await getAddress(authId, network || 5);
         const contractFlag = await isContract(addr)
-        if(!contractFlag){
+        if (!contractFlag) {
           linked[result.oauth.provider] = [authId, publicAddress]
         } else {
           alert("This account is already connected to a FunWallet")
@@ -144,7 +144,7 @@ export default function ConnectWallet(props) {
         return;
       }
       connectFunWallet(result.oauth.provider, authId, provider, publicAddress)
-    } catch(e){
+    } catch (e) {
       setConnecting("");
       setLoading(false)
       localStorage.removeItem("magic-connecting");
