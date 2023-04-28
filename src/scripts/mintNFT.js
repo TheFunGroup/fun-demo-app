@@ -5,9 +5,8 @@ import { Token } from "fun-wallet/data";
 import { tokens } from "../utils/tokens"
 import erc20ABI from "../utils/funTokenAbi.json";
 import { isContract } from "./wallet";
-import { FunWallet } from 'fun-wallet/'
-import { Eoa } from 'fun-wallet/auth'
 import nftABI from "../utils/nftABI.json"
+import { apiKey } from "../utils/constants";
 export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
   try {
 
@@ -22,7 +21,7 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
     if(paymentToken != "ETH" && paymentToken != "gasless"){
       await configureEnvironment({
         chain: 5,
-        apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
+        apiKey,
         gasSponsor: {
           sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
           token: paymentaddr
@@ -47,7 +46,7 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
     else if(paymentToken=="gasless"){
       await configureEnvironment({
         chain: 5,
-        apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
+        apiKey,
         gasSponsor: {
           sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
         }
@@ -56,7 +55,7 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
     else{ //base
       await configureEnvironment({
         chain: 5,
-        apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
+        apiKey,
         gasSponsor: false
       })
     }

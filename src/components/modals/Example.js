@@ -32,9 +32,6 @@ const examples = {
   }
 }
 
-const WALLET_INDEX = 28316
-const API_KEY = "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf"
-
 export default function Example(props) {
 
   const router = useRouter();

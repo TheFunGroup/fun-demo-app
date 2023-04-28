@@ -5,6 +5,7 @@ import { Token } from "fun-wallet/data";
 import { tokens } from "../utils/tokens"
 import erc20ABI from "../utils/funTokenAbi.json";
 import { isContract } from "./wallet";
+import { apiKey } from "../utils/constants";
 
 export const handleSwap = async function (wallet, paymentToken, swapData, auth) {
   try {
@@ -44,7 +45,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
     if (paymentToken != "ETH" && paymentToken != "gasless") { //use paymaster
       await configureEnvironment({
         chain: 5,
-        apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
+        apiKey,
         gasSponsor: {
           sponsorAddress: "0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9",
           token: paymentaddr
@@ -70,7 +71,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
     else if(paymentToken=="gasless"){
       await configureEnvironment({
         chain: 5,
-        apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
+        apiKey,
         gasSponsor: {
           sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
         }
@@ -79,7 +80,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
     else {
       await configureEnvironment({
         chain: 5,
-        apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
+        apiKey,
         gasSponsor: false
       })
     }

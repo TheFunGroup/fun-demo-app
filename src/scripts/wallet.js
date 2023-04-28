@@ -1,9 +1,10 @@
 import { FunWallet, configureEnvironment } from "fun-wallet";
 import { ethers } from "ethers";
+import { apiKey } from "../utils/constants";
 
 const options = {
   chain: 5,
-  apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf"
+  apiKey
 }
 
 const WALLET_INDEX = 34781
