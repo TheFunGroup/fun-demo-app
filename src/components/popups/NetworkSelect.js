@@ -7,8 +7,7 @@ import { createFunWallet, useFaucet } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
 import { useAccount, useSigner } from 'wagmi'
-import { Eoa } from "/Users/jamesrezendes/Code/fun-wallet-sdk/auth";
-import web3AuthClient from "../../scripts/web3auth";
+import { Eoa } from "/Users/chaz/workspace/fun-wallet/fun-wallet-sdk/auth";
 
 export default function NetworkSelect(props) {
 
@@ -30,17 +29,10 @@ export default function NetworkSelect(props) {
     let provider;
     let auth;
     try {
-      if (connectMethod == "wagmi") {
-        const chainId = await connector.getChainId();
-        if (chainId !== id) await connector.switchChain(Number(id))
-        provider = await connector?.getProvider();
-        auth = new Eoa({ signer: signer, provider: provider })
-      } else {
-        const web3Auth = await web3AuthClient(id);
-        const web3authProvider = await web3Auth.connect()
-        provider = new ethers.providers.Web3Provider(web3authProvider)
-        auth = new Web3AuthEoa({ provider })
-      }
+      const chainId = await connector.getChainId();
+      if (chainId !== id) await connector.switchChain(Number(id))
+      provider = await connector?.getProvider();
+      auth = new Eoa({ signer: signer, provider: provider })
     } catch (e) {
       console.log(e)
     }
