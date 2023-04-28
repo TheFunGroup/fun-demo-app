@@ -1,16 +1,17 @@
-import { useEffect, useState, useRef } from "react";
-import TokenSelect from "./TokenSelect";
+import { useEffect, useRef, useState } from "react";
 import Input from "./Input";
 
 export default function TransferForm(props) {
 
   const {
     transfer, setTransfer,
-    receiverAddr, setReceiverAddr
+    receiverAddr, setReceiverAddr,
+    receiverTwitter, setReceiverTwitter
   } = props;
 
   const transferRef = useRef();
   const receiverRef = useRef();
+  const [usingTwitter, setUsingTwitter] = useState(false)
 
   function handleTransferChange(e){
     const amount = e.target.value;
@@ -37,10 +38,26 @@ export default function TransferForm(props) {
       <Input 
         className="w-[309px]" 
         label="Receiver Address"
-        placeholder="0x..."
-        value={receiverAddr}
-        onChange={(e) => {setReceiverAddr(e.target.value)}}
+        placeholder={usingTwitter ? "@chamath" : "0x..."}
+        value={usingTwitter ? receiverTwitter : receiverAddr}
+        onChange={(e) => {
+          if(usingTwitter){
+            setReceiverTwitter(e.target.value)
+          } else {
+            setReceiverAddr(e.target.value)}
+          }
+        }
         inputRef={receiverRef}
+        receiverSelect
+        setReceiverType={(type) => {
+          if(type == "Twitter"){
+            setUsingTwitter(true)
+            setReceiverAddr("")
+          } else {
+            setUsingTwitter(false)
+            setReceiverTwitter("")
+          }
+        }}
       />
 
     </div>

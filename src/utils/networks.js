@@ -29,6 +29,15 @@ export const networks = {
       symbol: 'ETH',
       decimals: 18
     },
+  },
+  "56": {
+    name: "Binance",
+    icon: "/bnb.svg",
+    nativeCurrency: {
+      name: "Binance Coin",
+      symbol: "BNB",
+      decimals: 18
+    }
   }
 }
 

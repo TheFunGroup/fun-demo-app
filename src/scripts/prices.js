@@ -1,6 +1,3 @@
-import { ethers } from "ethers";
-import Quoter from "@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json"
-
 export const getSwapAmount = async function (token1, amt, token2) {
   try {
     const swapInfo = await (await fetch(`https://min-api.cryptocompare.com/data/price?fsym=${token1.name}&tsyms=${token2.name}`)).json()

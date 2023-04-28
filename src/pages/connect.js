@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect  } from "react";
 import { useRouter } from "next/router";
 import Layout from '../components/layout';
 import ConnectWallet from "../components/modals/ConnectWallet";
