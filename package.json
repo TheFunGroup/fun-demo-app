@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@fun-wallet/sdk": "^0.2.1",
+    "fun-wallet": "^0.2.2",
     "@magic-ext/oauth": "^11.0.0",
     "eslint": "8.31.0",
     "eslint-config-next": "13.1.1",

@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { ethers } from "ethers";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
-import { MultiAuthEoa } from "/Users/aaronchew/CodeProjects/fun-wallet-sdk/auth";
+import { MultiAuthEoa } from "fun-wallet/auth";
 import { useFaucet, createFunWallet } from "../../scripts/wallet";
 import { useAccount } from 'wagmi'
 import socials from "../../utils/socials";
