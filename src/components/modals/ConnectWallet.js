@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Image from 'next/image';
 import { ethers } from "ethers";
-import { createFunWallet, useFaucet, isContract, getAddress } from "../../scripts/wallet";
+import { createFunWallet, useFaucet, isContract, getAddress, isAuthIdUsed } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
 import { MultiAuthEoa } from "fun-wallet/auth";
@@ -77,9 +77,8 @@ export default function ConnectWallet(props) {
   }, [router.query]);
 
   async function connectFunWallet(connector, authId, provider, publicKey) {
-    const funWalletAddr = await getAddress(authId, 5)
-    const contractFlag = await isContract(funWalletAddr)
-    if (!contractFlag) {
+    const authIdUsed = await isAuthIdUsed(authId)
+    if (!authIdUsed) {
       if (!linked[connector]) {
         linked[connector] = [authId, publicKey];
         setLinked(linked)
@@ -129,9 +128,8 @@ export default function ConnectWallet(props) {
       const isLinking = localStorage.getItem("magic-linking");
       const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
       if (isLinking && !linked[result.oauth.provider]) {
-        const addr = await getAddress(authId, network || 5);
-        const contractFlag = await isContract(addr)
-        if (!contractFlag) {
+        const authIdUsed = await isAuthIdUsed(authId)
+        if (!authIdUsed) {
           linked[result.oauth.provider] = [authId, publicAddress]
         } else {
           alert("This account is already connected to a FunWallet")
@@ -145,6 +143,7 @@ export default function ConnectWallet(props) {
       }
       connectFunWallet(result.oauth.provider, authId, provider, publicAddress)
     } catch (e) {
+      console.log("finishSocialLogin", e)
       setConnecting("");
       setLoading(false)
       localStorage.removeItem("magic-connecting");

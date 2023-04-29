@@ -1,4 +1,5 @@
 import { FunWallet, configureEnvironment } from "fun-wallet";
+import { getStoredUniqueId } from "fun-wallet/utils";
 import { ethers } from "ethers";
 import { apiKey } from "../utils/constants";
 
@@ -25,6 +26,21 @@ export const isContract = async (address, provider) => {
     if (code == '0x') return false
     return true
   } catch (error) {
+    return false
+  }
+}
+
+export const isAuthIdUsed = async (authId) => {
+  try {
+    await configureEnvironment(options)
+    const uniqueId = await getStoredUniqueId(authId)
+    if (uniqueId) {
+      return true
+    } else {
+      return false
+    }
+  } catch (error) {
+    console.log("isAuthIdUsed error: ", error)
     return false
   }
 }

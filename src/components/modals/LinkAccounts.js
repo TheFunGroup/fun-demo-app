@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
 import { MultiAuthEoa } from "fun-wallet/auth";
-import { useFaucet, createFunWallet } from "../../scripts/wallet";
+import { useFaucet, createFunWallet, isAuthIdUsed } from "../../scripts/wallet";
 import { useAccount } from 'wagmi'
 import socials from "../../utils/socials";
 
@@ -31,8 +31,9 @@ export default function LinkAccounts(props) {
       if (!linked[connector.name]) {
         const eoaAddr = await connector.getAccount()
         const addr = await getAddress(eoaAddr, network || 5);
-        const contractFlag = await isContract(addr)
-        if (!contractFlag) {
+        const authIdUsed = await isAuthIdUsed(addr)
+        console.log("LinkWallet authIdUsed: ", authIdUsed)
+        if (!authIdUsed) {
           linked[connector.name] = [eoaAddr, eoaAddr]
         } else {
           alert("This account is already connected to a FunWallet")
