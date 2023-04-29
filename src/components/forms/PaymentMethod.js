@@ -22,7 +22,7 @@ export default function PaymentMethod(props) {
         onClick={() => {if(!tokens[token]) setToken("USDC")}}
       >
         <div className="flex items-center">
-          <Image src="/erc20-payment.png" width="46" height="32" alt=""/>
+          <img src="/erc20-payment.png" width="46" height="32" alt=""/>
           <div className="ml-4">ERC-20 Tokens</div>
         </div>
         <Image src={tokens[token] ? "/checked.svg" : "/uncheck.svg"} width="20" height="20"  alt=""/>
@@ -63,7 +63,7 @@ export default function PaymentMethod(props) {
         onClick={() => {setToken("gasless")}}
       >
         <div className="flex items-center">
-          <Image src="/gasless-payment.png" width="46" height="32" alt=""/>
+          <img src="/gasless-payment.png" width="46" height="32" alt=""/>
           <div className="ml-4">Gasless</div>
         </div>
         <Image src={token == "gasless" ? "/checked.svg" : "/uncheck.svg"} width="20" height="20" alt=""/>
@@ -75,7 +75,7 @@ export default function PaymentMethod(props) {
         onClick={() => {setToken(chainToken.symbol)}}
       >
         <div className="flex items-center">
-          <Image src={network == '5' ?  "/ethereum-payment.png" : "/matic-payment.png"} width="46" height="32" alt=""/>
+          <img src={network == '5' ?  "/ethereum-payment.png" : "/matic-payment.png"} width="46" height="32" alt=""/>
           <div className="ml-4">{chainToken.name}</div>
         </div>
         <Image src={token == chainToken.symbol ? "/checked.svg" : "/uncheck.svg"} width="20" height="20" alt=""/>
