@@ -2,11 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Layout from '../components/layout';
 import Example from "../components/modals/Example";
+import { useFun } from "../contexts/funContext";
 
 export default function NFT() {
 
   const [selected, setSelected] = useState();
   const [ready, setReady] = useState(false);
+  const {setLoading} = useFun();
+
+  useEffect(() => {
+    setLoading(false)
+  }, [])
 
   return (
     <div className="w-full flex flex-col items-center">

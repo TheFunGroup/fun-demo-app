@@ -21,7 +21,7 @@ export const FunProvider = ({ children }) => {
     if((!wallet || !network) && (router.pathname !== "/connect")){
       router.push('/connect');
     }
-  }, [wallet, network])
+  }, [wallet, network, router.pathname])
 
   return (
     <FunContext.Provider value={{ 

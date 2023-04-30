@@ -179,9 +179,35 @@ export default function ConnectWallet(props) {
         <div className="font-semibold text-2xl mt-6 text-[#101828]">Connect to FunWallet</div>
         <div className="text-sm text-[#667085] mt-1">Explore what you can do with a FunWallet</div>
 
+        <div className="mt-8 flex w-full justify-between">
+          {Object.keys(socials).map((key) => {
+            const social = socials[key]
+            return (
+              <div
+                className="max-w-[56px] button rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-center items-center cursor-pointer py-[14px] px-4"
+                onClick={() => { if (!connecting) connectMagic(key) }}
+                key={key}
+              >
+                {connecting == key ? (
+                  <Spinner />
+                ) : (
+                  <Image src={social.icon} width="22" height="22" alt="" />
+                )}
+                {/* <div className="ml-3 font-medium text-[#344054]">{`Connect with ${social.name}`}</div> */}
+              </div>
+            )
+          })}
+        </div>
+
+        <div className="w-full flex items-center my-6">
+          <div className="w-full bg-[#E4E7EC] h-[1px]"></div>
+          <div className="text-[#667085] mx-2">OR</div>
+          <div className="w-full bg-[#E4E7EC] h-[1px]"></div>
+        </div>
+
         {!showEOA && (
           <div
-            className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-center cursor-pointer py-[10px] px-4"
+            className="button w-full rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-center cursor-pointer py-[10px] px-4"
             onClick={() => setShowEOA(true)}
           >
             <Image src="/wallet.svg" width="22" height="22" alt="" />
@@ -193,7 +219,7 @@ export default function ConnectWallet(props) {
           let name = connector.name;
           if (name == "WalletConnectLegacy") name = "WalletConnect"
           return (
-            <button className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
+            <button className="button mb-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
               disabled={!connector.ready}
               onClick={() => {
                 if (!connecting) connect({ connector })
@@ -209,24 +235,6 @@ export default function ConnectWallet(props) {
             </button>
           )
         }))}
-
-        {Object.keys(socials).map((key) => {
-          const social = socials[key]
-          return (
-            <div
-              className="button mt-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-center cursor-pointer py-[10px] px-4"
-              onClick={() => { if (!connecting) connectMagic(key) }}
-              key={key}
-            >
-              {connecting == key ? (
-                <Spinner />
-              ) : (
-                <Image src={social.icon} width="22" height="22" alt="" />
-              )}
-              <div className="ml-3 font-medium text-[#344054]">{`Connect with ${social.name}`}</div>
-            </div>
-          )
-        })}
 
       </div>
     )
