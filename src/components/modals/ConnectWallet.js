@@ -26,7 +26,6 @@ export default function ConnectWallet(props) {
   const [provider, setProvider] = useState();
   const router = useRouter()
   const [magic, setMagic] = useState()
-  const [authType, setAuthType] = useState("signup")
 
   useEffect(() => {
     const initMagicAuth = async () => {
@@ -177,7 +176,7 @@ export default function ConnectWallet(props) {
     return (
       <div className={`w-[360px] modal flex flex-col items-center text-center -mt-[64px]`} >
         <Image src="/fun.svg" width="52" height="42" alt="" />
-        <div className="font-semibold text-2xl mt-6 text-[#101828]">{`${authType == "signup" ? "Create" : "Login to"} a FunWallet`}</div>
+        <div className="font-semibold text-2xl mt-6 text-[#101828]">Connect to FunWallet</div>
         <div className="text-sm text-[#667085] mt-1">Explore what you can do with a FunWallet</div>
 
         <div className="mt-8 flex w-full justify-between">
@@ -212,7 +211,7 @@ export default function ConnectWallet(props) {
             onClick={() => setShowEOA(true)}
           >
             <Image src="/wallet.svg" width="22" height="22" alt="" />
-            <div className="ml-3 font-medium text-[#344054]">{`${authType == "signup" ? "Sign up" : "Login"} with EOA`}</div>
+            <div className="ml-3 font-medium text-[#344054]">Connect with EOA</div>
           </div>
         )}
 
@@ -232,26 +231,10 @@ export default function ConnectWallet(props) {
               ) : (
                 <Image src="/wallet.svg" width="22" height="22" alt="" />
               )}
-              <div className="ml-3 font-medium text-[#344054]">{`${authType == "signup" ? "Sign up" : "Login"} with ${name}`}</div>
+              <div className="ml-3 font-medium text-[#344054]">{`Connect with ${name}`}</div>
             </button>
           )
         }))}
-
-        <div className="flex items-center w-full justify-center cursor-default mt-8 select-none">
-          <div className="text-[#667085] mr-1">{authType == "signup" ? "Already have an account?" : "Don't have an account?"}</div>
-          <div 
-            className="font-medium text-[#2D4EA2] cursor-pointer transition hover:opacity-80"
-            onClick={() => {
-              if(authType == "signup"){
-                setAuthType("login")
-              } else {
-                setAuthType("signup")
-              }
-            }}
-          >
-            {authType == "signup" ? "Login" : "Sign up"}
-          </div>
-        </div>
 
       </div>
     )

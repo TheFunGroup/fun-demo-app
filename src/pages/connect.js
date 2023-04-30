@@ -9,7 +9,7 @@ export default function Connect() {
   const router = useRouter();
 
   useEffect(() => {
-    if(wallet && network){
+    if(wallet){
       router.push("/")
     }
   }, [wallet])
