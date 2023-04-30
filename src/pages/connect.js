@@ -5,7 +5,7 @@ import ConnectWallet from "../components/modals/ConnectWallet";
 import { useFun } from "../contexts/funContext";
 
 export default function Connect() {
-  const { wallet } = useFun();
+  const { wallet, network } = useFun();
   const router = useRouter();
 
   useEffect(() => {
