@@ -23,7 +23,7 @@ export default function Layout(props) {
         {loading && (
           <Loader />
         )}
-        <div className={`w-full h-full`}>
+        <div className={`w-full h-full overflow-y-scroll`}>
           {props.children}
         </div>
       </main>

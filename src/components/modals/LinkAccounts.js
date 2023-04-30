@@ -96,7 +96,7 @@ export default function LinkAccounts(props) {
   }
 
   return (
-    <div className={`w-[360px] modal flex flex-col items-center text-center -mt-[184px]`} >
+    <div className={`w-[360px] modal flex flex-col items-center text-center -mt-[184px] mb-12`}>
       <Image src="/fun.svg" width="52" height="42" alt="" />
       <div className="font-semibold text-2xl mt-6 text-[#101828]">Unlock more options for accessing your FunWallet</div>
       <div className="text-sm text-[#667085] mt-1">Add sign-in methods. Please note you can only add them during creation.</div>
