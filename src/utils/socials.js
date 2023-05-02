@@ -7,10 +7,10 @@ const socials  = {
     icon: "/twitter.svg",
     name: "Twitter",
   },
-  "facebook": {
-    icon: "/facebook.svg",
-    name: "Facebook"
-  },
+  // "facebook": {
+  //   icon: "/facebook.svg",
+  //   name: "Facebook"
+  // },
   "apple": {
     icon: "/apple.svg",
     name: "Apple"
