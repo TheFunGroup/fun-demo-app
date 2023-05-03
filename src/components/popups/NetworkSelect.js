@@ -77,7 +77,7 @@ export default function NetworkSelect(props) {
   return (
     <div>
       {networks[current] && (
-        <div className="w-[124px] flex items-center mr-2"
+        <div className="w-[88px] flex items-center mr-2"
         //  onClick={() => setDropdown(!dropdown)} ref={networkBtnRef}
         >
           <Image src={networks[current].icon} width="24" height="24" alt="" />
