@@ -31,7 +31,7 @@ export default function NFT() {
                 <div className="w-full h-full backdrop-blur	rounded-[16px] backdrop-brightness-75	"></div>
               </div>
               <img src="/nft1.png" width="165" height="173" className="rounded-[28px] absolute mt-9 self-center"/>
-              <div className="mt-8 text-lg font-medium">NFT #0001</div>
+              <div className="mt-8 text-lg font-medium">NFT 1</div>
               <div className="text-sm text-[#667085]">Fun Community Collection</div>
             </div>
             <div 
@@ -42,7 +42,7 @@ export default function NFT() {
                 <div className="w-full h-full backdrop-blur	rounded-[16px] backdrop-brightness-75	"></div>
               </div>
               <img src="/nft2.png" width="175" height="180" className="rounded-[28px] absolute mt-9 self-center"/>
-              <div className="mt-8 text-lg font-medium">NFT #0002</div>
+              <div className="mt-8 text-lg font-medium">NFT 2</div>
               <div className="text-[#667085] text-sm">Fun Community Collection</div>
             </div>
           </div>
