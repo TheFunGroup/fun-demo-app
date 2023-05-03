@@ -8,7 +8,7 @@ const options = {
   apiKey
 }
 
-const WALLET_INDEX = 34781
+const WALLET_INDEX = 34788
 
 export async function createFunWallet(auth) {
   await configureEnvironment(options)
