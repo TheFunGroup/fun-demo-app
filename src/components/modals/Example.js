@@ -245,7 +245,7 @@ export default function Example(props) {
 
       <PaymentMethod token={paymentToken} setToken={setPaymentToken}/>
 
-      <div className="text-[#101828] font-semibold mt-10">Transaction Fees</div>
+      {/* <div className="text-[#101828] font-semibold mt-10">Transaction Fees</div> */}
       
       {props.example == "swap" && (
         <div className="flex justify-between w-full mt-3 text-sm">
@@ -254,10 +254,10 @@ export default function Example(props) {
         </div>
       )}
 
-      <div className="flex justify-between w-full mt-3 text-sm">
+      {/* <div className="flex justify-between w-full mt-3 text-sm">
         <div className="text-[#344054] font-medium">Gas</div>
         <div className="text-[#667085]">{`${gas}`}</div>
-      </div>
+      </div> */}
 
       <div className="flex w-full items-center justify-between mt-10 text-center">
 

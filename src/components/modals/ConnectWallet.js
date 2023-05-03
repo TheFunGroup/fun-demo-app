@@ -178,7 +178,7 @@ export default function ConnectWallet(props) {
       <div className={`w-[360px] modal flex flex-col items-center text-center -mt-[64px]`} >
         <Image src="/fun.svg" width="52" height="42" alt="" />
         <div className="font-semibold text-2xl mt-6 text-[#101828]">{`${authType == "signup" ? "Create" : "Login to"} FunWallet`}</div>
-        <div className="text-sm text-[#667085] mt-1">Explore what you can do with a FunWallet</div>
+        <div className="text-sm text-[#667085] mt-1">Explore what you can do with FunWallet</div>
 
         <div className="mt-8 flex w-full justify-between">
           {Object.keys(socials).map((key) => {
