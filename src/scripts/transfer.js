@@ -16,7 +16,7 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
     const walletAddress = await wallet.getAddress()
     let tokenaddr = "eth"
     let paymentaddr = ""
-    
+
     for (let i of tokens["5"]) {
       if (i.name == transferData.token.name && transferData.token.name != "ETH") {
         tokenaddr = i.addr
@@ -25,7 +25,7 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
         paymentaddr = i.addr
       }
     }
-    
+
     let balance = 0;
     const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
     if (transferData.token.name == "ETH") {
@@ -57,14 +57,14 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
       if (iscontract) {
         let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress)//paymaster address
         allowance = ethers.utils.formatUnits(allowance, 6);
-        if (Number(allowance) < Number(5)) {//amt
+        if (Number(allowance) < Number(20)) {//amt
           //if approved, pop up modal, and ask for approval
           return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
         }
       }
 
     }
-    else if(paymentToken=="gasless"){
+    else if (paymentToken == "gasless") {
       console.log('using gasless')
       await configureEnvironment({
         chain: 5,
