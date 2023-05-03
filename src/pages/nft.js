@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import Layout from '../components/layout';
 import Example from "../components/modals/Example";
 import { useFun } from "../contexts/funContext";
 
 export default function NFT() {
 
+  const router = useRouter()
   const [selected, setSelected] = useState();
   const [ready, setReady] = useState(false);
   const {setLoading} = useFun();
@@ -45,12 +47,17 @@ export default function NFT() {
             </div>
           </div>
 
-          <div 
-            className="w-full button-dark p-4 font-medium flex items-center justify-center mt-12"
-            onClick={() => {setReady(true)}}
-            style={ !selected ? { opacity: 0.5, pointerEvents: "none" } : {}}
-          > 
-            <div>Mint</div>
+
+          <div className="flex items-center mt-12 w-full">
+            <div className="w-full button p-4 font-medium text-[#344054] text-center mr-4" onClick={() => router.push("/")}>Cancel</div>
+            <div 
+              className="w-full button-dark p-4 font-medium flex items-center justify-center"
+              onClick={() => {setReady(true)}}
+              style={ !selected ? { opacity: 0.5, pointerEvents: "none" } : {}}
+            > 
+              <div>Mint</div>
+          </div>
+
           </div>
 
         </div>

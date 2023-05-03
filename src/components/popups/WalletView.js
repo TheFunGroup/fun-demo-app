@@ -5,6 +5,7 @@ import { networks } from "../../utils/networks";
 import { useFun } from "../../contexts/funContext";
 import { ethers } from "ethers";
 import { toUSD } from "../../scripts/prices";
+import { handleGetNFTs } from "../../scripts/getNFTs";
 import { useRouter } from "next/router";
 import { disconnect } from '@wagmi/core'
 import erc20Abi from "../../utils/erc20Abi";
@@ -31,6 +32,8 @@ export default function WalletView(props) {
   const [usdtBalance, setUsdtBalance] = useState();
   const [usdtBalanceUSD, setUsdtBalanceUSD] = useState();
 
+  const [nfts, setNfts] = useState([])
+
   const [tab, setTab] = useState("balance");
 
   useEffect(() => {
@@ -47,8 +50,8 @@ export default function WalletView(props) {
         }).catch((e) => {
           console.log(e)
         });
-
         getCoinBalances(provider);
+        getNFTs()
       }
     }
   }, [network, dropdown])
@@ -71,7 +74,13 @@ export default function WalletView(props) {
     usdtBalance = ethers.utils.formatUnits(usdtBalance, 6)
     setUsdtBalance(Number(usdtBalance.toString()).toFixed(2))
     setUsdtBalanceUSD(await toUSD("USDT", usdtBalance));
+  }
 
+  async function getNFTs(){
+    const data = await handleGetNFTs(wallet, eoa);
+    if(data.nfts){
+      setNfts(data.nfts);
+    }
   }
 
   useOnClickOutside(dropdownRef, (e) => {
@@ -216,14 +225,18 @@ export default function WalletView(props) {
                   <div className="w-full flex items-center justify-between my-6">
                     <div className="flex items-center">
                       <div className="text-xl font-semibold text-black mr-1">NFTs</div>
-                      <div className="text-[#74777C] text-xl font-semibold">1</div>
+                      <div className="text-[#74777C] text-xl font-semibold">{nfts.length}</div>
                     </div>
                     <div className="flex items-center cursor-pointer" onClick={() => router.push("/nft")}>
                       <img width="20" height="20" src="/mint-fill.svg" />
                       <div className="text-[#2D4EA2] text-sm font-semibold ml-1">Mint an NFT</div>
                     </div>
                   </div>
-                  <img src="/nft1.png" width="312" height="312" />
+                  {nfts.map((nft) => {
+                    return (
+                      <img src={`${nft.uri}`} width="312" height="312" className="mb-2 rounded-2xl" />
+                    )
+                  })}
                 </div>
               )}
 
