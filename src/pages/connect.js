@@ -1,15 +1,15 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect  } from "react";
 import { useRouter } from "next/router";
 import Layout from '../components/layout';
 import ConnectWallet from "../components/modals/ConnectWallet";
 import { useFun } from "../contexts/funContext";
 
 export default function Connect() {
-  const { wallet } = useFun();
+  const { wallet, network } = useFun();
   const router = useRouter();
 
   useEffect(() => {
-    if(wallet){
+    if(wallet && network){
       router.push("/")
     }
   }, [wallet])

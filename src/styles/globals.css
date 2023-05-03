@@ -46,6 +46,14 @@ html, body, #__next{
   padding: 24px;
 }
 
+.nftSelectModal {
+  background: linear-gradient(125.87deg, rgba(255, 255, 255, 0.69) 0%, rgba(255, 255, 255, 0.42) 99.97%);
+  border: 1px solid #E4E7EC;
+  box-shadow: 0px 20px 24px -4px rgba(16, 24, 40, 0.1), 0px 8px 8px -4px rgba(16, 24, 40, 0.04);
+  border-radius: 12px;
+  padding: 56px;
+}
+
 .alert{
   background: #FCFCFD;
   border: 1px solid #E4E7EC;
@@ -147,4 +155,10 @@ html, body, #__next{
 
 .settingsBtn:hover{
   background: #00000006;
+}
+
+.minted{
+  background: linear-gradient(180deg, #8BDFD0 0%, #888CD8 50%, #B48BDF 100%);
+  width: 112px;
+  height: 112px;
 }

@@ -1,8 +1,5 @@
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
-import Image from 'next/image';
-import { ethers } from "ethers";
-import TokenSelect from "../forms/TokenSelect";
 import { handleApprove } from "../../scripts/approve";
 import { useFun } from "../../contexts/funContext";
 import Input from "../forms/Input";
@@ -11,7 +8,7 @@ import Spinner from "../misc/Spinner";
 export default function ApprovePM(props) {
 
   const router = useRouter();
-  const [amount, setAmount] = useState(["100.00"]);
+  const [amount, setAmount] = useState(["200.00"]);
   const { wallet, eoa, paymentToken, setPaymentToken, paymentAddr, paymasterAddress, setLoading } = useFun()
   const [approving, setApproving] = useState(false);
 
@@ -19,7 +16,11 @@ export default function ApprovePM(props) {
     setLoading(true);
     setApproving(true)
     handleApprove(wallet, eoa, paymasterAddress, paymentAddr, amount).then((data) => {
-      router.push("/")
+      if(router.query.example){
+        router.push(`/${router.query.example}`)
+      } else {
+        router.push("/")
+      }      
       setLoading(false);
       setApproving(false);
     })

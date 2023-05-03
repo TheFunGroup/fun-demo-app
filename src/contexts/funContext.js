@@ -8,18 +8,20 @@ export const FunProvider = ({ children }) => {
   const router = useRouter();
   const [eoa, setEOA] = useState();
   const [wallet, setWallet] = useState();
-  const [network, setNetwork] = useState();
+  const [network, setNetwork] = useState(5);
   const [deployedUrl, setDeployedUrl] = useState();
+  const [minted, setMinted] = useState();
   const [loading, setLoading] = useState()
   const [paymentToken, setPaymentToken] = useState("ETH");
   const [paymentAddr, setPaymentAddr] = useState();
   const [paymasterAddress, setPaymasterAddress] = useState();
+  const [connectMethod, setConnectMethod] = useState();
 
   useEffect(() => {
-    if(!wallet || !network){
+    if((!wallet || !network) && (router.pathname !== "/connect")){
       router.push('/connect');
     }
-  }, [wallet, network])
+  }, [wallet, network, router.pathname])
 
   return (
     <FunContext.Provider value={{ 
@@ -27,10 +29,12 @@ export const FunProvider = ({ children }) => {
       wallet, setWallet,
       network, setNetwork,
       deployedUrl, setDeployedUrl,
+      minted, setMinted,
       loading, setLoading,
       paymentToken, setPaymentToken,
       paymentAddr, setPaymentAddr,
-      paymasterAddress, setPaymasterAddress
+      paymasterAddress, setPaymasterAddress,
+      connectMethod, setConnectMethod
     }}>
         {children}
     </FunContext.Provider>

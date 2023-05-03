@@ -1,6 +1,4 @@
-import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/router";
-import Image from 'next/image';
+import { useEffect  } from "react";
 import Layout from '../components/layout';
 import FundWallet from "../components/modals/FundWallet";
 import { useFun } from "../contexts/funContext";

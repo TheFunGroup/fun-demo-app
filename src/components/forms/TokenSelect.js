@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
-import { networks,  connectToNetwork } from "../../utils/networks";
 import { tokens } from "../../utils/tokens";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 import { useFun } from "../../contexts/funContext";
@@ -19,7 +18,6 @@ export default function TokenSelect(props) {
 
   useEffect(() => {
     setDropdown(false);
-    console.log(token)
   }, [token])
 
   useOnClickOutside(dropdownRef, (e) => {
@@ -31,7 +29,7 @@ export default function TokenSelect(props) {
     <div className="">
       <div ref={selectBtnRef} className="flex items-center cursor-pointer" onClick={() => setDropdown(!dropdown)}>
         <div className="text-[#101828] mr-1">{token.name}</div>
-        <Image src="/chevron.svg" width="30" height="20" alt="" style={dropdown && {transform: "rotate(-180deg)"}}
+        <Image src="/chevron.svg" width="20" height="20" alt="" style={dropdown && {transform: "rotate(-180deg)"}}
           className="duration-200 ease-linear"
         />
       </div>
@@ -49,6 +47,7 @@ export default function TokenSelect(props) {
                 onClick={() => {nonToken?.name !== t.name && setToken(t)}}
                 onMouseEnter={() => setHover(t.name)}
                 onMouseLeave={() => setHover("")}
+                key={idx}
               >
                 <div className="text-[#101828] text-sm">{t.name}</div>
                 <div>

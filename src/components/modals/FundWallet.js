@@ -1,11 +1,8 @@
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import Image from 'next/image';
-import { ethers } from "ethers";
-import TokenSelect from "../forms/TokenSelect";
 import { handleFundWallet } from "../../scripts/fund";
 import { useFun } from "../../contexts/funContext";
 import { useRouter } from "next/router";
-import Input from "../forms/Input";
 import Spinner from "../misc/Spinner";
 
 export default function FundWallet(props) {
@@ -19,7 +16,11 @@ export default function FundWallet(props) {
     setFunding(true);
     setLoading(true)
     handleFundWallet(wallet.address).then(() => {
-      router.push('/')
+      if(router.query.example){
+        router.push(`/${router.query.example}`)
+      } else {
+        router.push('/')
+      }
       setFunding(false);
       setLoading(false);
     })

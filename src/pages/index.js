@@ -1,5 +1,3 @@
-import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/router";
 import Layout from '../components/layout';
 import { useFun } from "../contexts/funContext";
 import Main from "../components/modals/Main";
