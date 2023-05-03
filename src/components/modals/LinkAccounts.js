@@ -7,6 +7,7 @@ import { MultiAuthEoa } from "fun-wallet/auth";
 import { useFaucet, createFunWallet, isAuthIdUsed } from "../../scripts/wallet";
 import { useAccount } from 'wagmi'
 import socials from "../../utils/socials";
+import { getAddress } from "../../scripts/wallet";
 
 export default function LinkAccounts(props) {
 
