@@ -37,7 +37,7 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
       if (iscontract) {
         let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress)//paymaster address
         allowance = ethers.utils.formatUnits(allowance, 6);
-        if (Number(allowance) < Number(5)) {//amt
+        if (Number(allowance) < Number(20)) {//amt
           //if approved, pop up modal, and ask for approval
           return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
         }
