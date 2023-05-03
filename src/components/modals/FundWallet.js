@@ -16,7 +16,11 @@ export default function FundWallet(props) {
     setFunding(true);
     setLoading(true)
     handleFundWallet(wallet.address).then(() => {
-      router.push('/')
+      if(router.query.example){
+        router.push(`/${router.query.example}`)
+      } else {
+        router.push('/')
+      }
       setFunding(false);
       setLoading(false);
     })

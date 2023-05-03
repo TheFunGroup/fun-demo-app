@@ -198,7 +198,7 @@ export default function Example(props) {
             <Image src="/alert.svg" width="24" height="24" alt=""/>
             <div className="text-[#101828] font-medium ml-3">{`Insufficient ${paymentToken} for transaction fees.`}</div>
           </div>
-          <div className="button text-center px-[18px] py-[10px]" onClick={() => router.push("/fund")}>Fund</div>
+          <div className="button text-center px-[18px] py-[10px]" onClick={() => router.push(`/fund?example=${props.example}`)}>Fund</div>
         </div>
       )}
 
@@ -208,7 +208,7 @@ export default function Example(props) {
             <Image src="/alert.svg" width="24" height="24" alt=""/>
             <div className="text-[#101828] font-medium ml-3">{`Token Sponsor doesn’t have the required authorization amount.`}</div>
           </div>
-          <div className="button text-center px-[18px] py-[10px]" onClick={() => router.push("/approve")}>Give</div>
+          <div className="button text-center px-[18px] py-[10px]" onClick={() => router.push(`/approve?example=${props.example}`)}>Give</div>
         </div>
       )}
 

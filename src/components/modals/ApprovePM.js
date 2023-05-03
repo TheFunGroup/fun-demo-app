@@ -16,7 +16,11 @@ export default function ApprovePM(props) {
     setLoading(true);
     setApproving(true)
     handleApprove(wallet, eoa, paymasterAddress, paymentAddr, amount).then((data) => {
-      router.push("/")
+      if(router.query.example){
+        router.push(`/${router.query.example}`)
+      } else {
+        router.push("/")
+      }      
       setLoading(false);
       setApproving(false);
     })
