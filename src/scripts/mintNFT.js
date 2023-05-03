@@ -61,7 +61,7 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
         gasSponsor: false
       })
     }
-    const nft = new ethers.Contract("0x18e6a90659114a53ef143045e8b36d790ee3cd6c", nftABI)
+    const nft = new ethers.Contract("0x2749B15E4d39266A2C4dA9c835E9C9e384267C5A", nftABI)
     const tx = await nft.populateTransaction.safeMint(walletAddress)
     let receipt = await wallet.execRawTx(auth, tx)
     console.log("txId: ", receipt.txid)
