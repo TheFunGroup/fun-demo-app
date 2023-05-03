@@ -8,7 +8,7 @@ import Spinner from "../misc/Spinner";
 export default function ApprovePM(props) {
 
   const router = useRouter();
-  const [amount, setAmount] = useState(["100.00"]);
+  const [amount, setAmount] = useState(["200.00"]);
   const { wallet, eoa, paymentToken, setPaymentToken, paymentAddr, paymasterAddress, setLoading } = useFun()
   const [approving, setApproving] = useState(false);
 

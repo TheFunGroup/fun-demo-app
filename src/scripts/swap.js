@@ -66,6 +66,9 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
           return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
 
         }
+      } else {
+        alert("Its a known bug that first transaction of a fun wallet would fail if you are covering gas using ERC20 tokens. Please try to pay gas using gasless paymaster or ETH for this transaction and try token paymaster later.")
+        return { success: false, error: "do not use ERC20 token to pay for gas for first transaction of a fun wallet" }
       }
     }
     else if(paymentToken=="gasless"){
@@ -92,7 +95,8 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
 
     //Tells frontend swap was success
     console.log("txId: ", receipt.txid)
-    return { success: true, explorerUrl: `https://goerli.etherscan.io/address/${walletAddress}#internaltx`}
+    const explorerUrl = receipt.txid ? `https://goerli.etherscan.io/tx/${receipt.txid}` : `https://goerli.etherscan.io/address/${walletAddress}#internaltx`
+    return { success: true, explorerUrl}
 
 
   } catch (e) {
