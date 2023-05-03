@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import Layout from '../components/layout';
 import Example from "../components/modals/Example";
 import { useFun } from "../contexts/funContext";
 
 export default function NFT() {
 
+  const router = useRouter()
   const [selected, setSelected] = useState();
   const [ready, setReady] = useState(false);
   const {setLoading} = useFun();
@@ -29,7 +31,7 @@ export default function NFT() {
                 <div className="w-full h-full backdrop-blur	rounded-[16px] backdrop-brightness-75	"></div>
               </div>
               <img src="/nft1.png" width="165" height="173" className="rounded-[28px] absolute mt-9 self-center"/>
-              <div className="mt-8 text-lg font-medium">NFT #0001</div>
+              <div className="mt-8 text-lg font-medium">NFT 1</div>
               <div className="text-sm text-[#667085]">Fun Community Collection</div>
             </div>
             <div 
@@ -40,17 +42,22 @@ export default function NFT() {
                 <div className="w-full h-full backdrop-blur	rounded-[16px] backdrop-brightness-75	"></div>
               </div>
               <img src="/nft2.png" width="175" height="180" className="rounded-[28px] absolute mt-9 self-center"/>
-              <div className="mt-8 text-lg font-medium">NFT #0002</div>
+              <div className="mt-8 text-lg font-medium">NFT 2</div>
               <div className="text-[#667085] text-sm">Fun Community Collection</div>
             </div>
           </div>
 
-          <div 
-            className="w-full button-dark p-4 font-medium flex items-center justify-center mt-12"
-            onClick={() => {setReady(true)}}
-            style={ !selected ? { opacity: 0.5, pointerEvents: "none" } : {}}
-          > 
-            <div>Mint</div>
+
+          <div className="flex items-center mt-12 w-full">
+            <div className="w-full button p-4 font-medium text-[#344054] text-center mr-4" onClick={() => router.push("/")}>Cancel</div>
+            <div 
+              className="w-full button-dark p-4 font-medium flex items-center justify-center"
+              onClick={() => {setReady(true)}}
+              style={ !selected ? { opacity: 0.5, pointerEvents: "none" } : {}}
+            > 
+              <div>Mint</div>
+          </div>
+
           </div>
 
         </div>
