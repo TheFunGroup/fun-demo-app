@@ -11,7 +11,7 @@ import { Eoa } from "fun-wallet/auth";
 
 export default function NetworkSelect(props) {
 
-  const { network, setNetwork, setWallet, eoa, connectMethod } = useFun();
+  const { network, setNetwork, setWallet } = useFun();
 
   const [current, setCurrent] = useState(5)
   const [hover, setHover] = useState();

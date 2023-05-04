@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import Image from 'next/image';
 import { ethers } from "ethers";
 import Spinner from "../misc/Spinner";
-import { useFun } from "../../contexts/funContext";
+import { useFun, network } from "../../contexts/funContext";
 import { MultiAuthEoa } from "fun-wallet/auth";
 import { useFaucet, createFunWallet, isAuthIdUsed } from "../../scripts/wallet";
 import { useAccount } from 'wagmi'
