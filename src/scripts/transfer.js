@@ -13,7 +13,6 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
       return { success: false, error: "No Receiver Address Specified" }
     }
     if (!transferData.to.startsWith('0x') || transferData.to.length != 42) {
-      console.log("transferData: ", transferData.to)
       return { success: false, error: "Invalid Receiver Address" }
     }
     const walletAddress = await wallet.getAddress()
