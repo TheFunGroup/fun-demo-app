@@ -69,7 +69,7 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
     return { success: true, explorerUrl }
   } catch (e) {
     console.log(e)
-    return { success: false, error: e }
+    return { success: false, error: e.toString() }
   }
 }
 
