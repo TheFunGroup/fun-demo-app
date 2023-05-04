@@ -67,8 +67,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
 
         }
       } else {
-        alert("Its a known bug that first transaction of a fun wallet would fail if you are covering gas using ERC20 tokens. Please try to pay gas using gasless paymaster or ETH for this transaction and try token paymaster later.")
-        return { success: false, error: "do not use ERC20 token to pay for gas for first transaction of a fun wallet" }
+        return { success: false, error: "Its a known bug that first transaction of a fun wallet would fail if you are covering gas using ERC20 tokens. Please try to pay gas using gasless paymaster or ETH for this transaction and try token paymaster later." }
       }
     }
     else if(paymentToken=="gasless"){

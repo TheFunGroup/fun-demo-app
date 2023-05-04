@@ -181,14 +181,6 @@ export default function Example(props) {
     setLoading(false)
   }, [])
 
-  useEffect(() => {
-    if(error){
-      setTimeout(() => {
-        setError(null)
-      }, 2000)
-    }
-  }, [error])
-
   return (
     <div className={`modal w-[690px] ${props.example == "swap" ? "my-8" : "my-12"}`}>
 
@@ -213,11 +205,12 @@ export default function Example(props) {
       )}
 
       {error && (
-        <div className="alert w-full flex justify-between -mb-[58px] relative">
-         <div className="flex items-center">
-           <Image src="/alert.svg" width="24" height="24" alt=""/>
-           <div className="text-[#101828] font-medium ml-3">{`There was an error performing the transaction.`}</div>
+        <div className="alert w-full flex justify-between -mb-[80px] relative">
+         <div className="flex">
+           <Image src="/alert.svg" width="24" height="24" alt="" className="max-h-[24px]"/>
+           <div className="text-[#101828] font-medium ml-3">{error}</div>
          </div>
+         <Image src="/close.svg" width="24" height="24" alt="" className="max-h-[24px] cursor-pointer hover:opacity-75" onClick={() => setError(null)}/>
        </div>
       )}
 

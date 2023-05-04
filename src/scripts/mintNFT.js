@@ -8,8 +8,8 @@ import { isContract } from "./wallet";
 import nftABI from "../utils/nftABI.json"
 import { apiKey } from "../utils/constants";
 export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
+  const nftNumber = nft.nft;
   try {
-
     const walletAddress = await wallet.getAddress()
     let paymentaddr = ""
     for (let i of tokens["5"]) {
@@ -42,8 +42,7 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
           return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
         }
       } else {
-        alert("Its a known bug that first transaction of a fun wallet would fail if you are covering gas using ERC20 tokens. Please try to pay gas using gasless paymaster or ETH for this transaction and try token paymaster later.")
-        return { success: false, error: "do not use ERC20 token to pay for gas for first transaction of a fun wallet" }
+        return { success: false, error: "Its a known bug that first transaction of a fun wallet would fail if you are covering gas using ERC20 tokens. Please try to pay gas using gasless paymaster or ETH for this transaction and try token paymaster later." }
       }
     }
     else if(paymentToken=="gasless"){
@@ -62,12 +61,12 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
         gasSponsor: false
       })
     }
-    const nft = new ethers.Contract("0x18e6a90659114a53ef143045e8b36d790ee3cd6c", nftABI)
-    const tx = await nft.populateTransaction.safeMint(walletAddress)
+    const nftContract = new ethers.Contract("0x2749B15E4d39266A2C4dA9c835E9C9e384267C5A", nftABI)
+    const tx = await nftContract.populateTransaction.safeMint(walletAddress, `nft${nftNumber}.png`)
     let receipt = await wallet.execRawTx(auth, tx)
     console.log("txId: ", receipt.txid)
     const explorerUrl = receipt.txid ? `https://goerli.etherscan.io/tx/${receipt.txid}` : `https://goerli.etherscan.io/address/${walletAddress}#internaltx`
-    return { success: true, explorerUrl, nft }
+    return { success: true, explorerUrl }
   } catch (e) {
     console.log(e)
     return { success: false, error: e }
