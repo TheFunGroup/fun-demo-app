@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-import Image from 'next/image';
 import { useFun } from "../../contexts/funContext";
 
 export default function Minted(props) {
