@@ -23,7 +23,7 @@ export const handleGetNFTs = async function (wallet, auth) {
     return { success: true, nfts: nfts}
   } catch(e){
     console.log(e)
-    return { success: false, error: e}
+    return { success: false, error: e.toString()}
   }
 }
 

@@ -12,6 +12,10 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
     if (!transferData.to) {
       return { success: false, error: "No Receiver Address Specified" }
     }
+    if (!transferData.to.startsWith('0x') || transferData.to.length != 42) {
+      console.log("transferData: ", transferData.to)
+      return { success: false, error: "Invalid Receiver Address" }
+    }
     const walletAddress = await wallet.getAddress()
     let tokenaddr = "eth"
     let paymentaddr = ""
@@ -96,7 +100,7 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
     }
   } catch (e) {
     console.log(e)
-    return { success: false, error: e }
+    return { success: false, error: e.toString() }
   }
 }
 

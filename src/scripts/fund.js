@@ -11,6 +11,6 @@ export const handleFundWallet = async function (addr) {
             return;
         }, 1500)
     } catch(e){
-        return e;
+        return e.toString();
     }
 }

@@ -58,7 +58,13 @@ export default function Example(props) {
     setLoading(true)
     if(props.example == "transfer"){
       let addr = receiverAddr;
-      if(!addr && receiverTwitter){
+      if (!addr && receiverTwitter) {
+        if (receiverTwitter[0] != "@") {
+          setError("Twitter handle must start with @")
+          setSubmitting(false)
+          setLoading(false)
+          return;
+        }
         addr = await getAddress(`twitter###${receiverTwitter.substring(1)}`, network || 5);
       }
       if(!addr) {
