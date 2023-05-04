@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Image from 'next/image';
 import { ethers } from "ethers";
-import { createFunWallet, useFaucet, isContract, getAddress, isAuthIdUsed } from "../../scripts/wallet";
+import { createFunWallet, useFaucet, isAuthIdUsed } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
 import { MultiAuthEoa } from "fun-wallet/auth";
@@ -17,12 +17,12 @@ export default function ConnectWallet(props) {
   const { connector } = useAccount()
   const { data: signer } = useSigner()
   const wagmiProvider = useProvider()
-  const { setWallet, network, setNetwork, setEOA, setLoading, setConnectMethod } = useFun()
+  const { setWallet, setNetwork, setEOA, setLoading } = useFun()
   const [connecting, setConnecting] = useState();
   const [showEOA, setShowEOA] = useState(false);
   const [showLinkMore, setShowLinkMore] = useState(false);
   const [linked, setLinked] = useState({});
-  const [linkingWallet, setLinkingWallet] = useState();
+  const [linkingWallet] = useState();
   const [provider, setProvider] = useState();
   const router = useRouter()
   const [magic, setMagic] = useState()
