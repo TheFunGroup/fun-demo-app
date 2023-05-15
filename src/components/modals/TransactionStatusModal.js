@@ -142,7 +142,7 @@ const TransactionStatusModal = (props) => {
             classes={"mt-2 text-xl max-w-[136px]"}
           />
           <span className={"text-text-300 text-3xl font-regular mt-6"}>
-            0.69
+            {valueIn || "0.001"}
           </span>
         </div>
         <div className="flex flex-col items-start justify-evenly w-1/3">
@@ -154,7 +154,7 @@ const TransactionStatusModal = (props) => {
             classes={"mt-2 text-xl max-w-[136px]"}
           />
           <span className={"text-text-300 text-3xl font-regular mt-6"}>
-            0.69
+            { valueOut || 0.00099999}
           </span>
         </div>
       </div>
