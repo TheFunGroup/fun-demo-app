@@ -27,7 +27,7 @@ const examples = {
 // some requirements for staking 
 // must verify the user is on the correct chain. support chain 5 ONLY for now
 // must verify that the user has enough funds to pay for the gas given they are paying
-
+// TODO Test Gasless and ERC20 payment staking
 export default function StakingModal(props) {
   const router = useRouter();
   const example = examples[props.example];

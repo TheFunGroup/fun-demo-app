@@ -29,7 +29,9 @@ const examples = {
     title: "Uniswap",
     description: "Specify the amount and token you are exchanging, and the amount and token you will receive.",
     submit: "Swap"
-  }
+    
+  },
+  
 }
 
 export default function Example(props) {
@@ -242,6 +244,8 @@ export default function Example(props) {
         />
       )}
 
+
+
       <PaymentMethod token={paymentToken} setToken={setPaymentToken}/>
 
       {/* <div className="text-[#101828] font-semibold mt-10">Transaction Fees</div> */}
@@ -252,6 +256,7 @@ export default function Example(props) {
           <div className="text-[#667085]">{`${slippage}%`}</div>
         </div>
       )}
+
 
       {/* <div className="flex justify-between w-full mt-3 text-sm">
         <div className="text-[#344054] font-medium">Gas</div>
