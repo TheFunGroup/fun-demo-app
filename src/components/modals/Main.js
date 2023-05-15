@@ -82,7 +82,7 @@ export default function Main(props) {
             <div className="text-[#667085]">Stake to earn rewards. Longer staking earn more rewards.</div>
           </div>
         </div>
-        <div style={{background: "red", width:"100%", height: "128px"}}onClick={() => goToPage("/transaction")}></div>
+        <div style={{background: "white", border:"2px solid black", width:"100%", height: "24px"}}onClick={() => goToPage("/transaction")}></div>
       </div>
     </div>
   )

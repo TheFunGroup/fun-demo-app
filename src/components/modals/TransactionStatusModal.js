@@ -90,7 +90,7 @@ const TransactionStatusModal = (props) => {
     <div className={`modal w-[690px] my-12 font-sfpro`}>
       <div className="flex justify-between items-start w-full">
         <div>
-          <div className="text-[#101828] font-semibold text-xl">{title}</div>
+          <div className="text-[#101828] font-semibold text-xl">{title || "Staking"}</div>
         </div>
       </div>
 
