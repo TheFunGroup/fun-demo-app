@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import {BigNumber} from "ethers";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useFun } from "../../contexts/funContext";
@@ -7,18 +8,24 @@ import StakeForm from "../forms/StakeForm";
 import { calculateGas } from "../../scripts/calculateGas";
 import { networks } from "../../utils/networks";
 import Spinner from "../misc/Spinner";
-
+import { handleStakeEth } from "../../scripts/stake";
+import { formatEther, parseEther } from "ethers/lib/utils.js";
+import { getEtherBalance } from "../../scripts/wallet";
 const examples = {
   stake: {
     title: "Stake",
     description: "Stake to earn rewards. Longer staking earn more rewards.",
-    submit: "stake",
+    submit: "Stake",
   },
 };
 
 
+// Page should most likely display the maximum balance.
+// Page should most likely have a max button which can set the input to the max balance
+// Page should maybe display the Current network connected or used.
+
 // some requirements for staking 
-// must verify the user is on the correct chain. support chain 1 and 5 ONLY
+// must verify the user is on the correct chain. support chain 5 ONLY for now
 // must verify that the user has enough funds to pay for the gas given they are paying
 
 export default function StakingModal(props) {
@@ -27,37 +34,98 @@ export default function StakingModal(props) {
 
   const {
     wallet,
+    eoa,
     setLoading,
     paymentToken,
     setPaymentToken,
     network,
-    setNetwork
   } = useFun();
 
   const [mustFund, setMustFund] = useState(false);
   const [mustApprove, setMustApprove] = useState(false);
 
-  const [stakeInput, setStakeInput] = useState(0.01);
+  const [stakeInput, setStakeInput] = useState("0.01");
+  const [ethBalance, setEthBalance] = useState("loading");
   const [gas, setGas] = useState("Calculating...");
   const [submitReady, setSubmitReady] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState();
 
   async function handleSubmit() {
-    if (network !== 1) {
-      setError("Please connect to the Ethereum Mainnet.");
+    if (network !== 5) {
+      setError("Please connect to the Goerli Ethereum.");
+      return;
+    }
+    if (ethBalance == "0") return;
+    if (ethBalance < parseFloat(stakeInput)) {
+      setError("Insufficient ETH balance.");
       return;
     }
     if (submitting) return;
     setSubmitting(true);
     setLoading(true);
-    
+
+    // validate params
+    if (parseFloat(stakeInput) <= 0) {
+      setError("Please enter a valid amount.");
+      return;
+    }
+
+    // Handle Stakking
+
+    const res = await handleStakeEth(wallet, paymentToken, stakeInput, eoa)
+    if (!res.success) {
+      if (res.mustFund) {
+        setMustFund(true);
+      } else if (res.mustApprove) {
+        setMustApprove(true);
+      } else {
+        setError(res.error);
+      }
+    } 
+    // else {
+    //   router.push("/staking/success", {etherscan: res.txHash});
+    // }
+    console.log(res)
+    setSubmitting(false);
+    setLoading(false);
   }
 
   useEffect(() => {
     setMustFund(false);
     setMustApprove(false);
   }, [paymentToken]);
+
+  useEffect(() => {
+    // fetch balance on page load once
+    if (wallet && ethBalance === "loading") {
+      wallet.getAddress().then((addr) => {
+        getEtherBalance(addr).then((balance) => {
+          setEthBalance(formatEther(balance));
+        }).catch((e) => {
+          setError("Error getting balance.");
+        });
+      }).catch((e) => {
+        setError("Error getting address.");
+      });
+    }
+    // keep refreshing every 30 seconds.
+    const refresh = setInterval(() => {
+      wallet.getAddress().then((addr) => {
+        if (addr == null) return;
+        getEtherBalance(addr).then((balance) => {
+          setEthBalance(formatEther(balance));
+        }).catch((e) => {
+          setError("Error getting balance.");
+        });
+      }).catch((e) => {
+        setError("Error getting address.");
+      });
+    }, 30000);
+    return () => clearInterval(refresh);
+
+
+  }, [ethBalance, wallet]);
 
   useEffect(() => {
     if (props.example == "stake") {
@@ -150,11 +218,11 @@ export default function StakingModal(props) {
       <div className="text-[#667085] text-sm mt-1 mb-10 whitespace-nowrap">
         {example.description}
       </div></div>
-      <div className="flex items-start"> {networks[network]?.name}</div>
+      {/* <div className="flex items-start"> {networks[network]?.name}</div> */}
       </div>
       
 
-      <div className="rounded-lg border-[1px] border-[#E5E5E5] w-full mt-1 mb-10">
+      <div className="rounded-lg border-[1px] border-[#E5E5E5] w-full mt-1 mb-10 bg-white">
         <div className="flex justify-between items-center w-full p-3">
           <div className="flex items-start">
             <Image
@@ -192,6 +260,7 @@ export default function StakingModal(props) {
       <StakeForm
         setStakeInput={setStakeInput}
         stakeInput={stakeInput}
+        balance={ethBalance}
       />
 
       <PaymentMethod token={paymentToken} setToken={setPaymentToken} />

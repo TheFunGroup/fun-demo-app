@@ -6,6 +6,7 @@ import { ethers } from "ethers";
 import {
   getTransactionStatus,
   getBlockTimestamp,
+  unixTimestampToDate,
 } from "../../scripts/transactons";
 
 const TransactionStatusRow = (props) => {
@@ -30,6 +31,31 @@ const TransactionStatusRow = (props) => {
             "text-textBlue-200 text-xl font-regular px-4 animate-pulse"
           }
         >
+          {props.title}
+        </div>
+      </div>
+    );
+  }
+  if (props.title === "Pending" && props.status === "completed") {
+    title = (
+      <div className="flex justify-start items-center">
+        <div className="w-9 h-9 bg-bg-300 flex items-center justify-center rounded-full relative">
+          <Image src={"check.svg"} width="24" height="24" alt={props.title} />
+        </div>
+        <div className={"text-textBlue-200 text-xl font-regular px-4"}>
+          Confirmed
+        </div>
+      </div>
+    );
+  }
+
+  if (props.title === "Completed" && props.status !== "completed") {
+    title = (
+      <div className="flex justify-start items-center">
+        <div className="w-9 h-9  flex items-center justify-center rounded-full">
+          <div className="w-[10px] h-[10px] bg-text-100 rounded-full"></div>
+        </div>
+        <div className={"text-text-100 text-xl font-regular px-4"}>
           {props.title}
         </div>
       </div>
@@ -61,11 +87,21 @@ const TransactionStatusModal = (props) => {
     router.query;
 
   useEffect(() => {
+    
     getTransactionStatus(
-      "0xf32673f7e74f0ed5c444f3bac74e268073679c8233e4ef276d4e9b0aa7ea8240"
+        txHash || "0xf32673f7e74f0ed5c444f3bac74e268073679c8233e4ef276d4e9b0aa7ea8240"
     )
       .then((res) => {
         setTx(res);
+        getBlockTimestamp(res.blockNumber)
+          .then((time) => {
+            const date = unixTimestampToDate(time);
+            setBlockStartTime(date);
+            console.log(date);
+          })
+          .catch((err) => {
+            setBlockStartTime("unkown");
+          });
       })
       .catch((err) => {
         setTxStatus("error: ", err);
@@ -90,7 +126,9 @@ const TransactionStatusModal = (props) => {
     <div className={`modal w-[690px] my-12 font-sfpro`}>
       <div className="flex justify-between items-start w-full">
         <div>
-          <div className="text-[#101828] font-semibold text-xl">{title || "Staking"}</div>
+          <div className="text-[#101828] font-semibold text-xl">
+            {title || "Staking"}
+          </div>
         </div>
       </div>
 
@@ -127,20 +165,22 @@ const TransactionStatusModal = (props) => {
           <TransactionStatusRow
             title="Submitted"
             img="/check.svg"
-            date="May 20, 2021"
-            time="12:00:00 PM"
+            date={blockStartTime.date}
+            time={blockStartTime.time}
           />
           {txStatus === "pending" && <> </>}
           <TransactionSeperator />
           <TransactionStatusRow
             title="Pending"
+            status={txStatus}
             img="/chevron.svg"
             date=""
-            time="12:00:00 PM"
+            time={`${tx.confirmations} confirmations` || ""}
           />
           <TransactionSeperator />
           <TransactionStatusRow
             title="Completed"
+            status={txStatus}
             img="/check.svg"
             date="--"
             time=""
