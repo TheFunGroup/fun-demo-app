@@ -75,6 +75,14 @@ export default function Main(props) {
             <div className="text-[#667085]">A smart wallet is the secure movement of digital assets from one wallet to another.</div>
           </div>
         </div>
+        <div className="button flex items-center text-sm mt-4 p-4" onClick={() => goToPage("/stake")}>
+          <Image src="/transfer.svg" width="40" height="40" alt=""/>
+          <div className="ml-3">
+            <div className="font-medium text-[#344054]">Stake Ethereum</div>
+            <div className="text-[#667085]">Stake to earn rewards. Longer staking earn more rewards.</div>
+          </div>
+        </div>
+
       </div>
     </div>
   )
