@@ -82,9 +82,9 @@ export default function StakingModal(props) {
       } else {
         setError(res.error);
       }
-    } else {
-      router.push("/staking/success", {etherscan: res.txHash});
-    }
+    // } else {
+    //   router.push("/staking/success", {etherscan: res.txHash});
+    // }
     console.log(res)
     setSubmitting(false);
     setLoading(false);
