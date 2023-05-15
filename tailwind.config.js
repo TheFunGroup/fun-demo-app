@@ -8,7 +8,14 @@ module.exports = {
     extend: {
       fontFamily:{
         'sfpro': ['SF Pro', 'sans-serif'],
-      }
+      },
+      colors: {
+        "text": {
+          100: "#667085",
+          200: "#344054",
+          300: "#101828"
+        }
+      },
     },
   },
   plugins: [],

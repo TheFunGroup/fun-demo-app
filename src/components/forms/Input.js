@@ -12,6 +12,8 @@ export default function Input(props) {
       <div 
         className={`${active ? "border-[#2D4EA2] input-shadow" : "border-[#D0D5DD]"} border-[1px] w-full flex items-center justify-between px-[14px] py-[10px] rounded-lg bg-white`}
       >
+        <div className="flex items-center">
+        {(props.displayMax && props.balance) && (<div className="text-sm text-text-100 pr-2 cursor-pointer" onClick={() => {props.onChange({target:{value:props.balance}})}}>MAX</div>)}
         <input 
           className={`border-0 outline-0 text-[#101828] overflow-x-scroll`}
           style={{width: `${props.width || "180px"}`}}
@@ -24,6 +26,7 @@ export default function Input(props) {
           ref={props.inputRef || null}
         >
         </input>
+        </div>
         {props.tokenSelect && (
           <TokenSelect token={props.token} nonToken={props.nonToken} setToken={(value) => {props.setToken(value)}} excludeETH={props.excludeETH}/>
         )}
@@ -31,8 +34,9 @@ export default function Input(props) {
           <ReceiverSelect setType={props.setReceiverType}/>
         )}
         {props.sideLabel && (
-          <div className="flex items-center cursor-pointer" >
+          <div className="flex flex-col items-end cursor-pointer" >
             <div className="text-[#101828] mr-1">{props.sideLabel}</div>
+            {props.balance && (<div className="text-sm text-text-100 pt-1 pr-1">{`Balance: ${props.balance}`}</div>)}
           </div>
         )}
       </div>

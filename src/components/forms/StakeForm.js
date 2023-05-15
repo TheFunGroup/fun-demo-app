@@ -23,7 +23,8 @@ export default function StakeForm(props) {
           onChange={(e) => {setStakeInput(e.target.value)}}
           inputRef={swapExchangeRef}
           sideLabel={"ETH"}
-
+          // displayMax={true}
+          balance={props.balance}
 
         />
       </div>

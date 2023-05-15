@@ -88,3 +88,17 @@ export async function getAddress(uniqueId, chainId, index = WALLET_INDEX, apiKey
     return false;
   }
 }
+
+export const getEtherBalance = (walletAddress) => {
+  return new Promise(async (resolve, reject) => {
+    if (walletAddress == null) return reject("No wallet address provided");
+    const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
+    provider.getBalance(walletAddress).then((balance) => {
+        resolve(balance)
+    })
+    .catch((err) => {
+      reject(err)
+    });
+
+  })
+}
