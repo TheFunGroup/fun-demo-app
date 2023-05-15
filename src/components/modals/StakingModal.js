@@ -15,7 +15,7 @@ const examples = {
   stake: {
     title: "Stake",
     description: "Stake to earn rewards. Longer staking earn more rewards.",
-    submit: "stake",
+    submit: "Stake",
   },
 };
 
@@ -74,6 +74,17 @@ export default function StakingModal(props) {
     // Handle Stakking
 
     const res = await handleStakeEth(wallet, paymentToken, stakeInput, eoa)
+    if (!res.success) {
+      if (res.mustFund) {
+        setMustFund(true);
+      } else if (res.mustApprove) {
+        setMustApprove(true);
+      } else {
+        setError(res.error);
+      }
+    } else {
+      router.push("/staking/success", {etherscan: res.txHash});
+    }
     console.log(res)
     setSubmitting(false);
     setLoading(false);
@@ -87,11 +98,8 @@ export default function StakingModal(props) {
   useEffect(() => {
     // fetch balance on page load once
     if (wallet && ethBalance === "loading") {
-      console.log("fetching")
       wallet.getAddress().then((addr) => {
-        console.log(addr)
         getEtherBalance(addr).then((balance) => {
-          console.log(balance)
           setEthBalance(formatEther(balance));
         }).catch((e) => {
           setError("Error getting balance.");
@@ -101,21 +109,19 @@ export default function StakingModal(props) {
       });
     }
     // keep refreshing every 30 seconds.
-    // const refresh = setInterval(() => {
-    //   console.log(wallet)
-    //   wallet.getAddress().then((addr) => {
-    //     if (addr == null) return;
-    //     console.log(addr)
-    //     getEtherBalance(addr).then((balance) => {
-    //       setEthBalance(formatEther(balance));
-    //     }).catch((e) => {
-    //       setError("Error getting balance.");
-    //     });
-    //   }).catch((e) => {
-    //     setError("Error getting address.");
-    //   });
-    // }, 30000);
-    // return () => clearInterval(refresh);
+    const refresh = setInterval(() => {
+      wallet.getAddress().then((addr) => {
+        if (addr == null) return;
+        getEtherBalance(addr).then((balance) => {
+          setEthBalance(formatEther(balance));
+        }).catch((e) => {
+          setError("Error getting balance.");
+        });
+      }).catch((e) => {
+        setError("Error getting address.");
+      });
+    }, 30000);
+    return () => clearInterval(refresh);
 
 
   }, [ethBalance, wallet]);
@@ -215,7 +221,7 @@ export default function StakingModal(props) {
       </div>
       
 
-      <div className="rounded-lg border-[1px] border-[#E5E5E5] w-full mt-1 mb-10">
+      <div className="rounded-lg border-[1px] border-[#E5E5E5] w-full mt-1 mb-10 bg-white">
         <div className="flex justify-between items-center w-full p-3">
           <div className="flex items-start">
             <Image

@@ -1,8 +1,7 @@
 import { BigNumber, ethers } from "ethers";
 const Big  = ethers.BigNumber
-import { configureEnvironment } from "fun-wallet/managers";
-import { TokenSponsor } from "fun-wallet/sponsors";
-import type { FunWallet, } from "fun-wallet";
+import { configureEnvironment } from "../../fun-wallet/managers";
+import { TokenSponsor } from "../../fun-wallet/sponsors";
 import erc20ABI from "../utils/funTokenAbi.json";
 import { isContract } from "./wallet";
 import { apiKey } from "../utils/constants";
@@ -13,7 +12,7 @@ import { formatEther, parseEther } from "ethers/lib/utils.js";
 // paymentToken String (ETH, gassless, or address of ERC20 token)
 // amount string ETH amount to stake
 // auth Object or EOA signer specifically.
-export const handleStakeEth = async function (wallet: FunWallet, paymentToken: string, amount: string, auth) {
+export const handleStakeEth = async function (wallet, paymentToken, amount, auth) {
   try {
     const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
     const walletAddress = await wallet.getAddress()
@@ -71,7 +70,7 @@ export const handleStakeEth = async function (wallet: FunWallet, paymentToken: s
     }
     try {
       console.log(wallet, wallet.stake)
-      const receipt = await wallet.stake(auth, {amount});
+      const receipt = await wallet.stake(auth, {amount}, {gasLimit: 300000});
     //Tells frontend stake was success
     console.log("txId: ", receipt.txid)
     const explorerUrl = receipt.txid ? `https://goerli.etherscan.io/tx/${receipt.txid}` : `https://goerli.etherscan.io/address/${walletAddress}#internaltx`

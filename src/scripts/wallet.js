@@ -1,5 +1,5 @@
-import { FunWallet, configureEnvironment } from "fun-wallet";
-import { getStoredUniqueId } from "fun-wallet/utils";
+import { FunWallet, configureEnvironment } from "../../fun-wallet";
+import { getStoredUniqueId } from "../../fun-wallet/utils";
 import { ethers } from "ethers";
 import { apiKey } from "../utils/constants";
 import {handleFundWallet} from '../scripts/fund'
