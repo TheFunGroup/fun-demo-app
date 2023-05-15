@@ -28,10 +28,11 @@ export const getBlockTimestamp = async (blockNumber) => {
     })
 }
 
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Nov", "Dec"]
+
 export const unixTimestampToDate = (unixTimestamp) =>{
     const milliseconds = unixTimestamp * 1000;
     const dateObject = new Date(milliseconds);
-    const humanDateFormat = dateObject.toLocaleString();
-    const [date, time] = humanDateFormat.split(", ");
-    return { date, time };
+    const humanTime = dateObject.toLocaleString().split(", ");
+    return { date: `${months[dateObject.getMonth()]} ${dateObject.getDate()} ${dateObject.getFullYear()}`, time:  humanTime[1]};
   }

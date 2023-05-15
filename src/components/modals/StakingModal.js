@@ -44,7 +44,7 @@ export default function StakingModal(props) {
   const [mustFund, setMustFund] = useState(false);
   const [mustApprove, setMustApprove] = useState(false);
 
-  const [stakeInput, setStakeInput] = useState("0.01");
+  const [stakeInput, setStakeInput] = useState("0.0");
   const [ethBalance, setEthBalance] = useState("loading");
   const [gas, setGas] = useState("Calculating...");
   const [submitReady, setSubmitReady] = useState(false);
@@ -83,10 +83,9 @@ export default function StakingModal(props) {
         setError(res.error);
       }
     } 
-    // else {
-    //   router.push("/staking/success", {etherscan: res.txHash});
-    // }
-    console.log(res)
+    else {
+      router.push({pathname:"/transaction", query: {title: "Stake", valueIn: stakeInput, tokenIn: "ETH", valueOut: stakeInput, tokenOut:"stETH", explorerURL: res.explorerUrl}});
+    }
     setSubmitting(false);
     setLoading(false);
   }
@@ -101,7 +100,8 @@ export default function StakingModal(props) {
     if (wallet && ethBalance === "loading") {
       wallet.getAddress().then((addr) => {
         getEtherBalance(addr).then((balance) => {
-          setEthBalance(formatEther(balance));
+          const roundedEther = Math.round(parseFloat(formatEther(balance))*100000)/100000;
+          setEthBalance(roundedEther);
         }).catch((e) => {
           setError("Error getting balance.");
         });
@@ -114,7 +114,8 @@ export default function StakingModal(props) {
       wallet.getAddress().then((addr) => {
         if (addr == null) return;
         getEtherBalance(addr).then((balance) => {
-          setEthBalance(formatEther(balance));
+          const roundedEther = Math.round(parseFloat(formatEther(balance))*100000)/100000;
+          setEthBalance(formatEther(roundedEther));
         }).catch((e) => {
           setError("Error getting balance.");
         });
@@ -238,8 +239,8 @@ export default function StakingModal(props) {
               </div>
               <div className="text-xs text-[#667085]">
                 {" "}
-                At the current rate of stETH, 0.9553, it would be more
-                profitable to stake than to swap. Considering swapping?
+                At the current rate of stETH, it may be more
+                profitable to swap instead of stake. Consider using the swap?
               </div>
             </div>
           </div>

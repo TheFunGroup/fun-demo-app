@@ -20,7 +20,7 @@ export default function Input(props) {
         {(props.displayMax && props.balance) && (<div className="text-sm text-text-100 pr-2 cursor-pointer" onClick={() => {props.onChange({target:{value:props.balance}})}}>MAX</div>)}
         <input 
           ref={inputRef}
-          className={`border-0 outline-0 text-[#101828] overflow-x-scroll`}
+          className={`border-0 outline-0 text-[#101828] overflow-x-scroll ${props.balance && "mb-[20px]"}`}
           style={{width: `${props.width || "180px"}`}}
           placeholder={props.placeholder}
           type={props.type}

@@ -17,6 +17,7 @@ module.exports = {
         },
         "textBlue": {
           200: "#2D4EA2",
+          300: "#2B2F43"
         },
         "bg": {
           300: "#2D4EA20B",

@@ -17,7 +17,6 @@ export const handleStakeEth = async function (wallet, paymentToken, amount, auth
     const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
     const walletAddress = await wallet.getAddress()
     let balanceWEI = await provider.getBalance(walletAddress);
-    console.log(balanceWEI, amount)
     // validate the params
     if (parseFloat(amount) <= 0) return { success: false, error: "Staking amount must be greater than 0"};
     if (parseFloat(amount) > parseFloat(formatEther(balanceWEI))) return { success: false, error: "Staking amount cannot exceed your account balance" };
@@ -69,10 +68,9 @@ export const handleStakeEth = async function (wallet, paymentToken, amount, auth
       })
     }
     try {
-      console.log(wallet, wallet.stake)
       const receipt = await wallet.stake(auth, {amount}, {gasLimit: 300000});
     //Tells frontend stake was success
-    console.log("txId: ", receipt.txid)
+    console.log("txId: ",receipt, receipt.txid)
     const explorerUrl = receipt.txid ? `https://goerli.etherscan.io/tx/${receipt.txid}` : `https://goerli.etherscan.io/address/${walletAddress}#internaltx`
     return { success: true, explorerUrl}
 
