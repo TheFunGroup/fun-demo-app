@@ -12,14 +12,12 @@ import { formatEther, parseEther } from "ethers/lib/utils.js";
 // paymentToken String (ETH, gassless, or address of ERC20 token)
 // amount string ETH amount to stake
 // auth Object or EOA signer specifically.
-export const handleStakeEth = async function (wallet, paymentToken, amount, auth) {
+export const handleStakeEth = async function (wallet, paymentToken, amount, auth, estimateGas = false) {
   try {
     const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
     const walletAddress = await wallet.getAddress()
-    let balanceWEI = await provider.getBalance(walletAddress);
     // validate the params
     if (parseFloat(amount) <= 0) return { success: false, error: "Staking amount must be greater than 0"};
-    if (parseFloat(amount) > parseFloat(formatEther(balanceWEI))) return { success: false, error: "Staking amount cannot exceed your account balance" };
 
     
     // // Tells frontend that funwallet must be funded  
@@ -68,7 +66,8 @@ export const handleStakeEth = async function (wallet, paymentToken, amount, auth
       })
     }
     try {
-      const receipt = await wallet.stake(auth, {amount}, {gasLimit: 300000});
+      const receipt = await wallet.stake(auth, {amount}, {gasLimit: 300000}, estimateGas);
+      if (estimateGas) return { success: true, receipt }
     //Tells frontend stake was success
     console.log("txId: ",receipt, receipt.txid)
     const explorerUrl = receipt.txid ? `https://goerli.etherscan.io/tx/${receipt.txid}` : `https://goerli.etherscan.io/address/${walletAddress}#internaltx`

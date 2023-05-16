@@ -32,6 +32,11 @@ export const tokens = {
       decimal: 18
     },
     {
+      name: "stETH",
+      addr: "0x1643e812ae58766192cf7d2cf9567df2c37e9b7f",
+      decimal: 18
+    },
+    {
       name: "USDC",
       addr: "0xaa8958047307da7bb00f0766957edec0435b46b5",
       decimal: 6

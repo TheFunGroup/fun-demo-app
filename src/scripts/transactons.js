@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 export const getTransactionStatus = async (txHash) => {
     return new Promise((resolve, reject) => {
         const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
-        provider.getTransaction(txHash)
+        provider.getTransactionReceipt(txHash)
         .then((txObj) => {
             resolve(txObj)
         })
