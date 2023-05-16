@@ -5,7 +5,7 @@ import { useFun } from "../../contexts/funContext";
 import BridgeForm from "../forms/BridgeForm";
 import PaymentMethod from "../forms/PaymentMethod";
 import { calculateGas } from "../../scripts/calculateGas";
-
+import { verifyBridgeParams, handleBridge } from "../../scripts/bridge";
 import Spinner from "../misc/Spinner";
 
 const BridgeModalConfig = {
@@ -23,24 +23,59 @@ export default function Bridge(props) {
 
   const [mustFund, setMustFund] = useState(false);
   const [mustApprove, setMustApprove] = useState(false);
-  const [fromNetwork, setFromNetwork] = useState("ARB");
-  const [toNetwork, setToNetwork] = useState("MATIC");
+  const [fromNetwork, setFromNetwork] = useState(42161);
+  const [toNetwork, setToNetwork] = useState(137);
   const [bridgeAsset, setBridgeAsset] = useState({name: "ETH", amount: 0});
-  const [ethBalance, setEthBalance] = useState("loading");
+  const [ethBalance, setEthBalance] = useState("100" || "loading");
 
   const [gas, setGas] = useState("Calculating...");
   const [submitReady, setSubmitReady] = useState(false);
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState();
 
-  async function handleSubmit(){
-    if(submitting) return;
+  async function handleSubmit() {
+    // validate params
+    if (parseFloat(bridgeAsset.amount) <= 0) {
+      setError("Please enter a valid amount.");
+      return;
+    }
+    if (ethBalance == "0") return;
+    if (ethBalance < parseFloat(bridgeAsset.amount)) {
+      setError("Insufficient balance.");
+      return;
+    }
+    if (submitting ) return;
     setSubmitting(true);
     setLoading(true);
-    setTimeout(() => {setSubmitting(false);
-        setLoading(false);
-    }, 2000)
+
+
+
+    // Handle bridge
+    // verify the params
+    /* 
+    *   fromChainId: number (chain id you are bridging the asset from)
+    *   toChainId: number (chain id you are bridging the asset to)
+    *   fromAssetAddress: string (address of the asset on fromChainId's chain)
+    *   toAssetAddress: string (address of the asset you want to receive on toChainId's chain)
+    *   amount: number (amount of the from asset you want to input - make sure to take decimals into account)
+    * **/
+    const res = await handleBridge(wallet, paymentToken, stakeInput, eoa)
+    if (!res.success) {
+      if (res.mustFund) {
+        setMustFund(true);
+      } else if (res.mustApprove) {
+        setMustApprove(true);
+      } else {
+        setError(res.error);
+      }
+    } 
+    else {
+      router.push({pathname:"/transaction", query: {title: "Bridge", valueIn: stakeInput, tokenIn: "ETH", valueOut: stakeInput, tokenOut:"stETH", explorerURL: res.explorerUrl}});
+    }
+    setSubmitting(false);
+    setLoading(false);
   }
+
 
   useEffect(() => {
     setMustFund(false)
