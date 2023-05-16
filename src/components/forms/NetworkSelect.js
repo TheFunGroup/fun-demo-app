@@ -3,19 +3,19 @@ import Image from "next/image";
 import { useOnClickOutside } from "../../hooks/useOnClickOutside";
 
 export const NETWORKS = {
-  MATIC: {
+  137: {
     name: "Polygon",
     icon: "/polygon-rounded.svg",
     chainId: 137,
     ticker: "MATIC",
   },
-  GORLI: {
+  5: {
     name: "Goerli",
     icon: "/goerli.svg",
     chainId: 5,
     ticker: "ETH",
   },
-  ARB: {
+  42161: {
     name: "Arbitrum",
     icon: "/arbitrum.svg",
     chainId: 42161,

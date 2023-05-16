@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import NetworkDisplay from "../misc/NetworkDisplay";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import {
   getTransactionStatus,
   getBlockTimestamp,
@@ -11,6 +11,12 @@ import {toUSD} from "../../scripts/prices";
 
 import { useFun } from "../../contexts/funContext";
 import Link from "next/link";
+import { BigNumber } from "ethers";
+import { formatEther } from "ethers/lib/utils.js";
+import {getERC20Balance} from "../../scripts/wallet";
+import {tokens} from "../../utils/constants";
+
+const LIDO_TOKEN_TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 
 const TransactionStatusRow = (props) => {
   let title = (
@@ -104,15 +110,32 @@ const TransactionSeperator = (props) => {
   );
 };
 
+const handleTokenSpecificLogs = (txReceipt, tokenOut, valueOut) => {
+  if (tokenOut === "stETH" && txReceipt != null && txReceipt.logs != null) {
+    for (let i = 0; i < txReceipt.logs.length; i++) {
+      if (txReceipt.logs[i].topics[0] === LIDO_TOKEN_TRANSFER_TOPIC) { // find the TOPIC where LIDO tokens are transfered to the user to determin how many tokens were transfered
+        const unformatedEtherValue = formatEther(BigNumber.from(txReceipt.logs[i].data || "0"));
+          return Math.floor(parseFloat(unformatedEtherValue) * 1000000) / 1000000;
+      }
+    }
+
+  }
+  return valueOut;
+};
+
 //
 const TransactionStatusModal = (props) => {
   const router = useRouter();
-  const { setLoading } = useFun();
+  const {
+    wallet,
+    setLoading,
+  } = useFun();
   const [tx, setTx] = useState(null);
   const [blockStartTime, setBlockStartTime] = useState(0); // [blockNumber, timestamp
   const [inputPrice, setInputPrice] = useState(null); 
   const [outPrice, setOutPrice] = useState(null);
   const [txStatus, setTxStatus] = useState("started");
+  const [tokenOUT, setTokenOUT] = useState("loading");
   const {
     title,
     valueIn,
@@ -122,6 +145,7 @@ const TransactionStatusModal = (props) => {
     tokenOut,
     networkOut,
     explorerURL,
+    prevStEthBalance,
   } = router.query;
 
   // hook to get transaction status data and update it every 5 seconds as well as load the block timestamp
@@ -143,6 +167,7 @@ const TransactionStatusModal = (props) => {
     )
       .then((res) => {
         setTx(res);
+        setTokenOUT(handleTokenSpecificLogs(res, tokenOut, valueOut));
         getBlockTimestamp(res.blockNumber)
           .then((time) => {
             const date = unixTimestampToDate(time);
@@ -170,27 +195,26 @@ const TransactionStatusModal = (props) => {
     }, 5000);
 
     return () => clearInterval(txStatusInterval);
-  }, [explorerURL]);
+  }, [explorerURL, tokenOut, valueOut]);
 
   useEffect(() => {
     if (tx && txStatus === "started") {
       setTxStatus("pending");
-      tx.wait(15)
-        .then((success) => {
-          setTxStatus("completed");
-          setLoading(false);
-        })
-        .catch((failed) => {
-          setTxStatus("Error: ", failed);
-        });
+      if (tx.confirmations >= 5) {
+        setTxStatus("completed");
+      }
+      if (tx.status !== 1) {
+        setTxStatus("error");
+      }
     }
-  }, [setLoading, tx, txStatus]);
+  }, [ setLoading, tx, txStatus ]);
 
   // effect for getting the input and output prices
     useEffect(() => {
         // if (!valueIn || !valueOut) return;
         if (inputPrice == null && outPrice == null) return;
-        Promise.all([toUSD( tokenIn || "eth", valueIn || "0.1",), toUSD( tokenOut ||"steth", valueOut || "0.1",)])
+        if (tokenOUT === "loading") return;
+        Promise.all([toUSD( tokenIn || "eth", valueIn || "0.1",), toUSD( tokenOUT ||"steth", valueOut || "0.1",)])
         .then((prices) => {
             console.log(prices)
             setInputPrice(prices[0])
@@ -199,7 +223,11 @@ const TransactionStatusModal = (props) => {
         .catch((err) => {
             console.log(err)
         })
-    }, [inputPrice, outPrice, tokenIn, tokenOut, valueIn, valueOut])
+    }, [inputPrice, outPrice, tokenIn, tokenOUT, tokenOut, valueIn, valueOut]);
+
+    useEffect(() => {
+        if (title === "Staking") {}
+    })
   return (
     <div className={`modal w-[690px] my-12 font-sfpro`}>
       <div className="flex justify-between items-start w-full">
@@ -213,7 +241,7 @@ const TransactionStatusModal = (props) => {
       <div className="w-full flex justify-between items-center mt-2 p-6">
         <div className="flex flex-col items-start justify-evenly w-1/3 min-h-[148px]">
           <div className="text-text-100 text-base mb-2">From</div>
-          {tokenIn && tokenOut ? (
+          {!(networkIn && networkOut) ? (
             <NetworkDisplay
               token={tokenIn || "ETH"}
               size="32"
@@ -235,7 +263,7 @@ const TransactionStatusModal = (props) => {
         </div>
         <div className="flex flex-col items-start justify-evenly w-1/3 min-h-[148px]">
           <div className="text-text-100 text-base mb-2">To</div>
-          {tokenIn && tokenOut ? (
+          { !(networkIn && networkOut) ? (
             <NetworkDisplay
               token={tokenOut || "ETH"}
               size="32"
@@ -249,7 +277,7 @@ const TransactionStatusModal = (props) => {
             />
           )}
           <span className={"text-text-300 text-3xl font-regular mt-3"}>
-            {valueOut || "0.001"}
+            {tokenOUT || "0.001"}
           </span>
           <span className={"text-text-100 text-base font-regular mt-1"}>
             {`$${outPrice || "0.00"}`}
