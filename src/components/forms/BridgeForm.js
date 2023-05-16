@@ -4,7 +4,7 @@ import Input from "./Input";
 import NetworkSelect from "./NetworkSelect";
 
 const setNetwork = (newNetwork, network, otherNetwork, setNetwork, setOtherNetwork) => {
-    if (newNetwork === otherNetwork) {
+    if (newNetwork == otherNetwork) {
         setOtherNetwork(network)
         setNetwork(newNetwork)
         return;
@@ -66,6 +66,7 @@ export default function BridgeForm(props) {
           setToken={(value) => {
             setBridgeAsset({name:value.name, amount: bridgeAsset.amount})
           }}
+          balance={bridgeAsset.balance}
         />
       </div>
 

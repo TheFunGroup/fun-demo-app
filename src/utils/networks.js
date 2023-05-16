@@ -4,6 +4,7 @@ export const networks = {
   "137": {
     name: "Polygon",
     icon: "/polygon.svg",
+    paymentIcon:"/matic-payment.png",
     nativeCurrency: {
       name: 'MATIC',
       symbol: 'MATIC',
@@ -15,6 +16,7 @@ export const networks = {
   "1": {
     name: "Ethereum",
     icon: "/ethereum.svg",
+    paymentIcon:"/ethereum-payment.png",
     nativeCurrency: {
       name: 'Ethereum',
       symbol: 'ETH',
@@ -24,11 +26,24 @@ export const networks = {
   "5": {
     name: "Goerli",
     icon: "/goerli.svg",
+    paymentIcon:"/ethereum-payment.png",
     nativeCurrency: {
       name: 'Ethereum',
       symbol: 'ETH',
       decimals: 18
     },
+  },
+  "42161": {
+    name: "Arbitrum One",
+    icon: "/arbitrum.svg",
+    paymentIcon:"/ethereum-payment.png",
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'AETH',
+      decimals: 18
+    },
+    blockExplorerUrls: ["https://arbiscan.io/"],
+    rpcUrls: ["https://arb1.arbitrum.io/rpc"]
   },
   "56": {
     name: "Binance",

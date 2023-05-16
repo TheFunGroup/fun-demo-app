@@ -17,7 +17,7 @@ export default function ConnectWallet(props) {
   const { connector } = useAccount()
   const { data: signer } = useSigner()
   const wagmiProvider = useProvider()
-  const { setWallet, setNetwork, setEOA, setLoading } = useFun()
+  const { setWallet, setNetwork, setEOA, setLoading, setProvider: setContextProvider } = useFun()
   const [connecting, setConnecting] = useState();
   const [showEOA, setShowEOA] = useState(false);
   const [showLinkMore, setShowLinkMore] = useState(false);
@@ -59,9 +59,10 @@ export default function ConnectWallet(props) {
       setConnecting(connector.name)
       setLoading(true)
       let provider = await connector.getProvider({ chainId: 5 })
+      setContextProvider(connector)
       if (signer && provider) {
         const chainId = await connector.getChainId();
-        if (chainId !== 5) await connector.switchChain(5)
+        if (chainId !== 5) await connector.switchChain(5) // TODO support other networks
         setNetwork(5)
         const eoaAddr = await signer.getAddress();
         if (!provider.getBalance) provider = (await connector.getSigner()).provider;
@@ -85,6 +86,7 @@ export default function ConnectWallet(props) {
         setLinked(linked)
       }
       setProvider(provider)
+
       setShowLinkMore(true)
       setLoading(false)
       setConnecting("")

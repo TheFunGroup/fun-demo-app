@@ -9,12 +9,6 @@ export const NETWORKS = {
     chainId: 137,
     ticker: "MATIC",
   },
-  5: {
-    name: "Goerli",
-    icon: "/goerli.svg",
-    chainId: 5,
-    ticker: "ETH",
-  },
   42161: {
     name: "Arbitrum",
     icon: "/arbitrum.svg",
