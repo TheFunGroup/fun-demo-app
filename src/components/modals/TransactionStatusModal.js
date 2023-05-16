@@ -200,12 +200,12 @@ const TransactionStatusModal = (props) => {
   useEffect(() => {
     if (tx && txStatus === "started") {
       setTxStatus("pending");
-      if (tx.confirmations >= 5) {
-        setTxStatus("completed");
-      }
       if (tx.status !== 1) {
         setTxStatus("error");
       }
+    }
+    if (tx &&  tx.confirmations >= 5) {
+      setTxStatus("completed");
     }
   }, [ setLoading, tx, txStatus ]);
 

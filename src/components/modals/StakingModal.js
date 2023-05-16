@@ -37,9 +37,7 @@ export default function StakingModal(props) {
     setLoading,
     paymentToken,
     setPaymentToken,
-    paymentAddr,
     setPaymentAddr,
-    paymasterAddress,
     setPaymasterAddress,
     network,
   } = useFun();
@@ -84,7 +82,7 @@ export default function StakingModal(props) {
         }
       }
     }
-    const res = await handleStakeEth(wallet, paymentToken, stakeInput, eoa);
+    const res = await handleStakeEth(wallet, normalizedPaymentToken, stakeInput, eoa);
     if (!res.success) {
       if (res.mustFund) {
         setMustFund(true);
@@ -109,7 +107,6 @@ export default function StakingModal(props) {
           valueOut: stakeInput,
           tokenOut: "stETH",
           explorerURL: res.explorerUrl,
-          prevStEthBalance: stEthBalance.toString(),
         },
       });
     }
@@ -161,7 +158,7 @@ export default function StakingModal(props) {
         });
     }, 30000);
     return () => clearInterval(refresh);
-  }, [ethBalance, stEthBalance, wallet]);
+  }, [ethBalance, wallet]);
 
   //// determine the gas cost and convert to USD
   useEffect(() => {
