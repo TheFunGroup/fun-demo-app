@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { getSwapAmount } from "../../scripts/prices";
 import Input from "./Input";
 import NetworkSelect from "./NetworkSelect";
+import { tokens } from "../../utils/tokens";
 
 const setNetwork = (newNetwork, network, otherNetwork, setNetwork, setOtherNetwork) => {
     if (newNetwork == otherNetwork) {
@@ -12,6 +13,14 @@ const setNetwork = (newNetwork, network, otherNetwork, setNetwork, setOtherNetwo
     setNetwork(newNetwork);
 };
 
+
+const shouldResetToken = (network, token) => {
+  if (tokens[network] == null) return false;
+  for (let i = 0; i < tokens[network].length; i++) {
+    if (tokens[network][i].name == token.name) return false;
+  }
+  return true;
+}
 
 export default function BridgeForm(props) {
 
@@ -37,6 +46,9 @@ export default function BridgeForm(props) {
           network={fromNetwork}
           setNetwork={(val) => {
             setNetwork(val, fromNetwork, toNetwork, setFromNetwork, setToNetwork)
+            if (shouldResetToken(val, bridgeAsset)) {
+              setBridgeAsset({name: tokens[val][0].name, amount: bridgeAsset.amount})
+            }
           }}
 
         />
@@ -65,7 +77,7 @@ export default function BridgeForm(props) {
           token={bridgeAsset}
           nonToken={bridgeAsset}
           setToken={(value) => {
-            setBridgeAsset({name:value.name, amount: bridgeAsset.amount})
+            setBridgeAsset({...bridgeAsset, name:value.name, amount: bridgeAsset.amount})
           }}
           balance={bridgeAsset.balance}
         />

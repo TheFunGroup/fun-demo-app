@@ -12,7 +12,6 @@ export default function PaymentMethod(props) {
   }
   const networkConfig = networks[network || 5];
   const nativeToken = networkConfig.nativeCurrency;
-
   return (
     <div className="w-full mt-10">
       <div className="text-[#101828] font-semibold">Payment Method</div>

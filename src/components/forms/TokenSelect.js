@@ -14,7 +14,9 @@ export default function TokenSelect(props) {
   const dropdownRef = useRef()
   const selectBtnRef = useRef()
 
-  const { network } = useFun();
+
+  const { network: defaultNetwork } = useFun();
+  const network = props.network || defaultNetwork;
 
   useEffect(() => {
     setDropdown(false);

@@ -18,41 +18,32 @@ const BridgeModalConfig = {
   submit: "Bridge",
 };
 
-async function connectFunWallet(connector, authId, provider, publicKey) {
-  const authIdUsed = await isAuthIdUsed(authId)
-  if (!authIdUsed) {
-    if (!linked[connector]) {
-      linked[connector] = [authId, publicKey];
-      setLinked(linked)
-    }
-    setProvider(provider)
 
-    setShowLinkMore(true)
-    setLoading(false)
-    setConnecting("")
-    return;
-  }
-  const auth = new MultiAuthEoa({ provider, authIds: [[authId, publicKey]] })
-  const FunWallet = await createFunWallet(auth)
-  const addr = await FunWallet.getAddress()
-  FunWallet.address = addr
-  try {
-    let balance = await provider.getBalance(addr);
-    balance = ethers.utils.formatEther(balance);
-    if (balance == 0) {
-      FunWallet.deployed = false;
-      await useFaucet(addr, 5);
-    } else {
-      FunWallet.deployed = true
+const fetchTokenBalances = (address, network, bridgeAsset) => {
+  return new Promise( async (resolve, reject) => {
+    if (tokens[network] == null || networks[network].rpcUrls[0] == null ) 
+    {
+      reject({...bridgeAsset, balance: "N/A"})
+      return;
     }
-  } catch (e) {
-    console.log(e)
-  }
-  setProvider(provider)
-  setWallet(FunWallet);
-  setEOA(auth)
-  setConnecting("")
-  setLoading(false)
+    const etherProvider = new ethers.providers.JsonRpcProvider(networks[network].rpcUrls[0])
+  
+    let bridgeAssetAddr = tokens[network][0].addr
+    for( let i = 0; i < tokens[network].length; i++){
+      if(tokens[network][i].name == bridgeAsset.name){
+        bridgeAssetAddr = tokens[network][i].addr;
+        break;
+      }
+    }
+    
+    if (bridgeAssetAddr === "native") {
+      const balance = await getEtherBalance(address, etherProvider)
+      resolve({...bridgeAsset, balance: balance})
+    } else {
+      const balance = await getERC20Balance(address, bridgeAssetAddr, etherProvider )
+      resolve({...bridgeAsset, balance: balance})
+    }
+  })
 }
 
 
@@ -146,35 +137,31 @@ export default function Bridge(props) {
     setLoadingBalance(true);
       wallet.getAddress()
         .then(async (addr) => {
-
-          if (tokens[fromNetwork] == null || networks[fromNetwork].rpcUrls[0] == null ) 
-          {
-            setBridgeAsset({...bridgeAsset, balance: "N/A"})
-            return;
-          }
-          const etherProvider = new ethers.providers.JsonRpcProvider(networks[fromNetwork].rpcUrls[0])
-
-          let bridgeAssetAddr = tokens[fromNetwork][0].addr
-          for( let i = 0; i < tokens[fromNetwork].length; i++){
-            if(tokens[fromNetwork][i].name == bridgeAsset.name){
-              bridgeAssetAddr = tokens[fromNetwork][i].addr;
-              break;
+          console.log("fetching balances for ", addr, "on ", fromNetwork)
+          Promise.all([
+            fetchTokenBalances(addr, fromNetwork, bridgeAsset),
+            fetchTokenBalances(addr, toNetwork, bridgeOutAsset)
+          ])
+          .then((res) => {
+            if (res[0].balance == "N/A" || res[1].balance == "N/A") {
+              setError("Invalid network selected.");
+              return;
             }
-          }
-          
-          if (bridgeAssetAddr === "native") {
-            const balance = await getEtherBalance(addr, etherProvider)
-            setBridgeAsset({...bridgeAsset, balance: balance})
-          } else {
-            const balance = await getERC20Balance(addr, bridgeAssetAddr, etherProvider )
-            setBridgeAsset({...bridgeAsset, balance: balance})
-          }
+            if (res[0] && res[0].balance) {
+              setBridgeAsset(res[0])
+            }
+            if (res[1] && res[1].balance) {
+              setBridgeOutAsset(res[1])
+            }
+          })
+          .catch((err) => {console.log(err)})
+
 
         })
         .catch((err) => {
           console.log(err)
         });
-  }, [wallet, fromNetwork,  bridgeAsset, loadingBalance]);
+  }, [wallet, fromNetwork, bridgeAsset, loadingBalance, toNetwork, bridgeOutAsset]);
 
   // Ensures that the chainId is always set to the from Network selector.
   useEffect(() => {
@@ -188,6 +175,9 @@ export default function Bridge(props) {
             setNetwork(fromNetwork)
             setBridgeAsset({...bridgeAsset, balance: "loading"})
             setLoadingBalance(false)
+            if (paymentToken == "ETH" && networks[fromNetwork].nativeCurrency.symbol != "ETH") {
+              setPaymentToken(networks[fromNetwork].nativeCurrency.symbol)
+            }
           })
           .catch((err) => {console.log(err)})
 
@@ -309,10 +299,10 @@ export default function Bridge(props) {
           className="w-[315px] button p-3 font-medium text-[#344054]"
           onClick={() => {
             console.log('switching chain', provider)
-            provider.switchChain(Number(fromNetwork))
+            provider.switchChain(5)
             .then((r) => {
               console.log(r)
-              setNetwork(fromNetwork)
+              setNetwork(5)
               router.push("/")
             })
             .catch((err) => {console.log(err)})

@@ -21,16 +21,7 @@ export default function Input(props) {
         onClick={setFocus}
       >
         <div className={`flex items-center w-[256px]`}>
-          {props.displayMax && props.balance && (
-            <div
-              className="text-sm text-text-100 pr-2 cursor-pointer"
-              onClick={() => {
-                props.onChange({ target: { value: props.balance } });
-              }}
-            >
-              MAX
-            </div>
-          )}
+
           <input
             ref={inputRef}
             className={`border-0 outline-0 text-[#101828] overflow-x-scroll ${

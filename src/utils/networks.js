@@ -39,7 +39,7 @@ export const networks = {
     paymentIcon:"/ethereum-payment.png",
     nativeCurrency: {
       name: 'Ethereum',
-      symbol: 'AETH',
+      symbol: 'ETH',
       decimals: 18
     },
     blockExplorerUrls: ["https://arbiscan.io/"],
