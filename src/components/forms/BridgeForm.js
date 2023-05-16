@@ -19,6 +19,7 @@ export default function BridgeForm(props) {
     fromNetwork, setFromNetwork,
     toNetwork, setToNetwork,
     bridgeAsset, setBridgeAsset,
+    bridgeOutAsset, setBridgeOutAsset,
 
   } = props;
 
@@ -50,9 +51,9 @@ export default function BridgeForm(props) {
           }}
         />
       </div>
-      <div className="w-full flex items-center mt-6">
+      <div className="w-full flex items-center justify-between mt-6">
       <Input 
-          className="w-full" 
+          className="w-[304px]" 
           label="Amount & Token to Bridge"
           placeholder="0.00"
           type="number"
@@ -67,6 +68,23 @@ export default function BridgeForm(props) {
             setBridgeAsset({name:value.name, amount: bridgeAsset.amount})
           }}
           balance={bridgeAsset.balance}
+        />
+        <Input 
+          className="w-[304px]" 
+          label="Amount & Token to Bridge"
+          placeholder="0.00"
+          type="number"
+          width="80%"
+          value={bridgeOutAsset.amount}
+          onChange={(e) => {setBridgeOutAsset({...bridgeOutAsset, amount: e.target.value})}}
+          inputRef={swapReceiveRef}
+          tokenSelect
+          token={bridgeOutAsset}
+          nonToken={bridgeOutAsset}
+          setToken={(value) => {
+            setBridgeOutAsset({...bridgeOutAsset, name:value.name, amount: bridgeOutAsset.amount})
+          }}
+          balance={bridgeOutAsset.balance}
         />
       </div>
 

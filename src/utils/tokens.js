@@ -81,5 +81,15 @@ export const tokens = {
       name: "WBTC",
       addr: "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6"
     },
+  ],
+  "42161": [
+    {
+      name: "ETH",
+      addr: "native"
+    },
+    {
+      name: "USDC",
+      addr: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
+    }
   ]
 }

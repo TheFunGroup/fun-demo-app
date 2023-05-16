@@ -1,17 +1,17 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 const Big  = ethers.BigNumber
 import { configureEnvironment } from "../../fun-wallet/managers";
 import { TokenSponsor } from "../../fun-wallet/sponsors";
 import erc20ABI from "../utils/funTokenAbi.json";
 import { isContract } from "./wallet";
 import { apiKey } from "../utils/constants";
-import { formatEther, parseEther } from "ethers/lib/utils.js";
 
 // requires
 // Wallet funWallet
 // paymentToken String (ETH, gassless, or address of ERC20 token)
 // amount string ETH amount to stake
 // auth Object or EOA signer specifically.
+// estimate gas boolean
 export const handleStakeEth = async function (wallet, paymentToken, amount, auth, estimateGas = false) {
   try {
     const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
@@ -75,6 +75,7 @@ export const handleStakeEth = async function (wallet, paymentToken, amount, auth
 
 
     } catch (err) {
+      console.log(err)
       return { success: false, error: err.toString() }
     }
 

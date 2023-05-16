@@ -8,6 +8,9 @@ import { calculateGas } from "../../scripts/calculateGas";
 import { verifyBridgeParams, handleBridge } from "../../scripts/bridge";
 import Spinner from "../misc/Spinner";
 import { networks } from "../../utils/networks";
+import {getERC20Balance, getEtherBalance} from "../../scripts/wallet";
+import { tokens } from "../../utils/tokens";
+import {ethers} from "ethers";
 const BridgeModalConfig = {
   title: "Bridge",
   description:
@@ -52,6 +55,9 @@ async function connectFunWallet(connector, authId, provider, publicKey) {
   setLoading(false)
 }
 
+
+// TODO implement the cancel button to switch chains automatically and figure out why its buging out.
+
 export default function Bridge(props) {
   const router = useRouter();
 
@@ -72,11 +78,13 @@ export default function Bridge(props) {
 
   const [mustFund, setMustFund] = useState(false);
   const [mustApprove, setMustApprove] = useState(false);
-  const [fromNetwork, setFromNetwork] = useState(42161);
-  const [toNetwork, setToNetwork] = useState(137);
-  const [bridgeAsset, setBridgeAsset] = useState({ name: "ETH", amount: 0, balance: "loading" });
-  const [ethBalance, setEthBalance] = useState("100" || "loading");
+  const [fromNetwork, setFromNetwork] = useState(137);
+  const [toNetwork, setToNetwork] = useState(42161);
+  const [bridgeAsset, setBridgeAsset] = useState({ name: "MATIC", amount: 0, balance: "loading" });
+  const [bridgeOutAsset, setBridgeOutAsset] = useState({ name: "ETH", amount: 0, balance: "loading" });
 
+  const [ethBalance, setEthBalance] = useState("100" || "loading");
+  const [loadingBalance, setLoadingBalance] = useState(false);
   const [gas, setGas] = useState("Calculating...");
   const [submitReady, setSubmitReady] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -134,8 +142,39 @@ export default function Bridge(props) {
 
   // fetch the current balance of the selected token on the correct chain.
   useEffect(() => {
+    if (wallet == null || loadingBalance) return;
+    setLoadingBalance(true);
+      wallet.getAddress()
+        .then(async (addr) => {
 
-  })
+          if (tokens[fromNetwork] == null || networks[fromNetwork].rpcUrls[0] == null ) 
+          {
+            setBridgeAsset({...bridgeAsset, balance: "N/A"})
+            return;
+          }
+          const etherProvider = new ethers.providers.JsonRpcProvider(networks[fromNetwork].rpcUrls[0])
+
+          let bridgeAssetAddr = tokens[fromNetwork][0].addr
+          for( let i = 0; i < tokens[fromNetwork].length; i++){
+            if(tokens[fromNetwork][i].name == bridgeAsset.name){
+              bridgeAssetAddr = tokens[fromNetwork][i].addr;
+              break;
+            }
+          }
+          
+          if (bridgeAssetAddr === "native") {
+            const balance = await getEtherBalance(addr, etherProvider)
+            setBridgeAsset({...bridgeAsset, balance: balance})
+          } else {
+            const balance = await getERC20Balance(addr, bridgeAssetAddr, etherProvider )
+            setBridgeAsset({...bridgeAsset, balance: balance})
+          }
+
+        })
+        .catch((err) => {
+          console.log(err)
+        });
+  }, [wallet, fromNetwork,  bridgeAsset, loadingBalance]);
 
   // Ensures that the chainId is always set to the from Network selector.
   useEffect(() => {
@@ -146,8 +185,9 @@ export default function Bridge(props) {
         if (chainId != fromNetwork) {
           provider.switchChain(Number(fromNetwork))
           .then((r) => {
-            console.log(r)
             setNetwork(fromNetwork)
+            setBridgeAsset({...bridgeAsset, balance: "loading"})
+            setLoadingBalance(false)
           })
           .catch((err) => {console.log(err)})
 
@@ -230,7 +270,7 @@ export default function Bridge(props) {
         </div>
       )}
 
-      <div className="text-[#101828] font-semibold text-xl">
+      <div className="text-[#101828] font-semibold text-xl" onClick={() => {setLoadingBalance(false)}}>
         {BridgeModalConfig.title}
       </div>
       <div className="text-[#667085] text-sm mt-1 mb-10 ">
@@ -245,6 +285,8 @@ export default function Bridge(props) {
           setToNetwork={setToNetwork}
           bridgeAsset={bridgeAsset}
           setBridgeAsset={setBridgeAsset}
+          bridgeOutAsset={bridgeOutAsset}
+          setBridgeOutAsset={setBridgeOutAsset}
         />
       )}
 

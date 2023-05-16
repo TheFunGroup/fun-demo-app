@@ -34,7 +34,7 @@ export default function Input(props) {
           <input
             ref={inputRef}
             className={`border-0 outline-0 text-[#101828] overflow-x-scroll ${
-              props.balance && "mb-[20px]"
+              props.balance && "mb-[24px]"
             }`}
             style={{ width: `${props.width || "180px"}` }}
             placeholder={props.placeholder}
@@ -59,10 +59,11 @@ export default function Input(props) {
               setToken={(value) => {
                 props.setToken(value);
               }}
+              network={props.network}
               excludeETH={props.excludeETH}
             />
             {props.balance && (
-              <div className="text-sm text-text-100 pt-1 pr-1">{`Balance: ${props.balance}`}</div>
+              <div className="text-sm text-text-100 pt-1 pr-1 whitespace-nowrap">{`Balance: ${props.balance}`}</div>
             )}
           </div>
         )}
