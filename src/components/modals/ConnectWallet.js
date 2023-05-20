@@ -11,10 +11,11 @@ import { useRouter } from 'next/router';
 import { Magic } from 'magic-sdk';
 import { OAuthExtension } from '@magic-ext/oauth';
 import socials from "../../utils/socials";
+import { MagicAuthSocialLoginConnector } from "../../connectors/MagicAuthSocialLoginConnector"
 
 export default function ConnectWallet(props) {
   const { connect, connectors } = useConnect()
-  const { connector } = useAccount()
+  const { connector, isConnected, address } = useAccount()
   const { data: signer } = useSigner()
   const wagmiProvider = useProvider()
   const { setWallet, setNetwork, setEOA, setLoading } = useFun()
@@ -28,68 +29,76 @@ export default function ConnectWallet(props) {
   const [magic, setMagic] = useState()
   const [authType, setAuthType] = useState("signup")
 
-  useEffect(() => {
-    const initMagicAuth = async () => {
-      const magic = new Magic('pk_live_846F1095F0E1303C', {
-        network: {
-          chainId: 5,
-          rpcUrl: "https://rpc.ankr.com/eth_goerli"
-        },
-        extensions: [new OAuthExtension()],
-      })
+  // useEffect(() => {
+  //   const initMagicAuth = async () => {
+  //     const magic = new Magic('pk_live_846F1095F0E1303C', {
+  //       network: {
+  //         chainId: 5,
+  //         rpcUrl: "https://rpc.ankr.com/eth_goerli"
+  //       },
+  //       extensions: [new OAuthExtension()],
+  //     })
 
-      magic.preload()
+  //     magic.preload()
 
-      setMagic(magic)
+  //     setMagic(magic)
 
-      const isLinking = localStorage.getItem("magic-linking");
-      if (isLinking) {
-        const Linked = JSON.parse(localStorage.getItem("linked"));
-        setLinked({ ...linked, ...Linked });
-        setShowLinkMore(true);
-      }
+  //     const isLinking = localStorage.getItem("magic-linking");
+  //     if (isLinking) {
+  //       const Linked = JSON.parse(localStorage.getItem("linked"));
+  //       setLinked({ ...linked, ...Linked });
+  //       setShowLinkMore(true);
+  //     }
 
-    }
-    initMagicAuth()
-  }, [])
-
+  //   }
+  //   initMagicAuth()
+  // }, [])
 
   useEffect(() => {
     async function connectEOA() {
       setConnecting(connector.name)
       setLoading(true)
       let provider = await connector.getProvider({ chainId: 5 })
-      if (signer && provider) {
-        const chainId = await connector.getChainId();
-        if (chainId !== 5) await connector.switchChain(5)
-        setNetwork(5)
-        const eoaAddr = await signer.getAddress();
-        if (!provider.getBalance) provider = (await connector.getSigner()).provider;
-        connectFunWallet(connector.name, eoaAddr, provider, eoaAddr);
+      const chainId = await connector.getChainId();
+      if (chainId !== 5) await connector.switchChain(5)
+      setNetwork(5)
+
+      let authId
+      if (connector instanceof MagicAuthSocialLoginConnector) {
+        authId = await connector.getAuthId()
+      } else {
+        authId = address
+        if (!provider.getBalance) provider = (await connector.getSigner()).provider
       }
+
+      console.log("provider", provider)
+      
+
+      connectFunWallet(connector.name, authId, provider, address)
     }
-    if (!showLinkMore && connector) {
+    if (!showLinkMore && connector && isConnected && address) {
       connectEOA()
     }
-  }, [signer, wagmiProvider])
+  }, [isConnected, address])
 
-  useEffect(() => {
-    if (router.query.provider) finishSocialLogin();
-  }, [router.query]);
+  // useEffect(() => {
+  //   if (router.query.provider) finishSocialLogin();
+  // }, [router.query]);
 
   async function connectFunWallet(connector, authId, provider, publicKey) {
-    const authIdUsed = await isAuthIdUsed(authId)
-    if (!authIdUsed) {
-      if (!linked[connector]) {
-        linked[connector] = [authId, publicKey];
-        setLinked(linked)
-      }
-      setProvider(provider)
-      setShowLinkMore(true)
-      setLoading(false)
-      setConnecting("")
-      return;
-    }
+    // const authIdUsed = await isAuthIdUsed(authId)
+    // if (!authIdUsed) {
+    //   if (!linked[connector]) {
+    //     linked[connector] = [authId, publicKey];
+    //     setLinked(linked)
+    //   }
+    //   setProvider(provider)
+    //   setShowLinkMore(true)
+    //   setLoading(false)
+    //   setConnecting("")
+    //   return;
+    // }
+
     const auth = new MultiAuthEoa({ provider, authIds: [[authId, publicKey]] })
     const FunWallet = await createFunWallet(auth)
     const addr = await FunWallet.getAddress()
@@ -113,56 +122,56 @@ export default function ConnectWallet(props) {
     setLoading(false)
   }
 
-  const finishSocialLogin = async () => {
-    const oauthProvider = localStorage.getItem("magic-connecting");
-    setConnecting(oauthProvider);
-    setLoading(true)
-    try {
-      let result = await magic.oauth.getRedirectResult();
-      let authId = result.oauth.userInfo.email;
-      let publicAddress = result.magic.userMetadata.publicAddress
-      if (result.oauth.provider == "twitter") {
-        authId = result.oauth.userInfo.preferredUsername
-      }
-      authId = `${result.oauth.provider}###${authId}`;
-      localStorage.removeItem("magic-connecting");
-      const isLinking = localStorage.getItem("magic-linking");
-      const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
-      if (isLinking && !linked[result.oauth.provider]) {
-        const authIdUsed = await isAuthIdUsed(authId)
-        if (!authIdUsed) {
-          linked[result.oauth.provider] = [authId, publicAddress]
-        } else {
-          alert("This account is already connected to a FunWallet")
-        }
-        setLinked(linked)
-        setConnecting(false)
-        setLoading(false)
-        setProvider(provider)
-        localStorage.removeItem("magic-linking")
-        return;
-      }
-      connectFunWallet(result.oauth.provider, authId, provider, publicAddress)
-    } catch (e) {
-      console.log("finishSocialLogin", e)
-      setConnecting("");
-      setLoading(false)
-      localStorage.removeItem("magic-connecting");
-    }
-  };
+  // const finishSocialLogin = async () => {
+  //   const oauthProvider = localStorage.getItem("magic-connecting");
+  //   setConnecting(oauthProvider);
+  //   setLoading(true)
+  //   try {
+  //     let result = await magic.oauth.getRedirectResult();
+  //     let authId = result.oauth.userInfo.email;
+  //     let publicAddress = result.magic.userMetadata.publicAddress
+  //     if (result.oauth.provider == "twitter") {
+  //       authId = result.oauth.userInfo.preferredUsername
+  //     }
+  //     authId = `${result.oauth.provider}###${authId}`;
+  //     localStorage.removeItem("magic-connecting");
+  //     const isLinking = localStorage.getItem("magic-linking");
+  //     const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
+  //     if (isLinking && !linked[result.oauth.provider]) {
+  //       const authIdUsed = await isAuthIdUsed(authId)
+  //       if (!authIdUsed) {
+  //         linked[result.oauth.provider] = [authId, publicAddress]
+  //       } else {
+  //         alert("This account is already connected to a FunWallet")
+  //       }
+  //       setLinked(linked)
+  //       setConnecting(false)
+  //       setLoading(false)
+  //       setProvider(provider)
+  //       localStorage.removeItem("magic-linking")
+  //       return;
+  //     }
+  //     connectFunWallet(result.oauth.provider, authId, provider, publicAddress)
+  //   } catch (e) {
+  //     console.log("finishSocialLogin", e)
+  //     setConnecting("");
+  //     setLoading(false)
+  //     localStorage.removeItem("magic-connecting");
+  //   }
+  // };
 
   async function connectMagic(oauthProvider) {
-    try {
-      setConnecting(oauthProvider);
-      setLoading(true)
-      localStorage.setItem("magic-connecting", oauthProvider)
-      await magic.oauth.loginWithRedirect({
-        provider: oauthProvider,
-        redirectURI: new URL('/connect', window.location.origin).href
-      });
-    } catch (err) {
-      console.log("connect wallet connect error", err)
-    }
+    // try {
+    //   setConnecting(oauthProvider);
+    //   setLoading(true)
+    //   localStorage.setItem("magic-connecting", oauthProvider)
+    //   await magic.oauth.loginWithRedirect({
+    //     provider: oauthProvider,
+    //     redirectURI: new URL('/connect', window.location.origin).href
+    //   });
+    // } catch (err) {
+    //   console.log("connect wallet connect error", err)
+    // }
   }
 
   if (showLinkMore) {

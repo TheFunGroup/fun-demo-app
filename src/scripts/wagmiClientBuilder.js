@@ -4,6 +4,8 @@ import { InjectedConnector } from 'wagmi/connectors/injected'
 import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { WalletConnectLegacyConnector } from 'wagmi/connectors/walletConnectLegacy'
+import { GoogleLoginConnector } from "../connectors/GoogleLoginConnector"
+import { TwitterLoginConnector } from "../connectors/TwitterLoginConnector"
 import { publicProvider } from 'wagmi/providers/public';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 
@@ -36,6 +38,18 @@ export default function wagmiClientBuilder() {
             options: {
               qrcode: true,
               name: 'WalletConnect',
+            }
+          }),
+          new GoogleLoginConnector({
+            chains,
+            options: {
+              chainId: 5
+            }
+          }),
+          new TwitterLoginConnector({
+            chains,
+            options: {
+              chainId: 5
             }
           })
         ],
