@@ -89,7 +89,7 @@ export default function Main(props) {
             <div className="text-[#667085]">Bridge your tokens from one blockchain to another.</div>
           </div>
         </div>
-        <div style={{background: "white", border:"2px solid black", width:"100%", height: "24px"}}onClick={() => goToPage("/transaction")}></div>
+        {/* <div style={{background: "white", border:"2px solid black", width:"100%", height: "24px"}}onClick={() => goToPage("/transaction")}></div> */}
       </div>
     </div>
   )

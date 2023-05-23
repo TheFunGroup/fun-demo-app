@@ -10,8 +10,8 @@ const options = {
 
 const WALLET_INDEX = 34788;
 
-export async function createFunWallet(auth) {
-  await configureEnvironment(options);
+export async function createFunWallet(auth, chainId) {
+  await configureEnvironment({...options, chain: chainId});
   const uniqueId = await auth.getUniqueId();
   const wallet = new FunWallet({ uniqueId, index: WALLET_INDEX });
   const addr = await wallet.getAddress();
@@ -125,3 +125,5 @@ export const getERC20Balance = (
       });
   });
 };
+
+

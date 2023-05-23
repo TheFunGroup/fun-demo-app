@@ -79,6 +79,7 @@ export default function BridgeForm(props) {
           setToken={(value) => {
             setBridgeAsset({...bridgeAsset, name:value.name, amount: bridgeAsset.amount})
           }}
+          network={fromNetwork}
           balance={bridgeAsset.balance}
         />
         <Input 
@@ -96,6 +97,7 @@ export default function BridgeForm(props) {
           setToken={(value) => {
             setBridgeOutAsset({...bridgeOutAsset, name:value.name, amount: bridgeOutAsset.amount})
           }}
+          network={toNetwork}
           balance={bridgeOutAsset.balance}
         />
       </div>

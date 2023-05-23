@@ -292,8 +292,8 @@ const TransactionStatusModal = (props) => {
             <TransactionStatusRow
               title="Error"
               img="/alert.svg"
-              date={"Transaction hash missing"}
-              time={""}
+              date={""}
+              time={"Transaction hash missing"}
             />
           ) : (
             <>

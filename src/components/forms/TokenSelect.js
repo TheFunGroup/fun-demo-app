@@ -17,10 +17,10 @@ export default function TokenSelect(props) {
 
   const { network: defaultNetwork } = useFun();
   const network = props.network || defaultNetwork;
-
   useEffect(() => {
+    
     setDropdown(false);
-  }, [token])
+  }, [ token])
 
   useOnClickOutside(dropdownRef, (e) => {
     if(selectBtnRef?.current?.contains(e.target) || e.target == selectBtnRef?.current) return;

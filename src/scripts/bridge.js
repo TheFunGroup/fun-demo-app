@@ -1,5 +1,10 @@
 import { tokens } from "../utils/tokens";
 import { networks } from "../utils/networks";
+import { apiKey } from "../utils/constants";
+import { ethers } from "ethers";
+import { TokenSponsor } from "../../fun-wallet/sponsors";
+import erc20ABI from "../utils/funTokenAbi.json";
+import { isContract } from "./wallet";
 
 // TODO implement support for verifying the asset to be bridged is in fact on the network being bridged from.
 export const verifyBridgeParams = (
@@ -21,9 +26,9 @@ export const verifyBridgeParams = (
 const defaultParamsObj = {
   fromChainId: 137,
   toChainId: 42161,
-  fromAssetAddress: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", // USDC
+  fromAssetAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", // wMATIC
   toAssetAddress: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8", // USDC
-  amount: 1000000,  // 1 USDC since USDC has 6 decimals
+  amount: 10000,  // 0.001 MATIC since MATIC has 18 decimals
   sort: "output"
 }
 /**
@@ -51,7 +56,7 @@ export const handleBridge = async function (
   try {
     const {
       fromChainId,
-    } = params;
+    } = defaultParamsObj;
 
     const walletAddress = await wallet.getAddress();
 
@@ -61,7 +66,7 @@ export const handleBridge = async function (
       gasSponsor: false,
     };
     // // Tells frontend that funwallet must be funded
-    if (paymentToken != "ETH" && paymentToken != "gasless") {
+    if (paymentToken != "ETH" && paymentToken != "MATIC" && paymentToken != "gasless") {
       //use paymaster
       tempEnvOptions = {
         chain: fromChainId,
@@ -72,8 +77,8 @@ export const handleBridge = async function (
         },
       };
 
-      const gasSponsor = new TokenSponsor();
-
+      const gasSponsor = new TokenSponsor(tempEnvOptions);
+      
       const paymasterAddress = await gasSponsor.getPaymasterAddress();
       const iscontract = await isContract(walletAddress);
       if (iscontract) {
@@ -116,7 +121,8 @@ export const handleBridge = async function (
     }
 
     try {
-      const receipt = await wallet.bridge(auth, params, {
+      console.log(tempEnvOptions)
+      const receipt = await wallet.bridge(auth, defaultParamsObj, {
         ...tempEnvOptions,
         gasLimit: 300000,
       });
@@ -125,8 +131,10 @@ export const handleBridge = async function (
       const explorerUrl = receipt.txid
         ? `https://goerli.etherscan.io/tx/${receipt.txid}`
         : `https://goerli.etherscan.io/address/${walletAddress}#internaltx`;
+        console.log(receipt)
       return { success: true, explorerUrl };
     } catch (err) {
+      console.log(err)
       return { success: false, error: err.toString() };
     }
   } catch (e) {
@@ -134,3 +142,8 @@ export const handleBridge = async function (
     return { success: false, error: e.toString() };
   }
 };
+
+
+export const fetchQuote = async () => {
+
+}
