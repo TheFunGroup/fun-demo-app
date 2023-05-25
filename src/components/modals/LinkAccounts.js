@@ -27,8 +27,8 @@ export default function LinkAccounts(props) {
       const chainId = await connector.getChainId();
       if (chainId !== 5) await connector.switchChain(5)
       const signer = await connector.getSigner();
-      const provider = await connector.getProvider();
-      // const provider = signer.provider;
+      let provider = await connector.getProvider();
+      if (!provider.getBalance) provider = (await connector.getSigner()).provider;
       if (!linked[connector.name]) {
         const eoaAddr = await connector.getAccount()
         const addr = await getAddress(eoaAddr, network || 5);
@@ -82,6 +82,7 @@ export default function LinkAccounts(props) {
       const wallet = await createFunWallet(auth)
       setEOA(auth)
       const addr = await wallet.getAddress()
+      console.log(provider);
       let balance = await provider.getBalance(addr);
       balance = ethers.utils.formatEther(balance);
       if (balance == 0) {
