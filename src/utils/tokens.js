@@ -76,5 +76,23 @@ export const tokens = {
       name: "WBTC",
       addr: "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6"
     },
+  ],
+  '42161': [
+    {
+      name: "ARB",
+      addr: "native"
+    },
+    {
+      name: "USDC",
+      addr: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
+    },
+    {
+      name: "DAI",
+      addr: "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+    },
+    {
+      name: "USDT",
+      addr: "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"
+    }
   ]
 }

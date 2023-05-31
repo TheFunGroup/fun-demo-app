@@ -9,10 +9,11 @@ import { handleGetNFTs } from "../../scripts/getNFTs";
 import { useRouter } from "next/router";
 import { disconnect } from '@wagmi/core'
 import erc20Abi from "../../utils/erc20Abi";
+import { Token } from "../../../../fun-wallet-sdk/data";
 
 export default function WalletView(props) {
 
-  const { wallet, setWallet, eoa, setEOA, network, setLoading } = useFun()
+  const { wallet, setWallet, eoa, setEOA, network, setLoading, provider } = useFun()
 
   const router = useRouter()
   const [addr, setAddr] = useState()
@@ -38,11 +39,10 @@ export default function WalletView(props) {
 
   useEffect(() => {
     if (networks[network]) {
-      if (wallet.address) {
+      if (wallet.address && provider) {
         setAddr(wallet.address);
-        let provider = eoa.signer ? eoa.signer.provider : eoa.provider;
-        provider.getBalance(wallet.address).then((balance) => {
-          balance = ethers.utils.formatEther(balance);
+        Token.getBalance("eth", wallet.address).then((balance) => {
+          console.log(balance)
           setBalance(Number(balance).toFixed(6))
           toUSD("ETH", balance).then((usd) => {
             setBalanceUSD(usd)
@@ -54,26 +54,32 @@ export default function WalletView(props) {
         getNFTs()
       }
     }
-  }, [network, dropdown])
+  }, [network, dropdown, provider])
 
   async function getCoinBalances(provider) {
-    const usdcContract = new ethers.Contract("0xaa8958047307da7bb00f0766957edec0435b46b5", erc20Abi, provider);
-    let usdcBalance = await usdcContract.balanceOf(wallet.address)
-    usdcBalance = ethers.utils.formatUnits(usdcBalance, 6)
-    setUsdcBalance(Number(usdcBalance.toString()).toFixed(2))
-    setUsdcBalanceUSD(await toUSD("USDC", usdcBalance));
 
-    const daiContract = new ethers.Contract("0x855af47cdf980a650ade1ad47c78ec1deebe9093", erc20Abi, provider);
-    let daiBalance = await daiContract.balanceOf(wallet.address)
-    daiBalance = ethers.utils.formatUnits(daiBalance, 6)
-    setDaiBalance(Number(daiBalance.toString()).toFixed(2))
-    setDaiBalanceUSD(await toUSD("DAI", daiBalance));
+    if(network == 5){
+      const usdcContract = new ethers.Contract("0xaa8958047307da7bb00f0766957edec0435b46b5", erc20Abi, provider);
+      let usdcBalance = await usdcContract.balanceOf(wallet.address)
+      usdcBalance = ethers.utils.formatUnits(usdcBalance, 6)
+      setUsdcBalance(Number(usdcBalance.toString()).toFixed(2))
+      setUsdcBalanceUSD(await toUSD("USDC", usdcBalance));
+  
+      const daiContract = new ethers.Contract("0x855af47cdf980a650ade1ad47c78ec1deebe9093", erc20Abi, provider);
+      let daiBalance = await daiContract.balanceOf(wallet.address)
+      daiBalance = ethers.utils.formatUnits(daiBalance, 6)
+      setDaiBalance(Number(daiBalance.toString()).toFixed(2))
+      setDaiBalanceUSD(await toUSD("DAI", daiBalance));
+  
+      const usdtContract = new ethers.Contract("0x3E1FF16B9A94eBdE6968206706BcD473aA3Da767", erc20Abi, provider);
+      let usdtBalance = await usdtContract.balanceOf(wallet.address)
+      usdtBalance = ethers.utils.formatUnits(usdtBalance, 6)
+      setUsdtBalance(Number(usdtBalance.toString()).toFixed(2))
+      setUsdtBalanceUSD(await toUSD("USDT", usdtBalance));
+    } else {
+      setUsdcBalance(); setDaiBalance(); setUsdtBalance();
+    }
 
-    const usdtContract = new ethers.Contract("0x3E1FF16B9A94eBdE6968206706BcD473aA3Da767", erc20Abi, provider);
-    let usdtBalance = await usdtContract.balanceOf(wallet.address)
-    usdtBalance = ethers.utils.formatUnits(usdtBalance, 6)
-    setUsdtBalance(Number(usdtBalance.toString()).toFixed(2))
-    setUsdtBalanceUSD(await toUSD("USDT", usdtBalance));
   }
 
   async function getNFTs(){
@@ -176,7 +182,10 @@ export default function WalletView(props) {
                   </div>
                   <div className="text-[#667085] text-lg -mt-1">{`$${balanceUSD} USD`}</div>
                   <div className="button-dark text-center py-3 px-4 w-full mt-6 font-medium" onClick={handleFund}>Fund</div>
-                  <div className="self-start text-black text-lg font-[590] mt-6 mb-2">Coins</div>
+                  
+                  {(usdcBalance || daiBalance || usdtBalance) && (
+                    <div className="self-start text-black text-lg font-[590] mt-6 mb-2">Coins</div>
+                  )}
 
                   {usdcBalance && (
                     <div className="w-full flex justify-between items-center my-2 mb-[6px]">

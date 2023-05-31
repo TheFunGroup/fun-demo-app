@@ -77,7 +77,7 @@ export default function Example(props) {
           token: transfer[1],
           amount: transfer[0],
           to: addr
-        }, eoa).then((data) => {
+        }, eoa, network).then((data) => {
           if(data.success){
             setDeployedUrl(data.explorerUrl)
             router.push("/success");
@@ -99,7 +99,7 @@ export default function Example(props) {
         token1: swapExchange[1],
         amount: swapExchange[0],
         token2: swapReceive[1]
-      }, eoa).then((data) => {
+      }, eoa, network).then((data) => {
         if(data.success){
           setDeployedUrl(data.explorerUrl)
           router.push('/success');
@@ -118,7 +118,7 @@ export default function Example(props) {
     } else if(props.example == "nft"){
       handleMintNFT(wallet, paymentToken, {
         nft: props.nft, //add extra nft data here
-      }, eoa).then((data) => {
+      }, eoa, network).then((data) => {
         if(data.success){
           setMinted(data.nft?.nft)
           setDeployedUrl(data.explorerUrl)

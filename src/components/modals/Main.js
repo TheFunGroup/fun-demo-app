@@ -46,7 +46,7 @@ export default function Main(props) {
           <div className="text-[#667085] text-sm mt-1 whitespace-nowrap">Explore the possibilities of a Fun Wallet!</div>
         </div>
         <div className="w-full flex flex-col items-end">
-          <div className="flex">
+          <div className="flex items-center">
             <NetworkSelect />
             <WalletView />
           </div>

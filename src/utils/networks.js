@@ -30,45 +30,48 @@ export const networks = {
       decimals: 18
     },
   },
-  "56": {
-    name: "Binance",
-    icon: "/bnb.svg",
+  "42161": {
+    name: "Arbitrum One",
+    icon: "/arbitrum.svg",
+    paymentIcon:"/ethereum-payment.png",
     nativeCurrency: {
-      name: "Binance Coin",
-      symbol: "BNB",
+      name: 'Ethereum',
+      symbol: 'AETH',
       decimals: 18
-    }
+    },
+    blockExplorerUrls: ["https://arbiscan.io/"],
+    rpcUrls: ["https://arb1.arbitrum.io/rpc"]
   }
 }
 
-export async function connectToNetwork(id){
-  return new Promise(async (res, rej) => {
-    const chain = ethers.utils.hexValue(Number(id));
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: chain }],
-      });
-      return res()
-    } catch(e){
-      try {
-        await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [
-            {
-              chainId: chain,
-              chainName: networks[id].name,
-              nativeCurrency: networks[id].nativeCurrency,
-              blockExplorerUrls: networks[id].blockExplorerUrls,
-              rpcUrls: networks[id].rpcUrls
-            },
-          ],
-        });
-        return res();
-      } catch(e){
-        console.log(e)
-        return res(e)
-      }
-    }
-  })  
-}
+// export async function connectToNetwork(id){
+//   return new Promise(async (res, rej) => {
+//     const chain = ethers.utils.hexValue(Number(id));
+//     try {
+//       await window.ethereum.request({
+//         method: 'wallet_switchEthereumChain',
+//         params: [{ chainId: chain }],
+//       });
+//       return res()
+//     } catch(e){
+//       try {
+//         await window.ethereum.request({
+//           method: 'wallet_addEthereumChain',
+//           params: [
+//             {
+//               chainId: chain,
+//               chainName: networks[id].name,
+//               nativeCurrency: networks[id].nativeCurrency,
+//               blockExplorerUrls: networks[id].blockExplorerUrls,
+//               rpcUrls: networks[id].rpcUrls
+//             },
+//           ],
+//         });
+//         return res();
+//       } catch(e){
+//         console.log(e)
+//         return res(e)
+//       }
+//     }
+//   })  
+// }

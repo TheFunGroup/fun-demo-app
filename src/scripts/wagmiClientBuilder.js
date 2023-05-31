@@ -1,5 +1,5 @@
 import { configureChains, createClient } from 'wagmi'
-import { mainnet, goerli, polygon, bsc} from 'wagmi/chains'
+import { mainnet, goerli, polygon, bsc, arbitrum} from 'wagmi/chains'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
@@ -10,7 +10,7 @@ import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 export default function wagmiClientBuilder() {
 
     const { chains, provider, webSocketProvider } = configureChains(
-        [mainnet, goerli, polygon, bsc],
+        [mainnet, goerli, polygon, bsc, arbitrum],
         [
           publicProvider()
         ],

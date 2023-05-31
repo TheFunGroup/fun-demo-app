@@ -17,13 +17,12 @@ export default function ConnectWallet(props) {
   const { connector } = useAccount()
   const { data: signer } = useSigner()
   const wagmiProvider = useProvider()
-  const { setWallet, setNetwork, setEOA, setLoading } = useFun()
+  const { setWallet, setEOA, setLoading, network, provider, setProvider } = useFun()
   const [connecting, setConnecting] = useState();
-  const [showEOA, setShowEOA] = useState(false);
+  const [showEOA, setShowEOA] = useState(true);
   const [showLinkMore, setShowLinkMore] = useState(false);
   const [linked, setLinked] = useState({});
   const [linkingWallet] = useState();
-  const [provider, setProvider] = useState();
   const router = useRouter()
   const [magic, setMagic] = useState()
   const [authType, setAuthType] = useState("signup")
@@ -32,7 +31,7 @@ export default function ConnectWallet(props) {
     const initMagicAuth = async () => {
       const magic = new Magic('pk_live_846F1095F0E1303C', {
         network: {
-          chainId: 5,
+          chainId: network,
           rpcUrl: "https://rpc.ankr.com/eth_goerli"
         },
         extensions: [new OAuthExtension()],
@@ -58,11 +57,8 @@ export default function ConnectWallet(props) {
     async function connectEOA() {
       setConnecting(connector.name)
       setLoading(true)
-      let provider = await connector.getProvider({ chainId: 5 })
+      let provider = await connector.getProvider({ chainId: network })
       if (signer && provider) {
-        const chainId = await connector.getChainId();
-        if (chainId !== 5) await connector.switchChain(5)
-        setNetwork(5)
         const eoaAddr = await signer.getAddress();
         if (!provider.getBalance) provider = (await connector.getSigner()).provider;
         connectFunWallet(connector.name, eoaAddr, provider, eoaAddr);
@@ -78,7 +74,7 @@ export default function ConnectWallet(props) {
   }, [router.query]);
 
   async function connectFunWallet(connector, authId, provider, publicKey) {
-    const authIdUsed = await isAuthIdUsed(authId)
+    const authIdUsed = await isAuthIdUsed(authId, network)
     if (!authIdUsed) {
       if (!linked[connector]) {
         linked[connector] = [authId, publicKey];
@@ -91,7 +87,7 @@ export default function ConnectWallet(props) {
       return;
     }
     const auth = new MultiAuthEoa({ provider, authIds: [[authId, publicKey]] })
-    const FunWallet = await createFunWallet(auth)
+    const FunWallet = await createFunWallet(auth, network)
     const addr = await FunWallet.getAddress()
     FunWallet.address = addr
     try {
@@ -220,7 +216,7 @@ export default function ConnectWallet(props) {
           let name = connector.name;
           if (name == "WalletConnectLegacy") name = "WalletConnect"
           return (
-            <button className="button mb-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
+            <button className="button mb-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex cursor-pointer py-[10px] px-4"
               disabled={!connector.ready}
               onClick={() => {
                 if (!connecting) connect({ connector })
@@ -232,7 +228,7 @@ export default function ConnectWallet(props) {
               ) : (
                 <Image src="/wallet.svg" width="22" height="22" alt="" />
               )}
-              <div className="ml-3 font-medium text-[#344054]">{`${authType == "signup" ? "Sign up" : "Login"} with ${name}`}</div>
+              <div className="ml-7 font-medium text-[#344054]">{`${authType == "signup" ? "Sign up" : "Login"} with ${name}`}</div>
             </button>
           )
         }))}

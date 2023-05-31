@@ -7,7 +7,7 @@ import erc20ABI from "../utils/funTokenAbi.json";
 import { isContract } from "./wallet";
 import { apiKey } from "../utils/constants";
 
-export const handleSwap = async function (wallet, paymentToken, swapData, auth) {
+export const handleSwap = async function (wallet, paymentToken, swapData, auth, chain) {
   try {
     const walletAddress = await wallet.getAddress()
     let inAddr = ""
@@ -44,7 +44,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
     // // Tells frontend that funwallet must be funded  
     if (paymentToken != "ETH" && paymentToken != "gasless") { //use paymaster
       await configureEnvironment({
-        chain: 5,
+        chain,
         apiKey,
         gasSponsor: {
           sponsorAddress: "0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9",
@@ -72,7 +72,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
     }
     else if(paymentToken=="gasless"){
       await configureEnvironment({
-        chain: 5,
+        chain,
         apiKey,
         gasSponsor: {
           sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
@@ -81,7 +81,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
     }
     else {
       await configureEnvironment({
-        chain: 5,
+        chain,
         apiKey,
         gasSponsor: false
       })

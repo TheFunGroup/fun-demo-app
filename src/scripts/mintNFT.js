@@ -7,7 +7,7 @@ import erc20ABI from "../utils/funTokenAbi.json";
 import { isContract } from "./wallet";
 import nftABI from "../utils/nftABI.json"
 import { apiKey } from "../utils/constants";
-export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
+export const handleMintNFT = async function (wallet, paymentToken, nft, auth, chain) {
   const nftNumber = nft.nft;
   try {
     const walletAddress = await wallet.getAddress()
@@ -20,7 +20,7 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
     //token paymaster
     if(paymentToken != "ETH" && paymentToken != "gasless"){
       await configureEnvironment({
-        chain: 5,
+        chain,
         apiKey,
         gasSponsor: {
           sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
@@ -47,7 +47,7 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
     }
     else if(paymentToken=="gasless"){
       await configureEnvironment({
-        chain: 5,
+        chain,
         apiKey,
         gasSponsor: {
           sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
@@ -56,7 +56,7 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
     }
     else{ //base
       await configureEnvironment({
-        chain: 5,
+        chain,
         apiKey,
         gasSponsor: false
       })
