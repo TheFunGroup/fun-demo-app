@@ -7,7 +7,7 @@ import { createFunWallet, useFaucet, switchNetwork } from "../../scripts/wallet"
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
 import { useAccount, useSigner } from 'wagmi'
-import { Eoa } from "fun-wallet/auth";
+import { Eoa } from "/Users/jamesrezendes/Code/fun-wallet-sdk/auth";
 
 export default function NetworkSelect(props) {
 

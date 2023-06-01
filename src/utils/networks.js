@@ -12,15 +12,15 @@ export const networks = {
     blockExplorerUrls: ["https://polygonscan.com/"],
     rpcUrls: ["https://polygon-rpc.com/"]
   },
-  "1": {
-    name: "Ethereum",
-    icon: "/ethereum.svg",
-    nativeCurrency: {
-      name: 'Ethereum',
-      symbol: 'ETH',
-      decimals: 18
-    },
-  },
+  // "1": {
+  //   name: "Ethereum",
+  //   icon: "/ethereum.svg",
+  //   nativeCurrency: {
+  //     name: 'Ethereum',
+  //     symbol: 'ETH',
+  //     decimals: 18
+  //   },
+  // },
   "5": {
     name: "Goerli",
     icon: "/goerli.svg",

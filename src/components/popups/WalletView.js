@@ -9,7 +9,7 @@ import { handleGetNFTs } from "../../scripts/getNFTs";
 import { useRouter } from "next/router";
 import { disconnect } from '@wagmi/core'
 import erc20Abi from "../../utils/erc20Abi";
-import { Token } from "../../../../fun-wallet-sdk/data";
+import { Token } from "/Users/jamesrezendes/Code/fun-wallet-sdk/data";
 
 export default function WalletView(props) {
 
@@ -33,6 +33,8 @@ export default function WalletView(props) {
   const [usdtBalance, setUsdtBalance] = useState();
   const [usdtBalanceUSD, setUsdtBalanceUSD] = useState();
 
+  const [tokens, setTokens] = useState([]);
+
   const [nfts, setNfts] = useState([])
 
   const [tab, setTab] = useState("balance");
@@ -41,22 +43,51 @@ export default function WalletView(props) {
     if (networks[network]) {
       if (wallet.address && provider) {
         setAddr(wallet.address);
-        Token.getBalance("eth", wallet.address).then((balance) => {
-          console.log(balance)
-          setBalance(Number(balance).toFixed(6))
-          toUSD("ETH", balance).then((usd) => {
-            setBalanceUSD(usd)
-          })
-        }).catch((e) => {
-          console.log(e)
-        });
-        getCoinBalances(provider);
+        setBalance();
+        setUsdcBalance()
+        setDaiBalance();
+        setUsdtBalance()
+        setTokens([]);
+        getTokenBalancesFromAssets();
+        if(network == 5){
+          getGoerliTokenBalances();
+        }
         getNFTs()
       }
     }
   }, [network, dropdown, provider])
 
-  async function getCoinBalances(provider) {
+  async function getTokenBalancesFromAssets(){
+    const nativeAddr = `0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`;
+    const assets = await wallet.getAssets();
+    //CHECK NATIVE, WETH, AND WMATIC
+    const native = assets.tokens[`${network}:${nativeAddr}`][0];
+    const nativeBal = ethers.utils.formatUnits(native.balance, native.decimals);
+    setBalance(Number(nativeBal).toFixed(6));
+    setBalanceUSD((Number(nativeBal) * native.price).toFixed(2))
+    const Tokens = [];
+    const weth = assets.tokens["WETH"].filter((token) => token.chainId == network)[0];
+    if(weth){
+      Tokens.push({
+        icon: weth.logoURI,
+        balance: Number(ethers.utils.formatUnits(weth.balance, weth.decimals)).toFixed(6),
+        balanceUSD: (Number(ethers.utils.formatUnits(weth.balance, weth.decimals)) * weth.price).toFixed(2),
+        symbol: weth.symbol
+      })
+    }
+    const wmatic = assets.tokens["WMATIC"].filter((token) => token.chainId == network)[0];
+    if(wmatic){
+      Tokens.push({
+        icon: wmatic.logoURI,
+        balance: Number(ethers.utils.formatUnits(wmatic.balance, wmatic.decimals)).toFixed(6),
+        balanceUSD: (Number(ethers.utils.formatUnits(wmatic.balance, wmatic.decimals)) * wmatic.price).toFixed(2),
+        symbol: wmatic.symbol
+      })
+    }
+    setTokens(Tokens)
+  }
+
+  async function getGoerliTokenBalances() {
 
     if(network == 5){
       const usdcContract = new ethers.Contract("0xaa8958047307da7bb00f0766957edec0435b46b5", erc20Abi, provider);
@@ -64,7 +95,7 @@ export default function WalletView(props) {
       usdcBalance = ethers.utils.formatUnits(usdcBalance, 6)
       setUsdcBalance(Number(usdcBalance.toString()).toFixed(2))
       setUsdcBalanceUSD(await toUSD("USDC", usdcBalance));
-  
+      
       const daiContract = new ethers.Contract("0x855af47cdf980a650ade1ad47c78ec1deebe9093", erc20Abi, provider);
       let daiBalance = await daiContract.balanceOf(wallet.address)
       daiBalance = ethers.utils.formatUnits(daiBalance, 6)
@@ -177,17 +208,34 @@ export default function WalletView(props) {
                 <div className="p-6 pt-0 w-full flex items-center flex-col max-h-[427px] overflow-y-scroll">
                   <Image src="/profile.svg" width="80" height="80" className="mt-4" alt="" />
                   <div className="flex items-end">
-                    <div className="text-[32px] font-semibold mr-1">{Number(balance).toFixed(6)}</div>
+                    <div className="text-[32px] font-semibold mr-1">{balance ? Number(balance).toFixed(6) : "--"}</div>
                     <div className="text-[#667085] mb-2">{networks[network]?.nativeCurrency.symbol}</div>
                   </div>
-                  <div className="text-[#667085] text-lg -mt-1">{`$${balanceUSD} USD`}</div>
-                  <div className="button-dark text-center py-3 px-4 w-full mt-6 font-medium" onClick={handleFund}>Fund</div>
+                  <div className="text-[#667085] text-lg -mt-1">{`$${balanceUSD ? balanceUSD : "--"} USD`}</div>
+                  {network == 5 && (
+                    <div className="button-dark text-center py-3 px-4 w-full mt-6 font-medium" onClick={handleFund}>Fund</div>
+                  )} 
                   
-                  {(usdcBalance || daiBalance || usdtBalance) && (
+                  {((tokens.length > 0) || ((usdcBalance || daiBalance || usdtBalance) && (network == 5))) && (
                     <div className="self-start text-black text-lg font-[590] mt-6 mb-2">Coins</div>
                   )}
 
-                  {usdcBalance && (
+                  {tokens.map((token) => {
+                    return (
+                      <div className="w-full flex justify-between items-center my-2 mb-[6px]">
+                        <div className="flex items-center">
+                          <img src={token.icon} width="40" height="40" alt="" className="mr-4" />
+                          <div>
+                            <div className="text-black">{token.symbol}</div>
+                            <div className="text-[#667085] text-sm">{`${token.balance} ${token.symbol}`}</div>
+                          </div>
+                        </div>
+                        <div className="text-black">{`$${token.balanceUSD}`}</div>
+                      </div>
+                    )
+                  })}
+
+                  {(network == 5 && usdcBalance) && (
                     <div className="w-full flex justify-between items-center my-2 mb-[6px]">
                       <div className="flex items-center">
                         <Image src="/usdc-coin.svg" width="40" height="40" alt="" className="mr-4" />
@@ -200,7 +248,7 @@ export default function WalletView(props) {
                     </div>
                   )}
 
-                  {daiBalance && (
+                  {(network == 5 && daiBalance) && (
                     <div className="w-full flex justify-between items-center my-[6px]">
                       <div className="flex items-center">
                         <Image src="/dai-coin.svg" width="40" height="40" alt="" className="mr-4" />
@@ -213,7 +261,7 @@ export default function WalletView(props) {
                     </div>
                   )}
 
-                  {usdtBalance && (
+                  {(network == 5 && usdtBalance) && (
                     <div className="w-full flex justify-between items-center mt-[6px]">
                       <div className="flex items-center">
                         <Image src="/usdt-coin.svg" width="40" height="40" alt="" className="mr-4" />

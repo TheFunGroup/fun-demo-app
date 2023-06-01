@@ -1,5 +1,5 @@
-import { FunWallet, configureEnvironment } from "fun-wallet";
-import { getStoredUniqueId } from "fun-wallet/utils";
+import { FunWallet, configureEnvironment } from "/Users/jamesrezendes/Code/fun-wallet-sdk";
+import { getStoredUniqueId } from "/Users/jamesrezendes/Code/fun-wallet-sdk/utils";
 import { ethers } from "ethers";
 import { apiKey } from "../utils/constants";
 import {handleFundWallet} from '../scripts/fund'
@@ -92,6 +92,5 @@ export async function getAddress(uniqueId, chainId, index = WALLET_INDEX, apiKey
 
 export async function switchNetwork(chain){
   options.chain = chain;
-  console.log(options)
   await configureEnvironment(options)
 }

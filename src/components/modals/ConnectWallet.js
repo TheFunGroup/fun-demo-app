@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import { createFunWallet, useFaucet, isAuthIdUsed } from "../../scripts/wallet";
 import Spinner from "../misc/Spinner";
 import { useFun } from "../../contexts/funContext";
-import { MultiAuthEoa } from "fun-wallet/auth";
+import { MultiAuthEoa } from "/Users/jamesrezendes/Code/fun-wallet-sdk/auth";
 import { useAccount, useProvider, useConnect, useSigner } from 'wagmi'
 import LinkAccounts from "./LinkAccounts";
 import { useRouter } from 'next/router';
