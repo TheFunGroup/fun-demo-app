@@ -5,7 +5,9 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      width="3.55556in" height="3.55556in"
      viewBox="0 0 320 320">
-  <path id="Selection #2"
+<rect x="10" y="10" width="300" height="300" rx="200" stroke="#white" fill-opacity="0.042"/>
+<rect x="10" y="10" width="300" height="300" rx="200" fill="#2D4EA2" fill-opacity="0.042"/>
+<path id="Selection #2"
         fill="#2D4EA2"
         d="M 125.00,144.00
            C 124.16,141.05 124.05,140.06 124.00,137.00
@@ -41,4 +43,7 @@
              206.00,198.00 205.42,169.00 205.42,169.00
              204.87,165.21 204.68,161.39 201.61,158.65
              197.54,155.02 187.25,154.80 182.00,155.28 Z" />
+  
 </svg>
+
+
