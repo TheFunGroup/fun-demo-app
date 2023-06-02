@@ -28,6 +28,11 @@ yarn-error.log*
 # local env files
 .env*.local
 
+package-lock.json
+
+/js-fun-wallet
+/fun-wallet
+
 yarn.lock
 
 # vercel
