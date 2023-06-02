@@ -73,6 +73,7 @@ export default function LinkAccounts(props) {
                 ids.push(linked[methods[i]])
             }
             const auth = new MultiAuthEoa({ provider, authIds: ids })
+            console.log("multi auth EOA: ", auth)
             const wallet = await createFunWallet(auth)
             setEOA(auth)
             const addr = await wallet.getAddress()

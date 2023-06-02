@@ -3,6 +3,7 @@ import { FunWallet, configureEnvironment } from "../../fun-wallet/dist"
 import { getStoredUniqueId } from "../../fun-wallet/dist/src/utils"
 import { handleFundWallet } from "../scripts/fund"
 import { apiKey } from "../utils/constants"
+import erc20Abi from "../utils/erc20Abi"
 const options = {
     chain: 5,
     apiKey
@@ -103,13 +104,14 @@ export const getERC20Balance = (
     return new Promise((resolve, reject) => {
         if (walletAddress == null) return reject("No wallet address provided")
         if (erc20Address == null) return reject("No token address provided")
-        provider
-            .getBalance(walletAddress)
+        const contract = new ethers.Contract(erc20Address, erc20Abi, provider)
+        contract
+            .balanceOf(walletAddress)
             .then((balance) => {
-                resolve(balance)
+                resolve({ value: balance, key: erc20Address })
             })
             .catch((err) => {
-                reject(err)
+                reject({ error: err, key: erc20Address })
             })
     })
 }

@@ -91,6 +91,11 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
                 gasSponsor: false
             })
         }
+        console.log(auth, {
+            in: ins == "eth" ? "eth" : inAddr,
+            amount: swapData.amount,
+            out: out == "eth" ? "eth" : outAddr
+        })
         const receipt = await wallet.swap(auth, {
             in: ins == "eth" ? "eth" : inAddr,
             amount: swapData.amount,

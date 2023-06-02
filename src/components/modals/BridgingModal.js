@@ -43,7 +43,7 @@ const fetchTokenBalances = (address, network, bridgeAsset) => {
         } else {
             console.log("fetching erc20 balance")
             const balance = await getERC20Balance(address, bridgeAssetAddr, etherProvider)
-            resolve({ ...bridgeAsset, balance: balance })
+            resolve({ ...bridgeAsset, balance: balance.value })
         }
     })
 }

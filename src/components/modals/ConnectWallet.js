@@ -90,7 +90,8 @@ export default function ConnectWallet() {
             setConnecting("")
             return
         }
-        const auth = new MultiAuthEoa({ provider, authIds: [authId, publicKey] })
+        const auth = new MultiAuthEoa({ provider, authIds: [[authId, publicKey]] })
+        console.log("multi auth EOA: ", auth)
         const FunWallet = await createFunWallet(auth)
         const addr = await FunWallet.getAddress()
         FunWallet.address = addr

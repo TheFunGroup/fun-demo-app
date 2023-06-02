@@ -84,7 +84,7 @@ export default function Main() {
                         <div className="text-[#667085]">Stake to earn rewards. Longer staking earn more rewards.</div>
                     </div>
                 </div>
-                <div className="button flex items-center text-sm mt-4 p-4" onClick={() => goToPage("/unstake")}>
+                {/* <div className="button flex items-center text-sm mt-4 p-4" onClick={() => goToPage("/unstake")}>
                     <Image src="/lock-closed-circular.svg" width="40" height="40" alt="" />
                     <div className="ml-3">
                         <div className="font-medium text-[#344054]">Unstake Ethereum</div>
@@ -97,8 +97,7 @@ export default function Main() {
                         <div className="font-medium text-[#344054]">Bridge Assets</div>
                         <div className="text-[#667085]">Bridge your tokens from one blockchain to another.</div>
                     </div>
-                </div>
-                {/* <div style={{background: "white", border:"2px solid black", width:"100%", height: "24px"}}onClick={() => goToPage("/transaction")}></div> */}
+                </div> */}
             </div>
         </div>
     )
