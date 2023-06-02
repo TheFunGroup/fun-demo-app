@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useState } from "react"
 import { useFun } from "../../contexts/funContext"
 import { toUSD } from "../../scripts/prices"
 import { handleStakeEth } from "../../scripts/stake"
-import { getEtherBalance } from "../../scripts/wallet"
+import { getEtherBalance, checkAndHandleUserRejectionsMessage } from "../../scripts/wallet"
 import { tokens } from "../../utils/tokens"
 import PaymentMethod from "../forms/PaymentMethod"
 import StakeForm from "../forms/StakeForm"
@@ -84,11 +84,7 @@ export default function StakingModal(props) {
                         setPaymasterAddress(res.paymasterAddress)
                         setMustApprove(true)
                     } else {
-                        if (res.error.slice(0, 28) === "Error: user rejected signing") {
-                            setError("User rejected Transaction.")
-                        } else {
-                            setError(res.error)
-                        }
+                        checkAndHandleUserRejectionsMessage(res.error, setError)
                     }
                 } else {
                     router.push({

@@ -1,9 +1,11 @@
 import { ethers } from "ethers"
-import { getERC20Balance, isContract } from "./wallet"
+import { getERC20Balance, isContract, checkWalletPaymasterConfig, checkIfWalletIsPrefunded } from "./wallet"
 import { configureEnvironment } from "../../fun-wallet/dist/config"
 import { TokenSponsor } from "../../fun-wallet/src/sponsors"
 import { apiKey } from "../utils/constants"
 import erc20ABI from "../utils/funTokenAbi.json"
+
+const CHAIN_ID = 5
 // requires
 // Wallet funWallet
 // paymentToken String (ETH, gassless, or address of ERC20 token)
@@ -16,51 +18,19 @@ export const handleStakeEth = async function (wallet, paymentToken, amount, auth
         const walletAddress = await wallet.getAddress()
         // validate the params
         if (parseFloat(amount) <= 0) return { success: false, error: "Staking amount must be greater than 0" }
-        let envOptions = {
-            chain: 5,
-            apiKey,
-            gasSponsor: false
-        }
-        // Tells frontend that funwallet must be funded
-        if (paymentToken != "ETH" && paymentToken != "gasless") {
-            //use paymaster
-            envOptions = {
-                chain: 5,
-                apiKey,
-                gasSponsor: {
-                    sponsorAddress: "0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9",
-                    token: paymentToken
-                }
-            }
-            const gasSponsor = new TokenSponsor()
-            const paymasterAddress = await gasSponsor.getPaymasterAddress()
-            const iscontract = await isContract(walletAddress)
-            if (iscontract) {
-                const erc20Contract = new ethers.Contract(paymentToken, erc20ABI.abi, provider)
-                let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress) //paymaster address
-                allowance = ethers.utils.formatUnits(allowance, 6)
-                if (Number(allowance) < Number(20)) {
-                    //amt
-                    //if approved, pop up modal, and ask for approval
-                    return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentToken }
-                }
-            } else
-                return {
-                    success: false,
-                    error: "Its a known bug that first transaction of a fun wallet would fail if you are covering gas using ERC20 tokens. Please try to pay gas using gasless paymaster or ETH for this transaction and try token paymaster later."
-                }
-        } else if (paymentToken == "gasless") {
-            envOptions = {
-                chain: 5,
-                apiKey,
-                gasSponsor: {
-                    sponsorAddress: "0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9"
-                }
-            }
-        }
+
+        let envOptions = await checkWalletPaymasterConfig(wallet, paymentToken, CHAIN_ID)
+        if (!envOptions.success) return envOptions
+
+        const estimatedGasCalc = await wallet.stake(auth, { amount }, envOptions.envOptions, true)
+        if (!estimatedGasCalc || estimatedGasCalc.isZero()) return { success: false, error: "Estimated gas is 0" }
+        if (estimateGas) return { success: true, receipt: estimatedGasCalc }
+        const native = envOptions.envOptions.gasSponsor === false
+
+        const prefundStatus = await checkIfWalletIsPrefunded(wallet, estimatedGasCalc, CHAIN_ID, native)
+        if (!prefundStatus.success) return prefundStatus
         // try {
-        const receipt = await wallet.stake(auth, { amount }, envOptions, estimateGas)
-        if (estimateGas) return { success: true, receipt }
+        const receipt = await wallet.stake(auth, { amount }, envOptions.envOptions, estimateGas)
         //Tells frontend stake was success
         console.log("txId: ", receipt, receipt.txid)
         const explorerUrl = receipt.txid

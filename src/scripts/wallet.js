@@ -1,5 +1,5 @@
 import { ethers } from "ethers"
-import { FunWallet, configureEnvironment } from "../../fun-wallet/dist"
+import { FunWallet, configureEnvironment, TokenSponsor, Token } from "../../fun-wallet/dist"
 import { getStoredUniqueId } from "../../fun-wallet/dist/src/utils"
 import { handleFundWallet } from "../scripts/fund"
 import { apiKey } from "../utils/constants"
@@ -76,6 +76,96 @@ export async function getAddress(uniqueId, chainId, index = WALLET_INDEX, apiKey
         return addr
     } catch (e) {
         return false
+    }
+}
+
+export const checkWalletPaymasterConfig = async (wallet, paymentToken, chainIdNumber) => {
+    try {
+        const walletAddress = await wallet.getAddress()
+        if (paymentToken === "ETH") {
+            return {
+                success: true,
+                envOptions: {
+                    chain: chainIdNumber,
+                    apiKey,
+                    gasSponsor: false
+                }
+            }
+        } else if (paymentToken === "gasless") {
+            console.log("using gasless")
+            return {
+                success: true,
+                envOptions: {
+                    chain: chainIdNumber,
+                    apiKey,
+                    gasSponsor: {
+                        sponsorAddress: "0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9"
+                    }
+                }
+            }
+        } else {
+            //use paymaster
+            const gasSponsor = new TokenSponsor()
+            const paymasterAddress = await gasSponsor.getPaymasterAddress()
+            const erc20Contract = new ethers.Contract(paymentToken, erc20ABI.abi, provider)
+
+            const iscontract = await isContract(walletAddress)
+            if (iscontract) {
+                let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress) //paymaster address
+                allowance = ethers.utils.formatUnits(allowance, 6)
+                if (Number(allowance) < Number(20)) {
+                    //amt
+                    //if approved, pop up modal, and ask for approval
+                    return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentToken }
+                }
+            } else {
+                return {
+                    success: false,
+                    error: "Its a known bug that first transaction of a fun wallet would fail if you are covering gas using ERC20 tokens. Please try to pay gas using gasless paymaster or ETH for this transaction and try token paymaster later."
+                }
+            }
+            return {
+                success: true,
+                envOptions: {
+                    chain: chainIdNumber,
+                    apiKey,
+                    gasSponsor: {
+                        sponsorAddress: "0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9",
+                        token: paymentToken
+                    }
+                }
+            }
+        }
+    } catch (err) {
+        console.log(err)
+        return { success: false, error: err }
+    }
+}
+
+// check if the wallet is deployed
+// check if the wallet has enough funds and if not fund the wallet
+export const checkIfWalletIsPrefunded = async (wallet, estimatedGas, chainId, native = true) => {
+    if (!native) return { success: true }
+    try {
+        const walletAddress = await wallet.getAddress()
+        const etherBalance = await Token.getBalance("ETH", walletAddress)
+        const balance = ethers.utils.parseEther(etherBalance)
+        if (balance < estimatedGas) {
+            await fundUsingFaucet(walletAddress, chainId)
+            return { success: false, error: "Insufficient balance try again in a minute" }
+        }
+        return { success: true }
+    } catch (err) {
+        console.log(err)
+        return { success: false, error: err }
+    }
+}
+
+export const checkAndHandleUserRejectionsMessage = (err, handlerFunc) => {
+    if (err.slice(0, 28) === "Error: user rejected signing") {
+        handlerFunc("User rejected Transaction.")
+    } else {
+        handlerFunc(err)
     }
 }
 
