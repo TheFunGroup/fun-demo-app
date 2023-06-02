@@ -162,10 +162,11 @@ export const checkIfWalletIsPrefunded = async (wallet, estimatedGas, chainId, na
 }
 
 export const checkAndHandleUserRejectionsMessage = (err, handlerFunc) => {
-    if (err.slice(0, 28) === "Error: user rejected signing") {
+    console.log(err)
+    if (err.slice && err.slice(0, 28) === "Error: user rejected signing") {
         handlerFunc("User rejected Transaction.")
     } else {
-        handlerFunc(err)
+        handlerFunc(JSON.stringify(err))
     }
 }
 

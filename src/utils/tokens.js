@@ -32,11 +32,6 @@ export const tokens = {
             decimal: 18
         },
         {
-            name: "stETH",
-            addr: "0x1643e812ae58766192cf7d2cf9567df2c37e9b7f",
-            decimal: 18
-        },
-        {
             name: "USDC",
             addr: "0xaa8958047307da7bb00f0766957edec0435b46b5",
             decimal: 6
@@ -50,6 +45,11 @@ export const tokens = {
             name: "USDT",
             addr: "0x3E1FF16B9A94eBdE6968206706BcD473aA3Da767",
             decimal: 6
+        },
+        {
+            name: "stETH",
+            addr: "0x1643e812ae58766192cf7d2cf9567df2c37e9b7f",
+            decimal: 18
         }
     ],
     137: [
