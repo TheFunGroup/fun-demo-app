@@ -8,7 +8,7 @@ import { useAccount, useConnect, useProvider, useSigner } from "wagmi"
 import LinkAccounts from "./LinkAccounts"
 import { MultiAuthEoa } from "../../../fun-wallet/dist"
 import { useFun } from "../../contexts/funContext"
-import { createFunWallet, isAuthIdUsed, useFaucet } from "../../scripts/wallet"
+import { createFunWallet, isAuthIdUsed, fundUsingFaucet } from "../../scripts/wallet"
 import socials from "../../utils/socials"
 import Spinner from "../misc/Spinner"
 
@@ -100,7 +100,7 @@ export default function ConnectWallet() {
             balance = ethers.utils.formatEther(balance)
             if (balance == 0) {
                 FunWallet.deployed = false
-                await useFaucet(addr, 5)
+                await fundUsingFaucet(addr, 5)
             } else {
                 FunWallet.deployed = true
             }

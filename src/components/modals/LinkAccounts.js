@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 import { MultiAuthEoa } from "../../../fun-wallet/dist"
 import { useFun } from "../../contexts/funContext"
-import { createFunWallet, getAddress, isAuthIdUsed, useFaucet } from "../../scripts/wallet"
+import { createFunWallet, fundUsingFaucet, getAddress, isAuthIdUsed } from "../../scripts/wallet"
 import socials from "../../utils/socials"
 import Spinner from "../misc/Spinner"
 
@@ -80,7 +80,7 @@ export default function LinkAccounts(props) {
             let balance = await provider.getBalance(addr)
             balance = ethers.utils.formatEther(balance)
             if (balance == 0) {
-                await useFaucet(addr, 5)
+                await fundUsingFaucet(addr, 5)
             }
             setWallet(wallet)
         } catch (e) {

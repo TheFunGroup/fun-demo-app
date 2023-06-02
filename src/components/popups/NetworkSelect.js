@@ -5,7 +5,7 @@ import { useAccount, useSigner } from "wagmi"
 import { Eoa } from "../../../fun-wallet/dist"
 import { useFun } from "../../contexts/funContext"
 import { useOnClickOutside } from "../../hooks/useOnClickOutside"
-import { createFunWallet, useFaucet } from "../../scripts/wallet"
+import { createFunWallet, fundUsingFaucet } from "../../scripts/wallet"
 import { networks } from "../../utils/networks"
 import Spinner from "../misc/Spinner"
 
@@ -49,7 +49,7 @@ export default function NetworkSelect(props) {
             let balance = await provider.getBalance(addr)
             balance = ethers.utils.formatEther(balance)
             if (balance == 0) {
-                await useFaucet(addr, id)
+                await fundUsingFaucet(addr, id)
             }
             setCurrent(id)
             setNetwork(id)

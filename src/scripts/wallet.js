@@ -46,7 +46,7 @@ export const isAuthIdUsed = async (authId) => {
     }
 }
 
-export async function useFaucet(addr, network) {
+export async function fundUsingFaucet(addr, network) {
     if (network == 5) {
         //GOERLI
         try {
