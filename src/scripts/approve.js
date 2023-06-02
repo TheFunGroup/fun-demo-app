@@ -1,11 +1,10 @@
-import { configureEnvironment } from "fun-wallet/managers";
+import { configureEnvironment } from "../../fun-wallet/dist"
 //Amount is in USDC
 export const handleApprove = async function (wallet, auth, paymasterAddress, paymentAddr, amount = 500) {
-  await configureEnvironment({
-    gasSponsor: false
-  })
-  await wallet.approve(auth, { spender: paymasterAddress, token: paymentAddr, amount: amount })
+    await configureEnvironment({
+        gasSponsor: false
+    })
+    await wallet.approve(auth, { spender: paymasterAddress, token: paymentAddr, amount: amount })
 
-  return { success: true }
-
+    return { success: true }
 }
