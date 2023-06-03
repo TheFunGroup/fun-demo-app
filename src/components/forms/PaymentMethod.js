@@ -11,7 +11,7 @@ export default function PaymentMethod(props) {
     "USDC": 1, "DAI": 1, "USDT": 1
   }
 
-  const chainToken = networks[network || 5].nativeCurrency;
+  const chainToken = networks[network].nativeCurrency;
 
   return (
     <div className="w-full mt-10">

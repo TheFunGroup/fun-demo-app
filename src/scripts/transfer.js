@@ -1,12 +1,12 @@
 import { ethers } from "ethers";
-import { configureEnvironment } from "fun-wallet/managers";
-import { TokenSponsor } from "fun-wallet/sponsors";
-import { Token } from "fun-wallet/data";
+import { configureEnvironment } from "fun-wallet-paymaster-test/managers";
+import { TokenSponsor } from "fun-wallet-paymaster-test/sponsors";
+import { Token } from "fun-wallet-paymaster-test/data";
 import { tokens } from "../utils/tokens"
 import erc20ABI from "../utils/funTokenAbi.json";
 import { isContract } from "./wallet";
 import { apiKey } from "../utils/constants";
-export const handleTransfer = async function (wallet, paymentToken, transferData, auth) {
+export const handleTransfer = async function (wallet, paymentToken, transferData, auth, chain) {
 
   try {
     if (!transferData.to) {
@@ -43,7 +43,7 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
 
     if (paymentToken != "ETH" && paymentToken != "gasless") { //use paymaster
       await configureEnvironment({
-        chain: 5,
+        chain,
         apiKey,
         gasSponsor: {
           sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
@@ -70,7 +70,7 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
     else if (paymentToken == "gasless") {
       console.log('using gasless')
       await configureEnvironment({
-        chain: 5,
+        chain,
         apiKey,
         gasSponsor: {
           sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
@@ -79,7 +79,7 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
     }
     else {
       await configureEnvironment({
-        chain: 5,
+        chain,
         apiKey,
         gasSponsor: false
       })

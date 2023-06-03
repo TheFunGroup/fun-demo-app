@@ -1,30 +1,30 @@
 export const tokens = {
-  '1': [
-    {
-      name: "ETH",
-      addr: "native"
-    },
-    {
-      name: "USDC",
-      addr: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-    },
-    {
-      name: "USDT",
-      addr: "0xdac17f958d2ee523a2206206994597c13d831ec7"
-    },
-    {
-      name: "BNB",
-      addr: "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
-    },
-    {
-      name: "DAI",
-      addr: "0x6b175474e89094c44da98b954eedeac495271d0f"
-    },
-    {
-      name: "WBTC",
-      addr: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
-    },
-  ],
+  // '1': [
+  //   {
+  //     name: "ETH",
+  //     addr: "native"
+  //   },
+  //   {
+  //     name: "USDC",
+  //     addr: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+  //   },
+  //   {
+  //     name: "USDT",
+  //     addr: "0xdac17f958d2ee523a2206206994597c13d831ec7"
+  //   },
+  //   {
+  //     name: "BNB",
+  //     addr: "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
+  //   },
+  //   {
+  //     name: "DAI",
+  //     addr: "0x6b175474e89094c44da98b954eedeac495271d0f"
+  //   },
+  //   {
+  //     name: "WBTC",
+  //     addr: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+  //   },
+  // ],
   '5': [
     {
       name: "ETH",
@@ -76,5 +76,23 @@ export const tokens = {
       name: "WBTC",
       addr: "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6"
     },
+  ],
+  '42161': [
+    {
+      name: "AETH",
+      addr: "native"
+    },
+    {
+      name: "USDC",
+      addr: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
+    },
+    {
+      name: "DAI",
+      addr: "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+    },
+    {
+      name: "USDT",
+      addr: "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"
+    }
   ]
 }

@@ -1,5 +1,5 @@
-import { FunWallet, configureEnvironment } from "fun-wallet";
-import { getStoredUniqueId } from "fun-wallet/utils";
+import { FunWallet, configureEnvironment } from "fun-wallet-paymaster-test";
+import { getStoredUniqueId } from "fun-wallet-paymaster-test/utils";
 import { ethers } from "ethers";
 import { apiKey } from "../utils/constants";
 import {handleFundWallet} from '../scripts/fund'
@@ -10,7 +10,8 @@ const options = {
 
 const WALLET_INDEX = 34788
 
-export async function createFunWallet(auth) {
+export async function createFunWallet(auth, chain) {
+  options.chain = chain;
   await configureEnvironment(options)
   const uniqueId = await auth.getUniqueId();
   const wallet = new FunWallet({ uniqueId, index: WALLET_INDEX })
@@ -87,4 +88,9 @@ export async function getAddress(uniqueId, chainId, index = WALLET_INDEX, apiKey
   } catch (e) {
     return false;
   }
+}
+
+export async function switchNetwork(chain){
+  options.chain = chain;
+  await configureEnvironment(options)
 }

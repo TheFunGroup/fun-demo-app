@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { ethers } from "ethers";
 import Spinner from "../misc/Spinner";
 import { useFun, network } from "../../contexts/funContext";
-import { MultiAuthEoa } from "fun-wallet/auth";
+import { MultiAuthEoa } from "fun-wallet-paymaster-test/auth";
 import { useFaucet, createFunWallet, isAuthIdUsed } from "../../scripts/wallet";
 import { useAccount } from 'wagmi'
 import socials from "../../utils/socials";
@@ -13,10 +13,10 @@ export default function LinkAccounts(props) {
 
   const {
     connect, connectors, setWallet, linked,
-    setLinked, provider, setProvider, magic,
+    setLinked, magic,
     connecting, setConnecting, signer
   } = props;
-  const { setLoading, setEOA } = useFun()
+  const { setLoading, setEOA, network, provider, setProvider } = useFun()
   const { connector } = useAccount()
   const [creating, setCreating] = useState(false)
 
@@ -24,14 +24,12 @@ export default function LinkAccounts(props) {
     const linkConnector = async () => {
       setConnecting(connector.name)
       setLoading(true)
-      const chainId = await connector.getChainId();
-      if (chainId !== 5) await connector.switchChain(5)
       const signer = await connector.getSigner();
       let provider = await connector.getProvider();
       if (!provider.getBalance) provider = (await connector.getSigner()).provider;
       if (!linked[connector.name]) {
         const eoaAddr = await connector.getAccount()
-        const addr = await getAddress(eoaAddr, network || 5);
+        const addr = await getAddress(eoaAddr, network);
         const authIdUsed = await isAuthIdUsed(addr)
         console.log("LinkWallet authIdUsed: ", authIdUsed)
         if (!authIdUsed) {
@@ -79,7 +77,7 @@ export default function LinkAccounts(props) {
         ids.push(linked[methods[i]])
       }
       const auth = new MultiAuthEoa({ provider, authIds: ids })
-      const wallet = await createFunWallet(auth)
+      const wallet = await createFunWallet(auth, network)
       setEOA(auth)
       const addr = await wallet.getAddress()
       console.log(provider);
