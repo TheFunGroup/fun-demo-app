@@ -4,6 +4,7 @@ import { getStoredUniqueId } from "../../fun-wallet/dist/src/utils"
 import { handleFundWallet } from "../scripts/fund"
 import { apiKey } from "../utils/constants"
 import erc20Abi from "../utils/erc20Abi"
+import { tokens } from "../utils/tokens"
 const options = {
     chain: 5,
     apiKey
@@ -105,9 +106,28 @@ export const checkWalletPaymasterConfig = async (wallet, paymentToken, chainIdNu
             }
         } else {
             //use paymaster
-            const gasSponsor = new TokenSponsor()
+            let normalizedTokenAddress = paymentToken
+            const paymentTokenContract = await isContract(paymentToken)
+            if (!paymentTokenContract) {
+                console.log("finding address")
+                for (let token in tokens[chainIdNumber]) {
+                    if (tokens[chainIdNumber][token].name === paymentToken) {
+                        normalizedTokenAddress = tokens[chainIdNumber][token].addr
+                        break
+                    }
+                }
+            }
+            const gasSponsor = new TokenSponsor({
+                chain: chainIdNumber,
+                apiKey,
+                gasSponsor: {
+                    sponsorAddress: "0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9",
+                    token: normalizedTokenAddress
+                }
+            })
+            const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161")
             const paymasterAddress = await gasSponsor.getPaymasterAddress()
-            const erc20Contract = new ethers.Contract(paymentToken, erc20ABI.abi, provider)
+            const erc20Contract = new ethers.Contract(normalizedTokenAddress, erc20Abi, provider)
 
             const iscontract = await isContract(walletAddress)
             if (iscontract) {
@@ -116,7 +136,7 @@ export const checkWalletPaymasterConfig = async (wallet, paymentToken, chainIdNu
                 if (Number(allowance) < Number(20)) {
                     //amt
                     //if approved, pop up modal, and ask for approval
-                    return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentToken }
+                    return { success: false, mustApprove: true, paymasterAddress, tokenAddr: normalizedTokenAddress }
                 }
             } else {
                 return {
@@ -150,6 +170,7 @@ export const checkIfWalletIsPrefunded = async (wallet, estimatedGas, chainId, na
         const walletAddress = await wallet.getAddress()
         const etherBalance = await Token.getBalance("ETH", walletAddress)
         const balance = ethers.utils.parseEther(etherBalance)
+        console.log("balance", balance.toString(), "estimatedGas", estimatedGas.toString())
         if (balance < estimatedGas) {
             await fundUsingFaucet(walletAddress, chainId)
             return { success: false, error: "Insufficient balance try again in a minute" }
