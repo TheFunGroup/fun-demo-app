@@ -4353,6 +4353,22 @@ fsevents@~2.3.2:
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
   integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
 
+fun-wallet-paymaster-test@^0.2.5:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/fun-wallet-paymaster-test/-/fun-wallet-paymaster-test-0.2.5.tgz#84c9d3dd10a9dc59c4150645d4fdf3e8697f720d"
+  integrity sha512-T9X7sYBE6W/yqliijZJPfc8llNFRRkofJvhUrtN9N8jFVzto2Xkv/1yqERm5SkxMg998m8L8Vbq5wbztmW1URw==
+  dependencies:
+    "@account-abstraction/sdk" "^0.4.0"
+    "@aws-sdk/client-secrets-manager" "^3.315.0"
+    "@lifeomic/attempt" "^3.0.3"
+    "@uniswap/sdk" "^3.0.3"
+    "@uniswap/v3-core" "^1.0.1"
+    "@uniswap/v3-sdk" "^3.9.0"
+    dotenv "^16.0.3"
+    ethers "5.7.2"
+    node-fetch "2.0.0"
+    web3 "^1.9.0"
+
 fun-wallet@^0.2.4:
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/fun-wallet/-/fun-wallet-0.2.6.tgz#6215587f711d295ac7e0a5bae2a827e2b3a79df2"

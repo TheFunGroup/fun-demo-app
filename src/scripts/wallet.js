@@ -1,5 +1,5 @@
-import { FunWallet, configureEnvironment } from "/Users/jamesrezendes/Code/fun-wallet-sdk";
-import { getStoredUniqueId } from "/Users/jamesrezendes/Code/fun-wallet-sdk/utils";
+import { FunWallet, configureEnvironment } from "fun-wallet-paymaster-test";
+import { getStoredUniqueId } from "fun-wallet-paymaster-test/utils";
 import { ethers } from "ethers";
 import { apiKey } from "../utils/constants";
 import {handleFundWallet} from '../scripts/fund'

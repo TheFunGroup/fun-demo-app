@@ -9,7 +9,7 @@ import { handleGetNFTs } from "../../scripts/getNFTs";
 import { useRouter } from "next/router";
 import { disconnect } from '@wagmi/core'
 import erc20Abi from "../../utils/erc20Abi";
-import { Token } from "/Users/jamesrezendes/Code/fun-wallet-sdk/data";
+import { Token } from "fun-wallet-paymaster-test/data";
 
 export default function WalletView(props) {
 
