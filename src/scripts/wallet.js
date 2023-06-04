@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
-import { FunWallet, configureEnvironment, TokenSponsor, Token } from "../../fun-wallet/dist"
-import { getStoredUniqueId } from "../../fun-wallet/dist/src/utils"
+import { FunWallet, configureEnvironment, TokenSponsor, Token } from "fun-wallet"
+import { getStoredUniqueId } from "fun-wallet/utils"
 import { handleFundWallet } from "../scripts/fund"
 import { apiKey } from "../utils/constants"
 import erc20Abi from "../utils/erc20Abi"

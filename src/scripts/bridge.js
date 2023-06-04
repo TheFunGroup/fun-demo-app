@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { isContract } from "./wallet"
-import { TokenSponsor } from "../../fun-wallet/dist"
+import { TokenSponsor } from "fun-wallet"
 import { apiKey } from "../utils/constants"
 import erc20ABI from "../utils/funTokenAbi.json"
 import { networks } from "../utils/networks"

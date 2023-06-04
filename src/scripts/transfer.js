@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { checkWalletPaymasterConfig, checkIfWalletIsPrefunded } from "./wallet"
-import { Token, TokenSponsor, configureEnvironment } from "../../fun-wallet/dist"
+import { Token, TokenSponsor, configureEnvironment } from "fun-wallet"
 
 import { tokens } from "../utils/tokens"
 

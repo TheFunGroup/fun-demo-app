@@ -1,8 +1,5 @@
 import { ethers } from "ethers"
 import { checkWalletPaymasterConfig, checkIfWalletIsPrefunded } from "./wallet"
-import { TokenSponsor, configureEnvironment } from "../../fun-wallet/dist"
-import { apiKey } from "../utils/constants"
-import erc20ABI from "../utils/funTokenAbi.json"
 import nftABI from "../utils/nftABI.json"
 import { tokens } from "../utils/tokens"
 
