@@ -41,7 +41,7 @@ export const FunProvider = ({ children }) => {
       paymasterAddress, setPaymasterAddress,
       connectMethod, setConnectMethod
     }}>
-      <UpdateBanner />
+      {APP_IS_UPDATING && <UpdateBanner />}
         {children}
     </FunContext.Provider>
   )
