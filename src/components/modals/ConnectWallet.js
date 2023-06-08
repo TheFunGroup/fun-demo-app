@@ -55,6 +55,7 @@ export default function ConnectWallet(props) {
 
 
   useEffect(() => {
+    if (window.APP_IS_UPDATING) return;
     async function connectEOA() {
       setConnecting(connector.name)
       setLoading(true)
