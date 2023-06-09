@@ -5,7 +5,7 @@ import { apiKey } from "../utils/constants"
 import erc20ABI from "../utils/funTokenAbi.json"
 import { tokens } from "../utils/tokens"
 
-const CHAIN_ID = 5
+const CHAIN_ID = "5"
 
 export const handleSwap = async function (wallet, paymentToken, swapData, auth) {
     try {
@@ -48,7 +48,8 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
         // // Tells frontend that funwallet must be funded
         let envOptions = await checkWalletPaymasterConfig(wallet, paymentToken, CHAIN_ID)
         if (!envOptions.success) return envOptions
-
+        // envOptions.envOptions.sendTxLater = true
+        console.log(envOptions)
         const estimatedGasCalc = await wallet.swap(
             auth,
             {
@@ -59,6 +60,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
             envOptions.envOptions,
             true
         )
+        console.log("Calculated gas", estimatedGasCalc)
         if (!estimatedGasCalc || estimatedGasCalc.isZero()) return { success: false, error: "Estimated gas is 0" }
         const native = envOptions.envOptions.gasSponsor === false
 
@@ -74,10 +76,10 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
             in: ins == "eth" ? "eth" : inAddr,
             amount: swapData.amount,
             out: out == "eth" ? "eth" : outAddr
-        })
+        }, envOptions.envOptions, false)
 
         //Tells frontend swap was success
-        console.log("txId: ", receipt.txid)
+        console.log("txId: ", receipt)
         const explorerUrl = receipt.txid
             ? `https://goerli.etherscan.io/tx/${receipt.txid}`
             : `https://goerli.etherscan.io/address/${walletAddress}#internaltx`

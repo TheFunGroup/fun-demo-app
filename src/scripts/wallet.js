@@ -1,6 +1,5 @@
 import { ethers } from "ethers"
-import { FunWallet, configureEnvironment, TokenSponsor, Token } from "fun-wallet"
-import { getStoredUniqueId } from "fun-wallet/utils"
+import { FunWallet, configureEnvironment, TokenSponsor, Token, getStoredUniqueId } from "fun-wallet"
 import { handleFundWallet } from "../scripts/fund"
 import { apiKey } from "../utils/constants"
 import erc20Abi from "../utils/erc20Abi"
@@ -170,9 +169,9 @@ export const checkIfWalletIsPrefunded = async (wallet, estimatedGas, chainId, na
         const walletAddress = await wallet.getAddress()
         const etherBalance = await Token.getBalance("ETH", walletAddress)
         const balance = ethers.utils.parseEther(etherBalance)
-        console.log("balance", balance.toString(), "estimatedGas", estimatedGas.toString())
-        if (balance < estimatedGas) {
-            await fundUsingFaucet(walletAddress, chainId)
+        console.log("balance", balance.toString(), "estimatedGas", estimatedGas.toString(), balance < estimatedGas)
+        if ( estimatedGas.gt(balance)) {
+            // await fundUsingFaucet(walletAddress, chainId)
             return { success: false, error: "Insufficient balance try again in a minute" }
         }
         return { success: true }
