@@ -5,7 +5,7 @@ import { apiKey } from "../utils/constants"
 import erc20ABI from "../utils/funTokenAbi.json"
 import { tokens } from "../utils/tokens"
 
-const CHAIN_ID = "5"
+const CHAIN_ID = 5
 
 export const handleSwap = async function (wallet, paymentToken, swapData, auth) {
     try {

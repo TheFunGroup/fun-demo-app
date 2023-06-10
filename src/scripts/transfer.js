@@ -40,16 +40,17 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
         }
         let envOptions = await checkWalletPaymasterConfig(wallet, paymentToken, CHAIN_ID)
         if (!envOptions.success) return envOptions
+        envOptions.envOptions.sendTxLater = true
         await configureEnvironment(envOptions.envOptions)
-
         const estimatedGasCalc = await wallet.transfer(
             auth,
             { to: transferData.to, amount: transferData.amount, token: tokenaddr },
-            null,
+            envOptions.envOptions,
             true
         )
+        console.log(estimatedGasCalc)
         if (!estimatedGasCalc || estimatedGasCalc.isZero()) return { success: false, error: "Estimated gas is 0" }
-
+ 
         const native = envOptions.envOptions.gasSponsor === false
         const prefundStatus = await checkIfWalletIsPrefunded(wallet, estimatedGasCalc, CHAIN_ID, native)
         if (!prefundStatus.success) return prefundStatus

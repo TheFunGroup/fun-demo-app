@@ -99,7 +99,7 @@ export const checkWalletPaymasterConfig = async (wallet, paymentToken, chainIdNu
                     chain: chainIdNumber,
                     apiKey,
                     gasSponsor: {
-                        sponsorAddress: "0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9"
+                        sponsorAddress: "0x175C5611402815Eba550Dad16abd2ac366a63329"
                     }
                 }
             }
@@ -116,7 +116,7 @@ export const checkWalletPaymasterConfig = async (wallet, paymentToken, chainIdNu
                     }
                 }
             }
-            const gasSponsor = new TokenSponsor({
+            await configureEnvironment({
                 chain: chainIdNumber,
                 apiKey,
                 gasSponsor: {
@@ -124,18 +124,21 @@ export const checkWalletPaymasterConfig = async (wallet, paymentToken, chainIdNu
                     token: normalizedTokenAddress
                 }
             })
+            const gasSponsor = new TokenSponsor()
+            gasSponsor.getTokenInfo()
             const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161")
             const paymasterAddress = await gasSponsor.getPaymasterAddress()
             const erc20Contract = new ethers.Contract(normalizedTokenAddress, erc20Abi, provider)
-
+            console.log(normalizedTokenAddress, walletAddress, paymasterAddress)
             const iscontract = await isContract(walletAddress)
             if (iscontract) {
                 let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress) //paymaster address
-                allowance = ethers.utils.formatUnits(allowance, 6)
-                if (Number(allowance) < Number(20)) {
+                const weiValue = ethers.utils.parseUnits("20", 'ether');
+                console.log("Toke allowance", allowance.toString(), weiValue.toString(), weiValue.gt(allowance))
+                if (weiValue.gt(allowance)) {
                     //amt
                     //if approved, pop up modal, and ask for approval
-                    return { success: false, mustApprove: true, paymasterAddress, tokenAddr: normalizedTokenAddress }
+                    return { success: false, mustApprove: true, paymasterAddress: paymasterAddress, tokenAddr: normalizedTokenAddress }
                 }
             } else {
                 return {
@@ -150,7 +153,7 @@ export const checkWalletPaymasterConfig = async (wallet, paymentToken, chainIdNu
                     apiKey,
                     gasSponsor: {
                         sponsorAddress: "0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9",
-                        token: paymentToken
+                        token: normalizedTokenAddress
                     }
                 }
             }
