@@ -4,6 +4,7 @@ export const handleApprove = async function (wallet, auth, paymasterAddress, pay
     await configureEnvironment({
         gasSponsor: false
     })
+    console.log(global.globalEnvOption)
     await wallet.approve(auth, { spender: paymasterAddress, token: paymentAddr, amount: amount })
 
     return { success: true }

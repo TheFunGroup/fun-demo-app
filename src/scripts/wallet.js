@@ -124,8 +124,8 @@ export const checkWalletPaymasterConfig = async (wallet, paymentToken, chainIdNu
                     token: normalizedTokenAddress
                 }
             })
+            console.log("Normalized caddy", normalizedTokenAddress, walletAddress)
             const gasSponsor = new TokenSponsor()
-            gasSponsor.getTokenInfo()
             const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161")
             const paymasterAddress = await gasSponsor.getPaymasterAddress()
             const erc20Contract = new ethers.Contract(normalizedTokenAddress, erc20Abi, provider)
@@ -133,7 +133,7 @@ export const checkWalletPaymasterConfig = async (wallet, paymentToken, chainIdNu
             const iscontract = await isContract(walletAddress)
             if (iscontract) {
                 let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress) //paymaster address
-                const weiValue = ethers.utils.parseUnits("20", 'ether');
+                const weiValue = ethers.utils.parseUnits("20", "ether")
                 console.log("Toke allowance", allowance.toString(), weiValue.toString(), weiValue.gt(allowance))
                 if (weiValue.gt(allowance)) {
                     //amt
@@ -173,7 +173,7 @@ export const checkIfWalletIsPrefunded = async (wallet, estimatedGas, chainId, na
         const etherBalance = await Token.getBalance("ETH", walletAddress)
         const balance = ethers.utils.parseEther(etherBalance)
         console.log("balance", balance.toString(), "estimatedGas", estimatedGas.toString(), balance < estimatedGas)
-        if ( estimatedGas.gt(balance)) {
+        if (estimatedGas.gt(balance)) {
             // await fundUsingFaucet(walletAddress, chainId)
             return { success: false, error: "Insufficient balance try again in a minute" }
         }
