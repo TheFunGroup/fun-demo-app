@@ -15,7 +15,8 @@ export default function ApprovePM(props) {
   function approve(){
     setLoading(true);
     setApproving(true)
-    handleApprove(wallet, eoa, paymasterAddress, paymentAddr, amount).then((data) => {
+    console.log(paymasterAddress, paymentAddr)
+    handleApprove(wallet, eoa, paymasterAddress, paymentAddr).then((data) => {
       if(router.query.example){
         router.push(`/${router.query.example}`)
       } else {

@@ -1,106 +1,90 @@
-import { ethers } from "ethers";
-import { configureEnvironment } from "fun-wallet/managers";
-import { TokenSponsor } from "fun-wallet/sponsors";
-import { Token } from "fun-wallet/data";
+import { ethers } from "ethers"
+import { checkWalletPaymasterConfig, checkIfWalletIsPrefunded } from "./wallet"
+import { Token } from "fun-wallet"
 import { tokens } from "../utils/tokens"
-import erc20ABI from "../utils/funTokenAbi.json";
-import { isContract } from "./wallet";
-import { apiKey } from "../utils/constants";
+
+const CHAIN_ID = "5"
 
 export const handleSwap = async function (wallet, paymentToken, swapData, auth) {
-  try {
-    const walletAddress = await wallet.getAddress()
-    let inAddr = ""
-    let outAddr = ""
-    let paymentaddr = ""
-    for (let i of tokens["5"]) {
-      if (i.name == swapData.token1.name) {
-        inAddr = i.addr
-      }
-      if (i.name == swapData.token2.name) {
-        outAddr = i.addr
-      }
-      if (i.name == paymentToken && paymentToken != "ETH") {
-        paymentaddr = i.addr
-      }
-    }
-
-    const ins = swapData.token1.name.toLowerCase()
-    const out = swapData.token2.name.toLowerCase()
-    const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
-
-    let balance = 0;
-    if (ins == "eth") {
-      balance = await provider.getBalance(walletAddress);
-      balance = ethers.utils.formatEther(balance);
-    }
-    else {
-      balance = (await Token.getBalance(inAddr, walletAddress))
-    }
-
-    if (balance < swapData.amount) {
-      return { success: false, mustFund: true }
-    }
-    // // Tells frontend that funwallet must be funded  
-    if (paymentToken != "ETH" && paymentToken != "gasless") { //use paymaster
-      await configureEnvironment({
-        chain: 5,
-        apiKey,
-        gasSponsor: {
-          sponsorAddress: "0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9",
-          token: paymentaddr
+    try {
+        const walletAddress = await wallet.getAddress()
+        let inAddr = ""
+        let outAddr = ""
+        let paymentaddr = ""
+        for (let i of tokens["5"]) {
+            if (i.name == swapData.token1.name) {
+                inAddr = i.addr
+            }
+            if (i.name == swapData.token2.name) {
+                outAddr = i.addr
+            }
+            if (i.name == paymentToken && paymentToken != "ETH") {
+                paymentaddr = i.addr
+            }
         }
-      })
 
-      const gasSponsor = new TokenSponsor()
-
-      const paymasterAddress = await gasSponsor.getPaymasterAddress()
-      const iscontract = await isContract(walletAddress)
-      if (iscontract) {
-        const erc20Contract = new ethers.Contract(paymentaddr, erc20ABI.abi, provider)
-        let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress)//paymaster address
-        allowance = ethers.utils.formatUnits(allowance, 6);
-
-        if (Number(allowance) < Number(20)) {//amt
-          //if approved, pop up modal, and ask for approval
-          return { success: false, mustApprove: true, paymasterAddress, tokenAddr: paymentaddr }
-
+        const ins = swapData.token1.name.toLowerCase()
+        const out = swapData.token2.name.toLowerCase()
+        const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161")
+        let balance = 0
+        if (ins == "eth") {
+            balance = await provider.getBalance(walletAddress)
+            balance = ethers.utils.formatEther(balance)
+        } else {
+            try {
+                balance = await Token.getBalance(inAddr, walletAddress)
+            } catch (err) {
+                console.log(err)
+            }
         }
-      } else {
-        return { success: false, error: "Its a known bug that first transaction of a fun wallet would fail if you are covering gas using ERC20 tokens. Please try to pay gas using gasless paymaster or ETH for this transaction and try token paymaster later." }
-      }
-    }
-    else if(paymentToken=="gasless"){
-      await configureEnvironment({
-        chain: 5,
-        apiKey,
-        gasSponsor: {
-          sponsorAddress: '0x07Ac5A221e5b3263ad0E04aBa6076B795A91aef9',
+
+        if (balance < swapData.amount) {
+            return { success: false, mustFund: true }
         }
-      })
+        // // Tells frontend that FunWallet must be funded
+        let envOptions = await checkWalletPaymasterConfig(wallet, paymentToken, CHAIN_ID)
+        if (!envOptions.success) return envOptions
+        // envOptions.envOptions.sendTxLater = true
+        const estimatedGasCalc = await wallet.swap(
+            auth,
+            {
+                in: ins == "eth" ? "eth" : inAddr,
+                amount: swapData.amount,
+                out: out == "eth" ? "eth" : outAddr
+            },
+            null,
+            true
+        )
+        if (!estimatedGasCalc || estimatedGasCalc == 0) return { success: false, error: "Estimated gas is 0" }
+        const native = envOptions.envOptions.gasSponsor === false
+
+        const prefundStatus = await checkIfWalletIsPrefunded(wallet, estimatedGasCalc, CHAIN_ID, native)
+        if (!prefundStatus.success) return prefundStatus
+
+        console.log(auth, {
+            in: ins == "eth" ? "eth" : inAddr,
+            amount: swapData.amount,
+            out: out == "eth" ? "eth" : outAddr
+        })
+        const receipt = await wallet.swap(
+            auth,
+            {
+                in: ins == "eth" ? "eth" : inAddr,
+                amount: swapData.amount,
+                out: out == "eth" ? "eth" : outAddr
+            },
+            envOptions.envOptions,
+            false
+        )
+
+        //Tells frontend swap was success
+        console.log("txId: ", receipt)
+        const explorerUrl = receipt.txid
+            ? `https://goerli.etherscan.io/tx/${receipt.txid}`
+            : `https://goerli.etherscan.io/address/${walletAddress}#internaltx`
+        return { success: true, explorerUrl }
+    } catch (e) {
+        console.log(e)
+        return { success: false, error: e.toString() }
     }
-    else {
-      await configureEnvironment({
-        chain: 5,
-        apiKey,
-        gasSponsor: false
-      })
-    }
-    const receipt = await wallet.swap(auth, {
-      in: ins == "eth" ? "eth" : inAddr,
-      amount: swapData.amount,
-      out: out == "eth" ? "eth" : outAddr
-    })
-
-    //Tells frontend swap was success
-    console.log("txId: ", receipt.txid)
-    const explorerUrl = receipt.txid ? `https://goerli.etherscan.io/tx/${receipt.txid}` : `https://goerli.etherscan.io/address/${walletAddress}#internaltx`
-    return { success: true, explorerUrl}
-
-
-  } catch (e) {
-    console.log(e)
-    return { success: false, error: e.toString() }
-  }
-
 }
