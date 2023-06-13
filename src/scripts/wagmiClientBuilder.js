@@ -1,46 +1,40 @@
-import { configureChains, createClient } from 'wagmi'
-import { mainnet, goerli, polygon, bsc} from 'wagmi/chains'
-import { InjectedConnector } from 'wagmi/connectors/injected'
-import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
-import { WalletConnectLegacyConnector } from 'wagmi/connectors/walletConnectLegacy'
-import { publicProvider } from 'wagmi/providers/public';
-import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
+"use client"
+import { configureChains, createConfig } from "wagmi"
+import { mainnet, goerli, polygon, bsc } from "wagmi/chains"
+import { InjectedConnector } from "wagmi/connectors/injected"
+import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet"
+// import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
+// import { WalletConnectLegacyConnector } from "wagmi/connectors/walletConnectLegacy"
+import { publicProvider } from "wagmi/providers/public"
 
 export default function wagmiClientBuilder() {
+    const { chains, publicClient, webSocketPublicClient } = configureChains([goerli, polygon, bsc], [publicProvider()])
 
-    const { chains, provider, webSocketProvider } = configureChains(
-        [mainnet, goerli, polygon, bsc],
-        [
-          publicProvider()
-        ],
-    )
-
-    const wagmiClient = createClient({
+    const wagmiClient = createConfig({
         autoConnect: true,
-        connectors:[
-          new InjectedConnector({
-            chains,
-            options: {
-              shimDisconnect: true,
-            }
-          }),
-          new CoinbaseWalletConnector({
-            chains,
-            options: {
-              appName: 'wagmi',
-            },
-          }),
-          new WalletConnectLegacyConnector({
-            chains,
-            options: {
-              qrcode: true,
-              name: 'WalletConnect',
-            }
-          })
+        connectors: [
+            new InjectedConnector({
+                chains,
+                options: {
+                    shimDisconnect: true
+                }
+            }),
+            new CoinbaseWalletConnector({
+                chains,
+                options: {
+                    appName: "wagmi"
+                }
+            })
+            // new WalletConnectLegacyConnector({
+            //     chains,
+            //     options: {
+            //         qrcode: true,
+            //         name: "WalletConnect"
+            //     }
+            // })
         ],
-        provider,
-        webSocketProvider
+        publicClient,
+        webSocketPublicClient
     })
 
     return wagmiClient
