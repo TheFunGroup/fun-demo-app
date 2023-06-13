@@ -1,8 +1,9 @@
-import React, { createContext, useState, useContext, useEffect, use } from "react"
+import React, { createContext, useState, useContext, useEffect } from "react"
 import { useRouter } from "next/router"
+import UpdateBanner from "../components/misc/UpdateBanner"
 
 const FunContext = createContext()
-
+const APP_IS_UPDATING = false
 export const FunProvider = ({ children }) => {
     const router = useRouter()
     const [provider, setProvider] = useState()
@@ -18,16 +19,18 @@ export const FunProvider = ({ children }) => {
     const [connectMethod, setConnectMethod] = useState()
 
     useEffect(() => {
+        if (APP_IS_UPDATING) {
+            setLoading(false)
+            window.APP_IS_UPDATING = APP_IS_UPDATING
+        }
         if ((!wallet || !network) && router.pathname !== "/connect") {
             router.push("/connect")
         }
-    }, [wallet, network, router.pathname, router])
+    }, [wallet, network, router.pathname, APP_IS_UPDATING])
 
     return (
         <FunContext.Provider
             value={{
-                provider,
-                setProvider,
                 eoa,
                 setEOA,
                 wallet,
@@ -49,6 +52,7 @@ export const FunProvider = ({ children }) => {
                 connectMethod,
                 setConnectMethod
             }}>
+            {APP_IS_UPDATING && <UpdateBanner />}
             {children}
         </FunContext.Provider>
     )

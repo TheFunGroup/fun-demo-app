@@ -19,7 +19,7 @@ export default function ConnectWallet() {
     const { connector } = useAccount()
     const { data: signer } = useWalletClient()
     const wagmiProvider = usePublicClient()
-    const { setWallet, setNetwork, setEOA, setLoading, setProvider: setContextProvider } = useFun()
+    const { setWallet, setNetwork, setEOA, setLoading } = useFun()
     const [connecting, setConnecting] = useState()
     const [showEOA, setShowEOA] = useState(false)
     const [showLinkMore, setShowLinkMore] = useState(false)
@@ -55,11 +55,11 @@ export default function ConnectWallet() {
     }, [])
 
     useEffect(() => {
+        if (window.APP_IS_UPDATING) return
         async function connectEOA() {
             setConnecting(connector.name)
             setLoading(true)
             let provider = await connector.getProvider({ chainId: 5 })
-            setContextProvider(connector)
             if (signer && provider) {
                 setNetwork(5)
                 const [address] = await signer.getAddresses()
