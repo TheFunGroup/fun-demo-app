@@ -2,8 +2,9 @@ import { ethers } from "ethers"
 import { checkWalletPaymasterConfig, checkIfWalletIsPrefunded } from "./wallet"
 import nftABI from "../utils/nftABI.json"
 import { tokens } from "../utils/tokens"
+import { hexToBigInt } from "viem"
 
-const CHAIN_ID = 5
+const CHAIN_ID = "5"
 
 export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
     const nftNumber = nft.nft
@@ -23,8 +24,8 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
         const nftContract = new ethers.Contract("0x2749B15E4d39266A2C4dA9c835E9C9e384267C5A", nftABI)
         const tx = await nftContract.populateTransaction.safeMint(walletAddress, `nft${nftNumber}.png`)
         // estimate gas and make sure the wallet does not need to be prefunded
-        const estimatedGasCalc = await wallet.execRawTx(auth, tx, envOptions.envOptions, true)
-        if (!estimatedGasCalc || estimatedGasCalc.isZero()) return { success: false, error: "Estimated gas is 0" }
+        const estimatedGasCalc = hexToBigInt(await wallet.execRawTx(auth, tx, envOptions.envOptions, true))
+        if (!estimatedGasCalc || estimatedGasCalc == 0n) return { success: false, error: "Estimated gas is 0" }
         const native = envOptions.envOptions.gasSponsor === false
         const prefundStatus = await checkIfWalletIsPrefunded(wallet, estimatedGasCalc, CHAIN_ID, native)
         if (!prefundStatus.success) return prefundStatus

@@ -4,19 +4,21 @@ import { Magic } from "magic-sdk"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
-import { useAccount, useConnect, useProvider, useSigner } from "wagmi"
+import { useAccount, useConnect, usePublicClient, useWalletClient } from "wagmi"
 import LinkAccounts from "./LinkAccounts"
 import { MultiAuthEoa } from "fun-wallet"
 import { useFun } from "../../contexts/funContext"
 import { createFunWallet, isAuthIdUsed, fundUsingFaucet } from "../../scripts/wallet"
 import socials from "../../utils/socials"
 import Spinner from "../misc/Spinner"
+import { createWalletClient, custom } from "viem"
+import { mainnet } from "viem/chains"
 
 export default function ConnectWallet() {
     const { connect, connectors } = useConnect()
     const { connector } = useAccount()
-    const { data: signer } = useSigner()
-    const wagmiProvider = useProvider()
+    const { data: signer } = useWalletClient()
+    const wagmiProvider = usePublicClient()
     const { setWallet, setNetwork, setEOA, setLoading, setProvider: setContextProvider } = useFun()
     const [connecting, setConnecting] = useState()
     const [showEOA, setShowEOA] = useState(false)
@@ -59,12 +61,9 @@ export default function ConnectWallet() {
             let provider = await connector.getProvider({ chainId: 5 })
             setContextProvider(connector)
             if (signer && provider) {
-                const chainId = await connector.getChainId()
-                if (chainId !== 5) await connector.switchChain(5) // TODO support other networks
                 setNetwork(5)
-                const eoaAddr = await signer.getAddress()
-                if (!provider.getBalance) provider = (await connector.getSigner()).provider
-                connectFunWallet(connector.name, eoaAddr, provider, eoaAddr)
+                const [address] = await signer.getAddresses()
+                connectFunWallet(connector.name, address, signer, address)
             }
         }
         if (!showLinkMore && connector) {
@@ -76,27 +75,37 @@ export default function ConnectWallet() {
         if (router.query.provider) finishSocialLogin()
     }, [router.query])
 
-    async function connectFunWallet(connector, authId, provider, publicKey) {
+    async function connectFunWallet(connector, authId, walletClient, publicKey) {
         const authIdUsed = await isAuthIdUsed(authId)
         if (!authIdUsed) {
             if (!linked[connector]) {
                 linked[connector] = [authId, publicKey]
                 setLinked(linked)
             }
-            setProvider(provider)
+            setProvider(walletClient)
 
             setShowLinkMore(true)
             setLoading(false)
             setConnecting("")
             return
         }
-        const auth = new MultiAuthEoa({ provider, authIds: [[authId, publicKey]] })
-        console.log("multi auth EOA: ", auth)
+        const authOptions = { authIds: [[authId, publicKey]] }
+        if (walletClient.isMagic) {
+            authOptions.provider = walletClient
+            // createWalletClient({
+            //     chain: mainnet,
+            //     transport: custom(walletClient)
+            // })
+        } else {
+            authOptions.client = walletClient
+        }
+
+        const auth = new MultiAuthEoa(authOptions)
         const FunWallet = await createFunWallet(auth)
         const addr = await FunWallet.getAddress()
         FunWallet.address = addr
         try {
-            let balance = await provider.getBalance(addr)
+            let balance = await wagmiProvider.getBalance({ address: addr })
             balance = ethers.utils.formatEther(balance)
             if (balance == 0) {
                 FunWallet.deployed = false
@@ -128,7 +137,7 @@ export default function ConnectWallet() {
             authId = `${result.oauth.provider}###${authId}`
             localStorage.removeItem("magic-connecting")
             const isLinking = localStorage.getItem("magic-linking")
-            const provider = new ethers.providers.Web3Provider(magic.rpcProvider)
+            const provider = magic.rpcProvider // new ethers.providers.Web3Provider(magic.rpcProvider)
             if (isLinking && !linked[result.oauth.provider]) {
                 const authIdUsed = await isAuthIdUsed(authId)
                 if (!authIdUsed) {

@@ -5,7 +5,7 @@ import { TokenSponsor } from "fun-wallet"
 import { apiKey } from "../utils/constants"
 import erc20ABI from "../utils/funTokenAbi.json"
 
-const CHAIN_ID = 5
+const CHAIN_ID = "5"
 // requires
 // Wallet funWallet
 // paymentToken String (ETH, gassless, or address of ERC20 token)
@@ -23,7 +23,7 @@ export const handleStakeEth = async function (wallet, paymentToken, amount, auth
         if (!envOptions.success) return envOptions
 
         const estimatedGasCalc = await wallet.stake(auth, { amount }, envOptions.envOptions, true)
-        if (!estimatedGasCalc || estimatedGasCalc.isZero()) return { success: false, error: "Estimated gas is 0" }
+        if (!estimatedGasCalc || estimatedGasCalc == 0) return { success: false, error: "Estimated gas is 0" }
         if (estimateGas) return { success: true, receipt: estimatedGasCalc }
         const native = envOptions.envOptions.gasSponsor === false
 

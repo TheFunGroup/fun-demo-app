@@ -1,11 +1,9 @@
 import { ethers } from "ethers"
 import { checkWalletPaymasterConfig, checkIfWalletIsPrefunded } from "./wallet"
-import { Token, TokenSponsor, configureEnvironment } from "fun-wallet"
-import { apiKey } from "../utils/constants"
-import erc20ABI from "../utils/funTokenAbi.json"
+import { Token } from "fun-wallet"
 import { tokens } from "../utils/tokens"
 
-const CHAIN_ID = 5
+const CHAIN_ID = "5"
 
 export const handleSwap = async function (wallet, paymentToken, swapData, auth) {
     try {
@@ -33,10 +31,8 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
             balance = await provider.getBalance(walletAddress)
             balance = ethers.utils.formatEther(balance)
         } else {
-            console.log(Token)
-
             try {
-                // balance = await Token.getBalance(inAddr, walletAddress)
+                balance = await Token.getBalance(inAddr, walletAddress)
             } catch (err) {
                 console.log(err)
             }
@@ -45,11 +41,10 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
         if (balance < swapData.amount) {
             return { success: false, mustFund: true }
         }
-        // // Tells frontend that funwallet must be funded
+        // // Tells frontend that FunWallet must be funded
         let envOptions = await checkWalletPaymasterConfig(wallet, paymentToken, CHAIN_ID)
         if (!envOptions.success) return envOptions
         // envOptions.envOptions.sendTxLater = true
-        console.log(envOptions)
         const estimatedGasCalc = await wallet.swap(
             auth,
             {
@@ -57,11 +52,10 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
                 amount: swapData.amount,
                 out: out == "eth" ? "eth" : outAddr
             },
-            envOptions.envOptions,
+            null,
             true
         )
-        console.log("Calculated gas", estimatedGasCalc)
-        if (!estimatedGasCalc || estimatedGasCalc.isZero()) return { success: false, error: "Estimated gas is 0" }
+        if (!estimatedGasCalc || estimatedGasCalc == 0) return { success: false, error: "Estimated gas is 0" }
         const native = envOptions.envOptions.gasSponsor === false
 
         const prefundStatus = await checkIfWalletIsPrefunded(wallet, estimatedGasCalc, CHAIN_ID, native)
@@ -72,11 +66,16 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
             amount: swapData.amount,
             out: out == "eth" ? "eth" : outAddr
         })
-        const receipt = await wallet.swap(auth, {
-            in: ins == "eth" ? "eth" : inAddr,
-            amount: swapData.amount,
-            out: out == "eth" ? "eth" : outAddr
-        }, envOptions.envOptions, false)
+        const receipt = await wallet.swap(
+            auth,
+            {
+                in: ins == "eth" ? "eth" : inAddr,
+                amount: swapData.amount,
+                out: out == "eth" ? "eth" : outAddr
+            },
+            envOptions.envOptions,
+            false
+        )
 
         //Tells frontend swap was success
         console.log("txId: ", receipt)

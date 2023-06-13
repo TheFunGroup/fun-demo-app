@@ -1,7 +1,7 @@
 import { ethers } from "ethers"
 import Image from "next/image"
 import React, { useEffect, useRef, useState } from "react"
-import { useAccount, useSigner } from "wagmi"
+import { useAccount, useWalletClient } from "wagmi"
 import { Eoa } from "fun-wallet"
 import { useFun } from "../../contexts/funContext"
 import { useOnClickOutside } from "../../hooks/useOnClickOutside"
@@ -18,7 +18,7 @@ export default function NetworkSelect(props) {
     const dropdownRef = useRef()
     const networkBtnRef = useRef()
     const { connector } = useAccount()
-    const { data: signer } = useSigner()
+    const { data: walletClient } = useWalletClient()
 
     const [connecting, setConnecting] = useState()
 
@@ -31,7 +31,7 @@ export default function NetworkSelect(props) {
             const chainId = await connector.getChainId()
             if (chainId !== id) await connector.switchChain(Number(id))
             provider = await connector?.getProvider()
-            auth = new Eoa({ signer: signer, provider: provider })
+            auth = new Eoa({ client: walletClient })
         } catch (e) {
             console.log(e)
         }

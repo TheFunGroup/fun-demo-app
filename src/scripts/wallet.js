@@ -4,8 +4,10 @@ import { handleFundWallet } from "../scripts/fund"
 import { apiKey } from "../utils/constants"
 import erc20Abi from "../utils/erc20Abi"
 import { tokens } from "../utils/tokens"
+import { parseUnits, parseEther } from "viem"
+
 const options = {
-    chain: 5,
+    chain: "5",
     apiKey
 }
 
@@ -108,7 +110,6 @@ export const checkWalletPaymasterConfig = async (wallet, paymentToken, chainIdNu
             let normalizedTokenAddress = paymentToken
             const paymentTokenContract = await isContract(paymentToken)
             if (!paymentTokenContract) {
-                console.log("finding address")
                 for (let token in tokens[chainIdNumber]) {
                     if (tokens[chainIdNumber][token].name === paymentToken) {
                         normalizedTokenAddress = tokens[chainIdNumber][token].addr
@@ -124,18 +125,15 @@ export const checkWalletPaymasterConfig = async (wallet, paymentToken, chainIdNu
                     token: normalizedTokenAddress
                 }
             })
-            console.log("Normalized caddy", normalizedTokenAddress, walletAddress)
             const gasSponsor = new TokenSponsor()
             const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161")
             const paymasterAddress = await gasSponsor.getPaymasterAddress()
             const erc20Contract = new ethers.Contract(normalizedTokenAddress, erc20Abi, provider)
-            console.log(normalizedTokenAddress, walletAddress, paymasterAddress)
             const iscontract = await isContract(walletAddress)
             if (iscontract) {
                 let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress) //paymaster address
-                const weiValue = ethers.utils.parseUnits("20", "ether")
-                console.log("Toke allowance", allowance.toString(), weiValue.toString(), weiValue.gt(allowance))
-                if (weiValue.gt(allowance)) {
+                const weiValue = parseUnits("20", "ether")
+                if (weiValue > BigInt(allowance)) {
                     //amt
                     //if approved, pop up modal, and ask for approval
                     return { success: false, mustApprove: true, paymasterAddress: paymasterAddress, tokenAddr: normalizedTokenAddress }
@@ -171,10 +169,9 @@ export const checkIfWalletIsPrefunded = async (wallet, estimatedGas, chainId, na
     try {
         const walletAddress = await wallet.getAddress()
         const etherBalance = await Token.getBalance("ETH", walletAddress)
-        const balance = ethers.utils.parseEther(etherBalance)
-        console.log("balance", balance.toString(), "estimatedGas", estimatedGas.toString(), balance < estimatedGas)
-        if (estimatedGas.gt(balance)) {
-            // await fundUsingFaucet(walletAddress, chainId)
+        const balance = parseEther(etherBalance)
+        if (estimatedGas > balance) {
+            await fundUsingFaucet(walletAddress, chainId)
             return { success: false, error: "Insufficient balance try again in a minute" }
         }
         return { success: true }

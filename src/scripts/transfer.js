@@ -4,7 +4,7 @@ import { Token, TokenSponsor, configureEnvironment } from "fun-wallet"
 
 import { tokens } from "../utils/tokens"
 
-const CHAIN_ID = 5
+const CHAIN_ID = "5"
 export const handleTransfer = async function (wallet, paymentToken, transferData, auth) {
     console.log("handleTransfer: ", paymentToken, transferData)
     try {
@@ -48,7 +48,7 @@ export const handleTransfer = async function (wallet, paymentToken, transferData
             envOptions.envOptions,
             true
         )
-        if (!estimatedGasCalc || estimatedGasCalc.isZero()) return { success: false, error: "Estimated gas is 0" }
+        if (!estimatedGasCalc || estimatedGasCalc == 0) return { success: false, error: "Estimated gas is 0" }
 
         const native = envOptions.envOptions.gasSponsor === false
         const prefundStatus = await checkIfWalletIsPrefunded(wallet, estimatedGasCalc, CHAIN_ID, native)

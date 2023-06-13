@@ -1,5 +1,5 @@
 import { disconnect } from "@wagmi/core"
-import { ethers } from "ethers"
+import { formatEther, formatUnits } from "viem"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useRef, useState } from "react"
@@ -9,14 +9,16 @@ import { handleGetNFTs } from "../../scripts/getNFTs"
 import { toUSD } from "../../scripts/prices"
 import erc20Abi from "../../utils/erc20Abi"
 import { networks } from "../../utils/networks"
+import { usePublicClient } from "wagmi"
 
 export default function WalletView() {
     const { wallet, setWallet, eoa, setEOA, network, setLoading } = useFun()
+    const publicClient = usePublicClient()
 
     const router = useRouter()
     const [addr, setAddr] = useState()
-    const [balance, setBalance] = useState()
-    const [balanceUSD, setBalanceUSD] = useState()
+    const [balance, setBalance] = useState("0")
+    const [balanceUSD, setBalanceUSD] = useState("0")
     const [dropdown, setDropdown] = useState()
     const dropdownRef = useRef()
     const walletBtnRef = useRef()
@@ -40,12 +42,11 @@ export default function WalletView() {
         if (networks[network]) {
             if (wallet.address) {
                 setAddr(wallet.address)
-                let provider = eoa.signer ? eoa.signer.provider : eoa.provider
-                if (provider == null || provider.getBalance == null) return
-                provider
-                    .getBalance(wallet.address)
+                if (publicClient == null || publicClient.getBalance == null) return
+                publicClient
+                    .getBalance({ address: wallet.address })
                     .then((balance) => {
-                        balance = ethers.utils.formatEther(balance)
+                        balance = formatEther(BigInt(balance))
                         setBalance(Number(balance).toFixed(6))
                         toUSD("ETH", balance).then((usd) => {
                             setBalanceUSD(usd)
@@ -54,50 +55,68 @@ export default function WalletView() {
                     .catch((e) => {
                         console.log(e)
                     })
-                getCoinBalances(provider)
+                getCoinBalances()
                 getNFTs()
             }
         }
     }, [network, dropdown, wallet.address, eoa.signer, eoa.provider])
 
-    async function getCoinBalances(provider) {
-        const usdcContract = new ethers.Contract("0xaa8958047307da7bb00f0766957edec0435b46b5", erc20Abi, provider)
-        const daiContract = new ethers.Contract("0x855af47cdf980a650ade1ad47c78ec1deebe9093", erc20Abi, provider)
-        const usdtContract = new ethers.Contract("0x3E1FF16B9A94eBdE6968206706BcD473aA3Da767", erc20Abi, provider)
-        const stEthContract = new ethers.Contract("0x1643e812ae58766192cf7d2cf9567df2c37e9b7f", erc20Abi, provider)
+    async function getCoinBalances() {
+        const usdcContract = publicClient.readContract({
+            address: "0xaa8958047307da7bb00f0766957edec0435b46b5",
+            abi: erc20Abi,
+            functionName: "balanceOf",
+            args: [wallet.address]
+        })
+        const daiContract = publicClient.readContract({
+            address: "0x855af47cdf980a650ade1ad47c78ec1deebe9093",
+            abi: erc20Abi,
+            functionName: "balanceOf",
+            args: [wallet.address]
+        })
+        const usdtContract = publicClient.readContract({
+            address: "0x3E1FF16B9A94eBdE6968206706BcD473aA3Da767",
+            abi: erc20Abi,
+            functionName: "balanceOf",
+            args: [wallet.address]
+        })
+        const stEthContract = publicClient.readContract({
+            address: "0x1643e812ae58766192cf7d2cf9567df2c37e9b7f",
+            abi: erc20Abi,
+            functionName: "balanceOf",
+            args: [wallet.address]
+        })
+        try {
+            const tokenBalances = await Promise.all([usdcContract, daiContract, usdtContract, stEthContract])
+            let usdcBalance = tokenBalances[0]
+            usdcBalance = formatUnits(BigInt(usdcBalance), 6)
+            setUsdcBalance(Number(usdcBalance.toString()).toFixed(2))
 
-        const tokenBalanes = await Promise.all([
-            usdcContract.balanceOf(wallet.address),
-            daiContract.balanceOf(wallet.address),
-            usdtContract.balanceOf(wallet.address),
-            stEthContract.balanceOf(wallet.address)
-        ])
-        let usdcBalance = tokenBalanes[0]
-        usdcBalance = ethers.utils.formatUnits(usdcBalance, 6)
-        setUsdcBalance(Number(usdcBalance.toString()).toFixed(2))
+            let daiBalance = tokenBalances[1]
+            daiBalance = formatUnits(BigInt(daiBalance), 6)
+            setDaiBalance(Number(daiBalance.toString()).toFixed(2))
 
-        let daiBalance = tokenBalanes[1]
-        daiBalance = ethers.utils.formatUnits(daiBalance, 6)
-        setDaiBalance(Number(daiBalance.toString()).toFixed(2))
+            let usdtBalance = tokenBalances[2]
+            usdtBalance = formatUnits(BigInt(usdtBalance), 6)
+            setUsdtBalance(Number(usdtBalance.toString()).toFixed(2))
 
-        let usdtBalance = tokenBalanes[2]
-        usdtBalance = ethers.utils.formatUnits(usdtBalance, 6)
-        setUsdtBalance(Number(usdtBalance.toString()).toFixed(2))
+            let stEthBalance = tokenBalances[3]
+            stEthBalance = formatUnits(BigInt(stEthBalance), 18)
+            setstEthBalance(parseFloat(stEthBalance.toString()).toFixed(6))
 
-        let stEthBalance = tokenBalanes[3]
-        stEthBalance = ethers.utils.formatUnits(stEthBalance, 18)
-        setstEthBalance(parseFloat(stEthBalance.toString()).toFixed(6))
-
-        const tokenUSDBalance = await Promise.all([
-            toUSD("DAI", daiBalance),
-            toUSD("USDC", usdcBalance),
-            toUSD("USDT", usdtBalance),
-            toUSD("STETH", stEthBalance)
-        ])
-        setDaiBalanceUSD(tokenUSDBalance[0])
-        setUsdcBalanceUSD(tokenUSDBalance[1])
-        setUsdtBalanceUSD(tokenUSDBalance[2])
-        setstEthBalanceUSD(tokenUSDBalance[3])
+            const tokenUSDBalance = await Promise.all([
+                toUSD("DAI", daiBalance),
+                toUSD("USDC", usdcBalance),
+                toUSD("USDT", usdtBalance),
+                toUSD("STETH", stEthBalance)
+            ])
+            setDaiBalanceUSD(tokenUSDBalance[0])
+            setUsdcBalanceUSD(tokenUSDBalance[1])
+            setUsdtBalanceUSD(tokenUSDBalance[2])
+            setstEthBalanceUSD(tokenUSDBalance[3])
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     async function getNFTs() {
@@ -285,8 +304,8 @@ export default function WalletView() {
                                             <div className="text-[#2D4EA2] text-sm font-semibold ml-1">Mint an NFT</div>
                                         </div>
                                     </div>
-                                    {nfts.map((nft) => {
-                                        return <img src={`${nft.uri}`} width="312" height="312" className="mb-2 rounded-2xl" />
+                                    {nfts.map((nft, index) => {
+                                        return <img src={`${nft.uri}`} key={index} width="312" height="312" className="mb-2 rounded-2xl" />
                                     })}
                                 </div>
                             )}

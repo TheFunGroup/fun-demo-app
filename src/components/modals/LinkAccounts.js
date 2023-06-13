@@ -7,10 +7,13 @@ import { useFun } from "../../contexts/funContext"
 import { createFunWallet, fundUsingFaucet, getAddress, isAuthIdUsed } from "../../scripts/wallet"
 import socials from "../../utils/socials"
 import Spinner from "../misc/Spinner"
+import { usePublicClient, useWalletClient } from "wagmi"
 
 export default function LinkAccounts(props) {
     const { connect, connectors, network, setWallet, linked, setLinked, provider, setProvider, magic, connecting, setConnecting, signer } =
         props
+    const publicClient = usePublicClient()
+    const { data: walletClient } = useWalletClient()
     const { setLoading, setEOA } = useFun()
     const { connector } = useAccount()
     const [creating, setCreating] = useState(false)
@@ -19,15 +22,12 @@ export default function LinkAccounts(props) {
         const linkConnector = async () => {
             setConnecting(connector.name)
             setLoading(true)
-            const chainId = await connector.getChainId()
-            if (chainId !== 5) await connector.switchChain(5)
             let provider = await connector.getProvider()
-            if (!provider.getBalance) provider = (await connector.getSigner()).provider
+            if (!provider.getBalance) provider = publicClient
             if (!linked[connector.name]) {
                 const eoaAddr = await connector.getAccount()
                 const addr = await getAddress(eoaAddr, network || 5)
-                const authIdUsed = await isAuthIdUsed(addr)
-                console.log("LinkWallet authIdUsed: ", authIdUsed)
+                const authIdUsed = await isAuthIdUsed(eoaAddr)
                 if (!authIdUsed) {
                     linked[connector.name] = [eoaAddr, eoaAddr]
                 } else {
@@ -72,12 +72,18 @@ export default function LinkAccounts(props) {
             for (let i = 0; i < methods.length; i++) {
                 ids.push(linked[methods[i]])
             }
-            const auth = new MultiAuthEoa({ provider, authIds: ids })
-            console.log("multi auth EOA: ", auth)
+            console.log(walletClient, provider, provider.isMagic)
+            const authOptions = { authIds: ids }
+            if (provider.isMagic) {
+                authOptions.provider = provider
+            } else {
+                authOptions.client = walletClient
+            }
+            const auth = new MultiAuthEoa(authOptions)
             const wallet = await createFunWallet(auth)
             setEOA(auth)
             const addr = await wallet.getAddress()
-            let balance = await provider.getBalance(addr)
+            let balance = await publicClient.getBalance({ address: addr })
             balance = ethers.utils.formatEther(balance)
             if (balance == 0) {
                 await fundUsingFaucet(addr, 5)
