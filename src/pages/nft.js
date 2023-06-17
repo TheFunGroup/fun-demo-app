@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react"
-import { useRouter } from "next/router"
-import Layout from "../components/layout"
-import Example from "../components/modals/Example"
-import { useFun } from "../contexts/funContext"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import Layout from "../components/layout";
+import Example from "../components/modals/Example";
+import { useFun } from "../contexts/funContext";
 
 const NFT_DEMO_OPTIONS = [
   { id: 1, imgUrl: "/nft1.png", imgClassName: "bg-[url('/nft1.png')]", label: "NFT 1", subtext: "Fun Community Collection" },
@@ -10,10 +10,10 @@ const NFT_DEMO_OPTIONS = [
 ]
 
 export default function NFT() {
-  const router = useRouter()
-  const [selected, setSelected] = useState()
-  const [ready, setReady] = useState(false)
-  const { setLoading } = useFun()
+  const router = useRouter();
+  const [selected, setSelected] = useState();
+  const [ready, setReady] = useState(false);
+  const { setLoading } = useFun();
 
   useEffect(() => {
     setLoading(false)
