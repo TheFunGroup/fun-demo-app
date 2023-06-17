@@ -29,9 +29,11 @@ export default function ReceiverSelect(props) {
     <div className="">
       <div ref={selectBtnRef} className="flex items-center cursor-pointer" onClick={() => setDropdown(!dropdown)}>
         <div className="text-[#101828] mr-1">{type}</div>
-        <Image src="/chevron.svg" width="20" height="20" alt="" style={dropdown && {transform: "rotate(-180deg)"}}
-          className="duration-200 ease-linear"
-        />
+        <div className="flex w-5 h-5">
+          <Image src="/chevron.svg" width="20" height="20" alt="" style={dropdown && {transform: "rotate(-180deg)"}}
+            className="duration-200 ease-linear"
+          />
+        </div>
       </div>
       {dropdown && (
         <div className="dropdown w-[200px] absolute -ml-[100px] mt-2" ref={dropdownRef}>
