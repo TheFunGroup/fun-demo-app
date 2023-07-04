@@ -3,14 +3,14 @@ import Image from "next/image"
 import React, { useEffect, useRef, useState } from "react"
 import { useAccount, useWalletClient } from "wagmi"
 import { Eoa } from "fun-wallet"
-import { useFun } from "../../contexts/funContext"
+import { useFunUtils } from "../../contexts/funContext"
 import { useOnClickOutside } from "../../hooks/useOnClickOutside"
 import { createFunWallet, fundUsingFaucet } from "../../scripts/wallet"
 import { networks } from "../../utils/networks"
 import Spinner from "../misc/Spinner"
 
 export default function NetworkSelect(props) {
-    const { network, setNetwork, setWallet } = useFun()
+    const { network, setNetwork, setWallet } = useFunUtils()
 
     const [current, setCurrent] = useState(5)
     const [hover, setHover] = useState()

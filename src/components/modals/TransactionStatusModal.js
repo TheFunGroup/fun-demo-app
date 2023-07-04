@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
-import { useFun } from "../../contexts/funContext"
+import { useFunUtils } from "../../contexts/funContext"
 import { toUSD } from "../../scripts/prices"
 import { getBlockTimestamp, getTransactionStatus, unixTimestampToDate } from "../../scripts/transactons"
 import NetworkDisplay from "../misc/NetworkDisplay"
@@ -101,7 +101,7 @@ const handleTokenSpecificLogs = (txReceipt, tokenOut, valueOut) => {
 //
 const TransactionStatusModal = (props) => {
     const router = useRouter()
-    const { wallet, setLoading } = useFun()
+    const { wallet, setLoading } = useFunUtils()
     const [tx, setTx] = useState(null)
     const [blockStartTime, setBlockStartTime] = useState(0) // [blockNumber, timestamp
     const [inputPrice, setInputPrice] = useState(null)

@@ -3,18 +3,25 @@ import Image from "next/image"
 import React, { useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 import { MultiAuthEoa } from "fun-wallet"
-import { useFun } from "../../contexts/funContext"
+import { useFunUtils } from "../../contexts/funContext"
 import { createFunWallet, fundUsingFaucet, getAddress, isAuthIdUsed } from "../../scripts/wallet"
 import socials from "../../utils/socials"
 import Spinner from "../misc/Spinner"
 import { usePublicClient, useWalletClient } from "wagmi"
+
+// import {
+//     useBuildFunWallet,
+//     useFunUtils,
+//     useFunUtilsStoreInterface,
+//     Goerli,
+// } from "fun-wallet-react";
 
 export default function LinkAccounts(props) {
     const { connect, connectors, network, setWallet, linked, setLinked, provider, setProvider, magic, connecting, setConnecting, signer } =
         props
     const publicClient = usePublicClient()
     const { data: walletClient } = useWalletClient()
-    const { setLoading, setEOA } = useFun()
+    const { setLoading, setEOA } = useFunUtils()
     const { connector } = useAccount()
     const [creating, setCreating] = useState(false)
 

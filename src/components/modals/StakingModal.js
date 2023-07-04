@@ -4,7 +4,7 @@ import { formatEther } from "ethers/lib/utils.js"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import React, { useCallback, useEffect, useState } from "react"
-import { useFun } from "../../contexts/funContext"
+import { useFunUtils } from "../../contexts/funContext"
 import { toUSD } from "../../scripts/prices"
 import { handleStakeEth } from "../../scripts/stake"
 import { getEtherBalance, checkAndHandleUserRejectionsMessage } from "../../scripts/wallet"
@@ -31,7 +31,7 @@ export default function StakingModal(props) {
     const router = useRouter()
     const example = examples[props.example]
 
-    const { wallet, eoa, setLoading, paymentToken, setPaymentToken, setPaymentAddr, setPaymasterAddress, network } = useFun()
+    const { wallet, eoa, setLoading, paymentToken, setPaymentToken, setPaymentAddr, setPaymasterAddress, network } = useFunUtils()
 
     const [mustFund, setMustFund] = useState(false)
     const [mustApprove, setMustApprove] = useState(false)

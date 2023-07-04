@@ -2,10 +2,10 @@ import { useRouter } from "next/router"
 import React, { useEffect } from "react"
 import Layout from "../components/layout"
 import ConnectWallet from "../components/modals/ConnectWallet"
-import { useFun } from "../contexts/funContext"
+import { useFunUtils } from "../contexts/funContext"
 
 export default function Connect() {
-    const { wallet, network } = useFun()
+    const { wallet, network } = useFunUtils()
     const router = useRouter()
 
     useEffect(() => {

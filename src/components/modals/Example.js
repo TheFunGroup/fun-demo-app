@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react"
 import Image from "next/image"
 import { useRouter } from "next/router"
-import { useFun } from "../../contexts/funContext"
+import { useFunUtils } from "../../contexts/funContext"
 import { tokens } from "../../utils/tokens"
 import TransferForm from "../forms/TransferForm"
 import SwapForm from "../forms/SwapForm"
@@ -47,7 +47,7 @@ export default function Example(props) {
         setPaymentToken,
         setPaymentAddr,
         setPaymasterAddress
-    } = useFun()
+    } = useFunUtils()
 
     const [mustFund, setMustFund] = useState(false)
     const [mustApprove, setMustApprove] = useState(false)

@@ -58,4 +58,4 @@ export const FunProvider = ({ children }) => {
     )
 }
 
-export const useFun = () => useContext(FunContext)
+export const useFunUtils = () => useContext(FunContext)
