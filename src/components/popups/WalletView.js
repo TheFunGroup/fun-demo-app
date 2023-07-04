@@ -3,7 +3,7 @@ import { formatEther, formatUnits } from "viem"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useRef, useState } from "react"
-import { useFun } from "../../contexts/funContext"
+import { useFunUtils } from "../../contexts/funContext"
 import { useOnClickOutside } from "../../hooks/useOnClickOutside"
 import { handleGetNFTs } from "../../scripts/getNFTs"
 import { toUSD } from "../../scripts/prices"
@@ -12,7 +12,7 @@ import { networks } from "../../utils/networks"
 import { usePublicClient } from "wagmi"
 
 export default function WalletView() {
-    const { wallet, setWallet, eoa, setEOA, network, setLoading } = useFun()
+    const { wallet, setWallet, eoa, setEOA, network, setLoading } = useFunUtils()
     const publicClient = usePublicClient()
 
     const router = useRouter()

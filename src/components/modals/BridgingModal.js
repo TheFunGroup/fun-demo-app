@@ -3,7 +3,7 @@ import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { Eoa } from "fun-wallet"
-import { useFun } from "../../contexts/funContext"
+import { useFunUtils } from "../../contexts/funContext"
 import { handleBridge } from "../../scripts/bridge"
 import { getERC20Balance, getEtherBalance, isContract } from "../../scripts/wallet"
 import { networks } from "../../utils/networks"
@@ -71,7 +71,7 @@ const checkIfWalletExistsOnNetwork = (address, network, wallet, provider) => {
 export default function Bridge(props) {
     const router = useRouter()
 
-    const { wallet, setWallet, eoa, setNetwork, setLoading, paymentToken, setPaymentToken, provider } = useFun()
+    const { wallet, setWallet, eoa, setNetwork, setLoading, paymentToken, setPaymentToken, provider } = useFunUtils()
 
     const [mustFund, setMustFund] = useState(false)
     const [mustApprove, setMustApprove] = useState(false)

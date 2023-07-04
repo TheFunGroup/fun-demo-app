@@ -1,14 +1,14 @@
 import Image from "next/image"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
-import { useFun } from "../../contexts/funContext"
+import { useFunUtils } from "../../contexts/funContext"
 import NetworkSelect from "../popups/NetworkSelect"
 import WalletView from "../popups/WalletView"
 
 export default function Main() {
     const router = useRouter()
 
-    const { wallet, setLoading } = useFun()
+    const { wallet, setLoading } = useFunUtils()
 
     const [walletCreated, setWalletCreated] = useState()
 
