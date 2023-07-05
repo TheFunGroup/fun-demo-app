@@ -9,10 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@fun-xyz/react": "^0.0.3",
+    "@fun-xyz/react": "^0.0.4",
     "@magic-ext/oauth": "^11.0.0",
     "ethers": "5.7.2",
-    "fun-wallet": "^0.3.3",
+    "fun-wallet": "^0.3.4",
     "husky": "^8.0.3",
     "magic-sdk": "^17.0.0",
     "next": "^13.1.1",

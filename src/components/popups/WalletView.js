@@ -10,7 +10,7 @@ import { toUSD } from "../../scripts/prices"
 import erc20Abi from "../../utils/erc20Abi"
 import { networks } from "../../utils/networks"
 import { usePublicClient } from "wagmi"
-
+import {useFun} from "@fun-xyz/react"
 export default function WalletView() {
     const { wallet, setWallet, eoa, setEOA, network, setLoading } = useFunUtils()
     const publicClient = usePublicClient()
@@ -38,13 +38,21 @@ export default function WalletView() {
 
     const [tab, setTab] = useState("balance")
 
+    const { supportedChain, FunWallet } = useFun((state) => {
+        return {
+            supportedChains: state.supportedChains,
+            FunWallet: state.FunWallet
+        }
+    })
+
     useEffect(() => {
         if (networks[network]) {
-            if (wallet.address) {
-                setAddr(wallet.address)
+            console.log(FunWallet)
+            if (FunWallet.address) {
+                setAddr(FunWallet.address)
                 if (publicClient == null || publicClient.getBalance == null) return
                 publicClient
-                    .getBalance({ address: wallet.address })
+                    .getBalance({ address: FunWallet.address })
                     .then((balance) => {
                         balance = formatEther(BigInt(balance))
                         setBalance(Number(balance).toFixed(6))
@@ -59,32 +67,32 @@ export default function WalletView() {
                 getNFTs()
             }
         }
-    }, [network, dropdown, wallet.address, eoa.signer, eoa.provider])
+    }, [network, dropdown, FunWallet,])
 
     async function getCoinBalances() {
         const usdcContract = publicClient.readContract({
             address: "0xaa8958047307da7bb00f0766957edec0435b46b5",
             abi: erc20Abi,
             functionName: "balanceOf",
-            args: [wallet.address]
+            args: [FunWallet.address]
         })
         const daiContract = publicClient.readContract({
             address: "0x855af47cdf980a650ade1ad47c78ec1deebe9093",
             abi: erc20Abi,
             functionName: "balanceOf",
-            args: [wallet.address]
+            args: [FunWallet.address]
         })
         const usdtContract = publicClient.readContract({
             address: "0x3E1FF16B9A94eBdE6968206706BcD473aA3Da767",
             abi: erc20Abi,
             functionName: "balanceOf",
-            args: [wallet.address]
+            args: [FunWallet.address]
         })
         const stEthContract = publicClient.readContract({
             address: "0x1643e812ae58766192cf7d2cf9567df2c37e9b7f",
             abi: erc20Abi,
             functionName: "balanceOf",
-            args: [wallet.address]
+            args: [FunWallet.address]
         })
         try {
             const tokenBalances = await Promise.all([usdcContract, daiContract, usdtContract, stEthContract])
@@ -120,7 +128,7 @@ export default function WalletView() {
     }
 
     async function getNFTs() {
-        const data = await handleGetNFTs(wallet, eoa)
+        const data = await handleGetNFTs(FunWallet, eoa)
         if (data.nfts) {
             setNfts(data.nfts)
         }

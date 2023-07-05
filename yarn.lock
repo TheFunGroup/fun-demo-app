@@ -1175,10 +1175,10 @@
     uuid "^9.0.0"
     viem "^0.3.50"
 
-"@fun-xyz/react@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@fun-xyz/react/-/react-0.0.3.tgz#be690b2755ae69c0cf7e49ebe6ff908a2d4faa7e"
-  integrity sha512-0bHcr9wMD4m7bO4yBNuLuD7/YnviVJyRrXWiG2adGpVEnETvaKwP7SxvQVfIFonlChWoWcXFcpvEIw9pYjgXkw==
+"@fun-xyz/react@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@fun-xyz/react/-/react-0.0.4.tgz#96bae2c5e55e9455a7789a7ce4282676ce52f0d1"
+  integrity sha512-tbktttiaRQSqVhRPLWWcwYmGeCznwjzZiKCoyQD64v9x3FyOSXRzpKU5ghqPT4Dm4YhD/gpE/sU0S+tNTXY00g==
   dependencies:
     "@coinbase/wallet-sdk" "^3.6.6"
     "@fun-xyz/core" "^0.3.5"
@@ -4502,10 +4502,10 @@ fsevents@~2.3.2:
   resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz"
   integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
 
-fun-wallet@^0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/fun-wallet/-/fun-wallet-0.3.3.tgz#99224262ccbda8c5a724913c5419e7eccd91eb0a"
-  integrity sha512-a8eG72+zI0nkx0D5wrcV9RMK2JsSg8TSQe1LjR5B4Ju5SGHjKmoRt8Mzbuq25jaktOy4qGIY6U0qIgz4mj/ghw==
+fun-wallet@^0.3.7:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/fun-wallet/-/fun-wallet-0.3.4.tgz#20eb2c587a4f25aed297752bcca9aefd49b4bcc2"
+  integrity sha512-C8ixIYFGz+dpC8lhrZcwqy1mOPG3LYJqTC7Z36bnFBnWOd+1tY+phcFAGQy92JigQLmjMlhpolnlie7HSfOxZA==
   dependencies:
     "@aws-sdk/client-secrets-manager" "^3.315.0"
     "@ethersproject/contracts" "^5.7.0"

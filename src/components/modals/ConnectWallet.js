@@ -9,7 +9,7 @@ import LinkAccounts from "./LinkAccounts"
 import { MultiAuthEoa } from "fun-wallet"
 import { useFunUtils } from "../../contexts/funContext"
 import { createFunWallet, isAuthIdUsed, fundUsingFaucet } from "../../scripts/wallet"
-import {socials, socialsIndex} from "../../utils/socials"
+import { socials, socialsIndex } from "../../utils/socials"
 import Spinner from "../misc/Spinner"
 import { createWalletClient, custom } from "viem"
 import { mainnet } from "viem/chains"
@@ -24,7 +24,7 @@ const DEFAULT_FUN_WALLET_CONFIG = {
 
 export default function ConnectWallet() {
     // const { connect, connectors } = useConnect()
-    const { connector } = useAccount()
+    // const { connector } = useAccount()
     const { data: signer } = useWalletClient()
     const wagmiProvider = usePublicClient()
     const { setWallet, setNetwork, setEOA, setLoading } = useFunUtils()
@@ -39,6 +39,7 @@ export default function ConnectWallet() {
     const [authType, setAuthType] = useState("signup")
 
     const [selectedConnectors, setSelectedConnectors] = useState([])
+
     const {
         connectors,
         // account,
@@ -47,10 +48,17 @@ export default function ConnectWallet() {
         // chainId,
         // loading,
         // resetFunError,
-        // activateConnector,
+        activateConnector,
         // initializeSingleAuthWallet,
         initializeMultiAuthWallet
     } = useBuildFunWallet({ config: DEFAULT_FUN_WALLET_CONFIG })
+
+    const hooks = connectors[3][1]
+
+    const { useChainId, useAccounts, useIsActivating, useIsActive, useProvider, useENSNames } = hooks
+    const isActive = useIsActive()
+    // const provider = useProvider()
+
     const { supportedChains, switchChain, FunWallet } = useFun((state) => {
         return {
             supportedChains: state.supportedChains,
@@ -60,49 +68,46 @@ export default function ConnectWallet() {
     })
 
     useEffect(() => {
-        const initMagicAuth = async () => {
-            const magic = new Magic("pk_live_846F1095F0E1303C", {
-                network: {
-                    chainId: 5,
-                    rpcUrl: "https://rpc.ankr.com/eth_goerli"
-                },
-                extensions: [new OAuthExtension()]
-            })
-
-            magic.preload()
-
-            setMagic(magic)
-
-            const isLinking = localStorage.getItem("magic-linking")
-            if (isLinking) {
-                const Linked = JSON.parse(localStorage.getItem("linked"))
-                setLinked({ ...linked, ...Linked })
-                setShowLinkMore(true)
-            }
-        }
-        initMagicAuth()
+        // const initMagicAuth = async () => {
+        //     const magic = new Magic("pk_live_846F1095F0E1303C", {
+        //         network: {
+        //             chainId: 5,
+        //             rpcUrl: "https://rpc.ankr.com/eth_goerli"
+        //         },
+        //         extensions: [new OAuthExtension()]
+        //     })
+        //     magic.preload()
+        //     setMagic(magic)
+        //     const isLinking = localStorage.getItem("magic-linking")
+        //     if (isLinking) {
+        //         const Linked = JSON.parse(localStorage.getItem("linked"))
+        //         setLinked({ ...linked, ...Linked })
+        //         setShowLinkMore(true)
+        //     }
+        // }
+        // initMagicAuth()
     }, [])
 
-    useEffect(() => {
-        if (window.APP_IS_UPDATING) return
-        async function connectEOA() {
-            setConnecting(connector.name)
-            setLoading(true)
-            let provider = await connector.getProvider({ chainId: 5 })
-            if (signer && provider) {
-                setNetwork(5)
-                const [address] = await signer.getAddresses()
-                connectFunWallet(connector.name, address, signer, address)
-            }
-        }
-        if (!showLinkMore && connector) {
-            connectEOA()
-        }
-    }, [signer, wagmiProvider])
+    // useEffect(() => {
+    //     if (window.APP_IS_UPDATING) return
+    //     // async function connectEOA() {
+    //     //     setConnecting(connector.name)
+    //     //     setLoading(true)
+    //     //     let provider = await connector.getProvider({ chainId: 5 })
+    //     //     if (signer && provider) {
+    //     //         setNetwork(5)
+    //     //         const [address] = await signer.getAddresses()
+    //     //         connectFunWallet(connector.name, address, signer, address)
+    //     //     }
+    //     // }
+    //     // if (!showLinkMore && connector) {
+    //     //     connectEOA()
+    //     // }
+    // }, [signer, wagmiProvider])
 
-    useEffect(() => {
-        if (router.query.provider) finishSocialLogin()
-    }, [router.query])
+    // useEffect(() => {
+    //     if (router.query.provider) finishSocialLogin()
+    // }, [router.query])
 
     // async function connectFunWallet(connector, authId, walletClient, publicKey) {
     //     const authIdUsed = await isAuthIdUsed(authId)
@@ -112,7 +117,6 @@ export default function ConnectWallet() {
     //             setLinked(linked)
     //         }
     //         setProvider(walletClient)
-            
     //         setShowLinkMore(true)
     //         setLoading(false)
     //         setConnecting("")
@@ -157,6 +161,8 @@ export default function ConnectWallet() {
     //     setConnecting("")
     //     setLoading(false)
     // }
+    
+
     async function connectFunWallet(index) {
         // const authIdUsed = await isAuthIdUsed(authId)
         // if (!authIdUsed) {
@@ -165,82 +171,82 @@ export default function ConnectWallet() {
         //         setLinked(linked)
         //     }
         //     setProvider(walletClient)
-            
+
         //     setShowLinkMore(true)
         //     setLoading(false)
         //     setConnecting("")
         //     return
         // }
-       
 
+        console.log(isActive)
+        console.log(FunWallet)
         initializeMultiAuthWallet({
-            index: 23498833,
-            connectorIndexes: [index]
+            index: 23498833
         })
 
-  
-        const addr = await FunWallet.getAddress()
-        console.log(FunWallet, addr)
+        // console.log(FunWallet)
 
-        FunWallet.address = addr
-        try {
-            // let balance = await wagmiProvider.getBalance({ address: addr })
-            let balance = await FunWallet.getAssets()
-            console.log("BALANCE ", balance)
-            balance = ethers.utils.formatEther(balance)
-            if (balance == 0) {
-                FunWallet.deployed = false
-                await fundUsingFaucet(addr, 5)
-            } else {
-                FunWallet.deployed = true
-            }
-        } catch (e) {
-            console.log(e)
-        }
-        setProvider(provider)
-        setWallet(FunWallet)
-        setEOA(auth)
-        setConnecting("")
-        setLoading(false)
+        // const addr = await FunWallet.getAddress()
+
+        // FunWallet.address = addr
+        // try {
+        //     // let balance = await wagmiProvider.getBalance({ address: addr })
+        //     let balance = await FunWallet.getAssets()
+        //     console.log("BALANCE ", balance)
+        //     balance = ethers.utils.formatEther(balance)
+        //     if (balance == 0) {
+        //         FunWallet.deployed = false
+        //         await fundUsingFaucet(addr, 5)
+        //     } else {
+        //         FunWallet.deployed = true
+        //     }
+        // } catch (e) {
+        //     console.log(e)
+        // }
+
+        // setProvider(provider)
+        // setWallet(FunWallet)
+        // setConnecting("")
+        // setLoading(false)
     }
 
-    const finishSocialLogin = async () => {
-        const oauthProvider = localStorage.getItem("magic-connecting")
-        setConnecting(oauthProvider)
-        setLoading(true)
-        try {
-            let result = await magic.oauth.getRedirectResult()
-            let authId = result.oauth.userInfo.email
-            let publicAddress = result.magic.userMetadata.publicAddress
-            if (result.oauth.provider == "twitter") {
-                authId = result.oauth.userInfo.preferredUsername
-            }
-            authId = `${result.oauth.provider}###${authId}`
-            localStorage.removeItem("magic-connecting")
-            const isLinking = localStorage.getItem("magic-linking")
-            const provider = magic.rpcProvider // new ethers.providers.Web3Provider(magic.rpcProvider)
-            if (isLinking && !linked[result.oauth.provider]) {
-                const authIdUsed = await isAuthIdUsed(authId)
-                if (!authIdUsed) {
-                    linked[result.oauth.provider] = [authId, publicAddress]
-                } else {
-                    alert("This account is already connected to a FunWallet")
-                }
-                setLinked(linked)
-                setConnecting(false)
-                setLoading(false)
-                setProvider(provider)
-                localStorage.removeItem("magic-linking")
-                return
-            }
-            connectFunWallet(result.oauth.provider, authId, provider, publicAddress)
-        } catch (e) {
-            console.log("finishSocialLogin", e)
-            setConnecting("")
-            setLoading(false)
-            localStorage.removeItem("magic-connecting")
-        }
-    }
+    // const finishSocialLogin = async () => {
+    //     const oauthProvider = localStorage.getItem("magic-connecting")
+    //     setConnecting(oauthProvider)
+    //     setLoading(true)
+    //     try {
+    //         let result = await magic.oauth.getRedirectResult()
+    //         let authId = result.oauth.userInfo.email
+    //         let publicAddress = result.magic.userMetadata.publicAddress
+    //         if (result.oauth.provider == "twitter") {
+    //             authId = result.oauth.userInfo.preferredUsername
+    //         }
+    //         authId = `${result.oauth.provider}###${authId}`
+    //         localStorage.removeItem("magic-connecting")
+    //         const isLinking = localStorage.getItem("magic-linking")
+    //         const provider = magic.rpcProvider // new ethers.providers.Web3Provider(magic.rpcProvider)
+    //         if (isLinking && !linked[result.oauth.provider]) {
+    //             const authIdUsed = await isAuthIdUsed(authId)
+    //             if (!authIdUsed) {
+    //                 linked[result.oauth.provider] = [authId, publicAddress]
+    //             } else {
+    //                 alert("This account is already connected to a FunWallet")
+    //             }
+    //             setLinked(linked)
+    //             setConnecting(false)
+    //             setLoading(false)
+    //             setProvider(provider)
+    //             localStorage.removeItem("magic-linking")
+    //             return
+    //         }
+    //         connectFunWallet(result.oauth.provider, authId, provider, publicAddress)
+    //     } catch (e) {
+    //         console.log("finishSocialLogin", e)
+    //         setConnecting("")
+    //         setLoading(false)
+    //         localStorage.removeItem("magic-connecting")
+    //     }
+    // }
 
     async function connectMagic(oauthProvider) {
         try {
@@ -281,14 +287,12 @@ export default function ConnectWallet() {
                     authType == "signup" ? "Create" : "Login to"
                 } FunWallet`}</div>
                 <div className="text-sm text-[#667085] mt-1">Explore what you can do with FunWallet</div>
-
                 <div className="mt-8 flex w-full justify-between">
                     {
                         // connectors.map((connector, index) => {
                         // if(!socialsIndex[index])return <></>
                         // console.log(connector)
                         // const social = socialsIndex[index]
-                        
                         // return (
                         //     <div
                         //         className="max-w-[56px] button rounded-lg border-[#D0D5DD] border-[1px] bg-[rgb(64, 153, 255)] flex justify-center items-center cursor-pointer py-[14px] px-4"
@@ -304,7 +308,6 @@ export default function ConnectWallet() {
                         //             // } else {
                         //             //     newArray.push(index)
                         //             // }
-
                         //             // setSelectedConnectors(newArray)
                         //         }}>
                         //         {connecting == index ? <Spinner /> : <Image src={social.icon} width="22" height="22" alt="" />}
@@ -330,13 +333,11 @@ export default function ConnectWallet() {
                         // })
                     }
                 </div>
-
                 {/* <div className="w-full flex items-center my-6">
                     <div className="w-full bg-[#E4E7EC] h-[1px]"></div>
                     <div className="text-[#667085] mx-2">OR</div>
                     <div className="w-full bg-[#E4E7EC] h-[1px]"></div>
                 </div> */}
-
                 {
                     // !showEOA && (
                     // <div
@@ -347,31 +348,44 @@ export default function ConnectWallet() {
                     // </div>
                     // )
                 }
+                {socialsIndex.map((social, idx) => {
+                    let index = Math.min(idx, 3)
+                    let connector = connectors[index]
+                    // if (!socialsIndex[index]) return <></>
 
-                {
-                    connectors.map((connector, index) => {
-                        // let name = connector.name
-                         if(!socialsIndex[index])return <></>
-                        console.log(connector)
-                        const social = socialsIndex[index]
-                        
-                        return (
-                            <button
-                                className="button mb-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
-                                disabled={!connector.ready}
-                                onClick={() => {
-                                    if (!connecting) connect({ connector })
-                                }}
-                                key={index}>
-                                {connecting == socialsIndex[index].name ? <Spinner /> : <Image src={socialsIndex[index].icon}width="22" height="22" alt="" />}
-                                <div className="ml-3 font-medium text-[#344054]">{`${
-                                    authType == "signup" ? "Sign up" : "Login"
-                                } with ${socialsIndex[index].name}`}</div>
-                            </button>
-                        )
-                    })
-                }
+                    return (
+                        <button
+                            className="button mb-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
+                            // disabled={!connector.ready}
+                            onClick={async () => {
+                                console.log(activateConnector, connector[0], social.name.toLowerCase())
 
+                                await activateConnector(connector[0], social.name.toLowerCase())
+
+                                if (!connector[2].getState().accounts) return
+                                const foundIndex = selectedConnectors.indexOf(index)
+                                const newArray = [...selectedConnectors]
+                                if (foundIndex !== -1) {
+                                    // foundIndex exists in the array, so remove it
+                                    newArray.splice(foundIndex, 1)
+                                } else {
+                                    // Index doesn't exist, so add it
+                                    newArray.push(index)
+                                }
+                                setSelectedConnectors(newArray)
+                            }}
+                            key={index}>
+                            {connecting == social.name ? <Spinner /> : <Image src={social.icon} width="22" height="22" alt="" />}
+                            <div className="ml-3 font-medium text-[#344054]">{`${authType == "signup" ? "Sign up" : "Login"} with ${
+                                social.name
+                            }`}</div>
+                        </button>
+                    )
+                })}
+
+                <div className="font-medium text-[#2D4EA2] cursor-pointer transition hover:opacity-80" onClick={connectFunWallet}>
+                    Continue
+                </div>
                 <div className="flex items-center w-full justify-center cursor-default mt-8 select-none">
                     <div className="text-[#667085] mr-1">
                         {authType == "signup" ? "Already have an account?" : "Don't have an account?"}

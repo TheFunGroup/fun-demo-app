@@ -10,6 +10,7 @@ export default function Main() {
 
     const { wallet, setLoading } = useFunUtils()
 
+ 
     const [walletCreated, setWalletCreated] = useState()
 
     useEffect(() => {

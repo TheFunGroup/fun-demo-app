@@ -45,6 +45,8 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
         let envOptions = await checkWalletPaymasterConfig(wallet, paymentToken, CHAIN_ID)
         if (!envOptions.success) return envOptions
         // envOptions.envOptions.sendTxLater = true
+        console.log(global)
+
         const estimatedGasCalc = await wallet.swap(
             auth,
             {
@@ -66,6 +68,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
             amount: swapData.amount,
             out: out == "eth" ? "eth" : outAddr
         })
+
         const receipt = await wallet.swap(
             auth,
             {
