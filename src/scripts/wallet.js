@@ -164,11 +164,12 @@ export const checkWalletPaymasterConfig = async (wallet, paymentToken, chainIdNu
 
 // check if the wallet is deployed
 // check if the wallet has enough funds and if not fund the wallet
-export const checkIfWalletIsPrefunded = async (wallet, estimatedGas, chainId, native = true) => {
+export const checkIfWalletIsPrefunded = async (wallet, estimatedGas, chainId, native = true, options) => {
     if (!native) return { success: true }
     try {
+        console.log(options)
         const walletAddress = await wallet.getAddress()
-        const etherBalance = await Token.getBalance("ETH", walletAddress)
+        const etherBalance = await Token.getBalance("ETH", walletAddress, options)
         const balance = parseEther(etherBalance)
         if (estimatedGas > balance) {
             await fundUsingFaucet(walletAddress, chainId)

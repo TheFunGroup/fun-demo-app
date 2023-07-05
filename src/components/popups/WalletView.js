@@ -168,9 +168,8 @@ export default function WalletView() {
     }
 
     function handleLogout() {
+        connector.deactivate();
         disconnect()
-        setWallet(null)
-        setEOA(null)
     }
 
     function handleFund() {

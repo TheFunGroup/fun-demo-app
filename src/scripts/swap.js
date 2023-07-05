@@ -45,7 +45,6 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
         let envOptions = await checkWalletPaymasterConfig(wallet, paymentToken, CHAIN_ID)
         if (!envOptions.success) return envOptions
         // envOptions.envOptions.sendTxLater = true
-        console.log(global)
 
         const estimatedGasCalc = await wallet.swap(
             auth,
@@ -60,7 +59,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
         if (!estimatedGasCalc || estimatedGasCalc == 0) return { success: false, error: "Estimated gas is 0" }
         const native = envOptions.envOptions.gasSponsor === false
 
-        const prefundStatus = await checkIfWalletIsPrefunded(wallet, estimatedGasCalc, CHAIN_ID, native)
+        const prefundStatus = await checkIfWalletIsPrefunded(wallet, estimatedGasCalc, CHAIN_ID, native, envOptions.envOptions)
         if (!prefundStatus.success) return prefundStatus
 
         console.log(auth, {
@@ -68,6 +67,7 @@ export const handleSwap = async function (wallet, paymentToken, swapData, auth) 
             amount: swapData.amount,
             out: out == "eth" ? "eth" : outAddr
         })
+        console.log(envOptions)
 
         const receipt = await wallet.swap(
             auth,

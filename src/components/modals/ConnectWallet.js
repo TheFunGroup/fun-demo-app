@@ -14,7 +14,8 @@ import Spinner from "../misc/Spinner"
 import { createWalletClient, custom } from "viem"
 import { mainnet } from "viem/chains"
 import { apiKey } from "../../utils/constants"
-
+import EOAButton from "../misc/EOAButton"
+import OAuthButton from "../misc/OAuthButton"
 import { useBuildFunWallet, useFun, useFunStoreInterface, Goerli } from "@fun-xyz/react"
 
 const DEFAULT_FUN_WALLET_CONFIG = {
@@ -161,9 +162,8 @@ export default function ConnectWallet() {
     //     setConnecting("")
     //     setLoading(false)
     // }
-    
 
-    async function connectFunWallet(index) {
+    async function connectFunWallet() {
         // const authIdUsed = await isAuthIdUsed(authId)
         // if (!authIdUsed) {
         //     if (!linked[connector]) {
@@ -178,12 +178,18 @@ export default function ConnectWallet() {
         //     return
         // }
 
-        console.log(isActive)
-        console.log(FunWallet)
-        initializeMultiAuthWallet({
-            index: 23498833
-        })
-
+        if (!selectedConnectors.length) {
+            //popup error message
+        }
+        else {
+            initializeMultiAuthWallet({
+                index: 23498833,
+                connectorIndexes: selectedConnectors,
+            })
+            setConnecting("")
+            setLoading(true)
+        }
+        
         // console.log(FunWallet)
 
         // const addr = await FunWallet.getAddress()
@@ -348,41 +354,55 @@ export default function ConnectWallet() {
                     // </div>
                     // )
                 }
-                {socialsIndex.map((social, idx) => {
+                {socialsIndex.slice(0, 3).map((social, idx) => {
+                    if (idx >= 3) return <></>
                     let index = Math.min(idx, 3)
                     let connector = connectors[index]
-                    // if (!socialsIndex[index]) return <></>
-
                     return (
-                        <button
-                            className="button mb-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
-                            // disabled={!connector.ready}
-                            onClick={async () => {
-                                console.log(activateConnector, connector[0], social.name.toLowerCase())
+                        <EOAButton
+                            social={social}
+                            index={index}
+                            activateConnector={activateConnector}
+                            selectedConnectors={selectedConnectors}
+                            setSelectedConnectors={setSelectedConnectors}
+                            authType={"signup"}
+                            connector={connector}></EOAButton>
+                        // <button
+                        //     className="button mb-3 w-full rounded-lg border-[#D0D5DD] border-[1px] bg-white flex justify-center cursor-pointer py-[10px] px-4"
+                        //     // disabled={!connector.ready}
+                        //     onClick={async () => {
+                        //         console.log(activateConnector, connector[0], social.name.toLowerCase())
 
-                                await activateConnector(connector[0], social.name.toLowerCase())
+                        //         await activateConnector(connector[0], social.name.toLowerCase())
 
-                                if (!connector[2].getState().accounts) return
-                                const foundIndex = selectedConnectors.indexOf(index)
-                                const newArray = [...selectedConnectors]
-                                if (foundIndex !== -1) {
-                                    // foundIndex exists in the array, so remove it
-                                    newArray.splice(foundIndex, 1)
-                                } else {
-                                    // Index doesn't exist, so add it
-                                    newArray.push(index)
-                                }
-                                setSelectedConnectors(newArray)
-                            }}
-                            key={index}>
-                            {connecting == social.name ? <Spinner /> : <Image src={social.icon} width="22" height="22" alt="" />}
-                            <div className="ml-3 font-medium text-[#344054]">{`${authType == "signup" ? "Sign up" : "Login"} with ${
-                                social.name
-                            }`}</div>
-                        </button>
+                        //         if (!connector[2].getState().accounts) return
+                        //         const foundIndex = selectedConnectors.indexOf(index)
+                        //         const newArray = [...selectedConnectors]
+                        //         if (foundIndex !== -1) {
+                        //             // foundIndex exists in the array, so remove it
+                        //             newArray.splice(foundIndex, 1)
+                        //         } else {
+                        //             // Index doesn't exist, so add it
+                        //             newArray.push(index)
+                        //         }
+                        //         setSelectedConnectors(newArray)
+                        //     }}
+                        //     key={index}>
+                        //     {connecting == social.name ? <Spinner /> : <Image src={social.icon} width="22" height="22" alt="" />}
+                        //     <div className="ml-3 font-medium text-[#344054]">{`${authType == "signup" ? "Sign up" : "Login"} with ${
+                        //         social.name
+                        //     }`}</div>
+                        // </button>
                     )
                 })}
-
+                <div>
+                    <OAuthButton
+                        activateConnector={activateConnector}
+                        selectedConnectors={selectedConnectors}
+                        setSelectedConnectors={setSelectedConnectors}
+                        authType={"signup"}
+                        connector={connectors[3]}></OAuthButton>
+                </div>
                 <div className="font-medium text-[#2D4EA2] cursor-pointer transition hover:opacity-80" onClick={connectFunWallet}>
                     Continue
                 </div>
