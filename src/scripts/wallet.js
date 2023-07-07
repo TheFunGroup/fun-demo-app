@@ -129,21 +129,14 @@ export const checkWalletPaymasterConfig = async (wallet, paymentToken, chainIdNu
             const provider = new ethers.providers.JsonRpcProvider("https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161")
             const paymasterAddress = await gasSponsor.getPaymasterAddress()
             const erc20Contract = new ethers.Contract(normalizedTokenAddress, erc20Abi, provider)
-            const iscontract = await isContract(walletAddress)
-            if (iscontract) {
-                let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress) //paymaster address
-                const weiValue = parseUnits("20", "ether")
-                if (weiValue > BigInt(allowance)) {
-                    //amt
-                    //if approved, pop up modal, and ask for approval
-                    return { success: false, mustApprove: true, paymasterAddress: paymasterAddress, tokenAddr: normalizedTokenAddress }
-                }
-            } else {
-                return {
-                    success: false,
-                    error: "Its a known bug that first transaction of a fun wallet would fail if you are covering gas using ERC20 tokens. Please try to pay gas using gasless paymaster or ETH for this transaction and try token paymaster later."
-                }
+            let allowance = await erc20Contract.allowance(walletAddress, paymasterAddress) //paymaster address
+            const weiValue = parseUnits("20", "ether")
+            if (weiValue > BigInt(allowance)) {
+                //amt
+                //if approved, pop up modal, and ask for approval
+                return { success: false, mustApprove: true, paymasterAddress: paymasterAddress, tokenAddr: normalizedTokenAddress }
             }
+
             return {
                 success: true,
                 envOptions: {

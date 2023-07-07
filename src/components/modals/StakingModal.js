@@ -12,6 +12,7 @@ import { tokens } from "../../utils/tokens"
 import PaymentMethod from "../forms/PaymentMethod"
 import StakeForm from "../forms/StakeForm"
 import Spinner from "../misc/Spinner"
+import { BigNumber } from "ethers"
 
 const examples = {
     stake: {
@@ -21,6 +22,9 @@ const examples = {
     }
 }
 
+const weiToEther = (wei) => {
+    return formatEther(BigNumber.from(wei.toString()))
+}
 // Page should maybe display the Current network connected or used.
 
 // some requirements for staking
@@ -123,8 +127,8 @@ export default function StakingModal(props) {
             handleStakeEth(wallet, normalizedPaymentToken, stakeInput, eoa, true)
                 .then(async (estimate) => {
                     if (estimate.success) {
-                        const usd = await toUSD(paymentToken, formatEther(estimate.receipt))
-                        setGas(`${parseFloat(formatEther(estimate.receipt)).toFixed(6)} ${paymentToken} · $${usd}`)
+                        const usd = await toUSD(paymentToken, weiToEther(estimate.receipt))
+                        setGas(`${parseFloat(weiToEther(estimate.receipt)).toFixed(10)} ${paymentToken} · $${usd}`)
                     } else {
                         console.log("error: ", estimate)
                         if (estimate.mustApprove) {
