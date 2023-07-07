@@ -19,7 +19,6 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
         // set environment options
         let envOptions = await checkWalletPaymasterConfig(wallet, paymentToken, CHAIN_ID)
         if (!envOptions.success) return envOptions
-
         // initialize NFT contract
         const nftContract = new ethers.Contract("0x2749B15E4d39266A2C4dA9c835E9C9e384267C5A", nftABI)
         const tx = await nftContract.populateTransaction.safeMint(walletAddress, `nft${nftNumber}.png`)
@@ -30,7 +29,7 @@ export const handleMintNFT = async function (wallet, paymentToken, nft, auth) {
         const prefundStatus = await checkIfWalletIsPrefunded(wallet, estimatedGasCalc, CHAIN_ID, native)
         if (!prefundStatus.success) return prefundStatus
         // execute smart contract transactions.
-        let receipt = await wallet.execRawTx(auth, tx)
+        let receipt = await wallet.execRawTx(auth, tx, envOptions.envOptions, false)
         console.log("txId: ", receipt.txid)
         const explorerUrl = receipt.txid
             ? `https://goerli.etherscan.io/tx/${receipt.txid}`
