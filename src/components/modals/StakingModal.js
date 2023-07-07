@@ -127,7 +127,6 @@ export default function StakingModal(props) {
             handleStakeEth(wallet, normalizedPaymentToken, stakeInput, eoa, true)
                 .then(async (estimate) => {
                     if (estimate.success) {
-                        console.log(estimate.receipt, weiToEther(estimate.receipt))
                         const usd = await toUSD(paymentToken, weiToEther(estimate.receipt))
                         setGas(`${parseFloat(weiToEther(estimate.receipt)).toFixed(10)} ${paymentToken} · $${usd}`)
                     } else {
